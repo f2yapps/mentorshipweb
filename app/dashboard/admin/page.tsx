@@ -34,11 +34,19 @@ export default async function AdminDashboardPage() {
     .order("created_at", { ascending: false })
     .limit(50);
 
-  const { data: mentors } = await supabase
+  const { data: mentorsRaw } = await supabase
     .from("mentors")
     .select("id, user_id, expertise_categories, verified, users(name, email)")
     .order("created_at", { ascending: false })
     .limit(50);
+
+  // Normalize: Supabase relation can return users as object or array
+  const mentors = (mentorsRaw ?? []).map((m) => {
+    const user = Array.isArray((m as { users?: unknown }).users)
+      ? ((m as { users: { name: string; email: string }[] }).users[0] ?? null)
+      : (m as { users: { name: string; email: string } | null }).users ?? null;
+    return { id: m.id, user_id: m.user_id, expertise_categories: m.expertise_categories, verified: m.verified, users: user };
+  });
 
   return (
     <div>
