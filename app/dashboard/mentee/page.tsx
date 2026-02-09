@@ -21,7 +21,7 @@ export default async function MenteeDashboardPage() {
     .single();
   if (!mentee) redirect("/auth/mentee");
 
-  const { data: requests } = await supabase
+  const { data: requestsRaw } = await supabase
     .from("mentorship_requests")
     .select(`
       id,
@@ -34,6 +34,23 @@ export default async function MenteeDashboardPage() {
     .eq("mentee_id", mentee.id)
     .order("created_at", { ascending: false });
 
+  // Normalize: Supabase relations can return as object or array
+  const requests = (requestsRaw ?? []).map((r) => {
+    const mentorsField: unknown = (r as { mentors?: unknown }).mentors;
+    const mentor = Array.isArray(mentorsField) ? mentorsField[0] : mentorsField;
+    const usersField: unknown = mentor != null ? (mentor as { users?: unknown }).users : null;
+    const user = Array.isArray(usersField) ? usersField[0] : usersField;
+    const mentorName = (user as { name?: string } | null)?.name ?? "Mentor";
+    return {
+      id: r.id,
+      category: r.category,
+      message: r.message,
+      status: r.status,
+      created_at: r.created_at,
+      mentorName,
+    };
+  });
+
   return (
     <div>
       <h1 className="section-heading">Mentee Dashboard</h1>
@@ -41,27 +58,7 @@ export default async function MenteeDashboardPage() {
         Track your mentorship requests and connect with mentors.
       </p>
       <div className="mt-6">
-        <MenteeDashboardRequests
-          requests={(requests ?? []).map((r: {
-            id: string;
-            category: string;
-            message: string | null;
-            status: string;
-            created_at: string;
-            mentors: {
-              id: string;
-              user_id: string;
-              users: { id: string; name: string } | null;
-            } | null;
-          }) => ({
-            id: r.id,
-            category: r.category,
-            message: r.message,
-            status: r.status,
-            created_at: r.created_at,
-            mentorName: r.mentors?.users?.name ?? "Mentor",
-          }))}
-        />
+        <MenteeDashboardRequests requests={requests} />
       </div>
       <div className="mt-8">
         <a href="/mentors" className="btn-primary">
