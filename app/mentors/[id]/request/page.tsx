@@ -47,7 +47,9 @@ export default async function RequestMentorshipPage({ params }: Props) {
     notFound();
   }
 
-  const mentorName = (mentor as { users?: { name: string } }).users?.name ?? "Mentor";
+  const usersField: unknown = (mentor as { users?: unknown }).users;
+  const user = Array.isArray(usersField) ? usersField[0] : usersField;
+  const mentorName = (user as { name?: string } | null)?.name ?? "Mentor";
 
   return (
     <div className="mx-auto max-w-lg px-4 py-12 sm:py-20">

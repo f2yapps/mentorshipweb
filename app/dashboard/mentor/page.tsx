@@ -21,7 +21,7 @@ export default async function MentorDashboardPage() {
     .single();
   if (!mentor) redirect("/auth/mentor");
 
-  const { data: requests } = await supabase
+  const { data: requestsRaw } = await supabase
     .from("mentorship_requests")
     .select(`
       id,
@@ -34,6 +34,26 @@ export default async function MentorDashboardPage() {
     .eq("mentor_id", mentor.id)
     .order("created_at", { ascending: false });
 
+  // Normalize: Supabase relations can return as object or array
+  const requests = (requestsRaw ?? []).map((r) => {
+    const menteesField: unknown = (r as { mentees?: unknown }).mentees;
+    const mentee = Array.isArray(menteesField) ? menteesField[0] : menteesField;
+    const usersField: unknown = mentee != null ? (mentee as { users?: unknown }).users : null;
+    const user = Array.isArray(usersField) ? usersField[0] : usersField;
+    const u = user as { name?: string; email?: string } | null;
+    const m = mentee as { goals?: string | null } | null;
+    return {
+      id: r.id,
+      category: r.category,
+      message: r.message,
+      status: r.status,
+      created_at: r.created_at,
+      menteeName: u?.name ?? "Mentee",
+      menteeEmail: u?.email,
+      menteeGoals: m?.goals ?? null,
+    };
+  });
+
   return (
     <div>
       <h1 className="section-heading">Mentor Dashboard</h1>
@@ -41,30 +61,7 @@ export default async function MentorDashboardPage() {
         View and respond to mentorship requests.
       </p>
       <div className="mt-6">
-        <MentorDashboardRequests
-          requests={(requests ?? []).map((r: {
-            id: string;
-            category: string;
-            message: string | null;
-            status: string;
-            created_at: string;
-            mentees: {
-              id: string;
-              goals: string | null;
-              user_id: string;
-              users: { id: string; name: string; email: string } | null;
-            } | null;
-          }) => ({
-            id: r.id,
-            category: r.category,
-            message: r.message,
-            status: r.status,
-            created_at: r.created_at,
-            menteeName: r.mentees?.users?.name ?? "Mentee",
-            menteeEmail: r.mentees?.users?.email,
-            menteeGoals: r.mentees?.goals,
-          }))}
-        />
+        <MentorDashboardRequests requests={requests} />
       </div>
     </div>
   );

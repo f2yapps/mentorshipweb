@@ -27,13 +27,30 @@ export default async function MentorsPage({ searchParams }: Props) {
     query = query.contains("languages", [params.language]);
   }
 
-  const { data: mentors } = await query.order("created_at", { ascending: false });
+  const { data: mentorsRaw } = await query.order("created_at", { ascending: false });
 
-  let filtered = mentors ?? [];
+  // Normalize: Supabase relation can return users as object or array
+  type UserRow = { id: string; name: string; country: string | null; bio: string | null } | null;
+  const mentors = (mentorsRaw ?? []).map((m) => {
+    const usersField: unknown = (m as { users?: unknown }).users;
+    const user: UserRow = Array.isArray(usersField)
+      ? (usersField[0] ?? null) as UserRow
+      : (usersField as UserRow) ?? null;
+    return {
+      id: m.id,
+      user_id: m.user_id,
+      expertise_categories: m.expertise_categories,
+      experience_years: m.experience_years,
+      availability: m.availability,
+      languages: m.languages,
+      verified: m.verified,
+      users: user,
+    };
+  });
+
+  let filtered = mentors;
   if (params.country) {
-    filtered = filtered.filter(
-      (m: { users?: { country: string | null } }) => m.users?.country === params.country
-    );
+    filtered = filtered.filter((m) => m.users?.country === params.country);
   }
 
   return (
@@ -52,16 +69,7 @@ export default async function MentorsPage({ searchParams }: Props) {
 
       <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {filtered.length > 0 ? (
-          filtered.map((mentor: {
-            id: string;
-            user_id: string;
-            expertise_categories: string[];
-            experience_years: number;
-            availability: string;
-            languages: string[];
-            verified: boolean;
-            users: { id: string; name: string; country: string | null; bio: string | null } | null;
-          }) => (
+          filtered.map((mentor) => (
             <MentorCard
               key={mentor.id}
               id={mentor.id}
