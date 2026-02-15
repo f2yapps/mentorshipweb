@@ -18,8 +18,8 @@ export default function ContactPage() {
           <h2 className="font-semibold text-earth-900">General inquiries</h2>
           <p className="mt-1 text-earth-600">
             For general questions about the platform, mentorship, or partnerships, email us at{" "}
-            <a href="mailto:hello@mentorship.example.com" className="text-primary-600 hover:underline">
-              hello@mentorship.example.com
+            <a href="mailto:f2yapps@support.com" className="text-primary-600 hover:underline">
+              f2yapps@support.com
             </a>
             .
           </p>
@@ -28,8 +28,8 @@ export default function ContactPage() {
           <h2 className="font-semibold text-earth-900">Support</h2>
           <p className="mt-1 text-earth-600">
             If you need help with your account or a mentorship request, use the support link in your dashboard or email{" "}
-            <a href="mailto:support@mentorship.example.com" className="text-primary-600 hover:underline">
-              support@mentorship.example.com
+            <a href="mailto:f2yapps@support.com" className="text-primary-600 hover:underline">
+              f2yapps@support.com
             </a>
             .
           </p>
