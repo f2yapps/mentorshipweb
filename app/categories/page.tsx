@@ -3,9 +3,9 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
-  title: "Categories",
+  title: "Mentorship Areas",
   description:
-    "Mentorship categories: Academics, Career, Life, Relationships, Mental Health, Entrepreneurship, Tech, Agriculture, Leadership, Immigration, Faith & Purpose.",
+    "Find mentors in AI & Machine Learning, Software Development, Data Science, Career Development, Tech Entrepreneurship, Digital Skills, and more.",
 };
 
 export default async function CategoriesPage() {
@@ -17,9 +17,10 @@ export default async function CategoriesPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-12 sm:py-20">
-      <h1 className="section-heading">Mentorship Categories</h1>
+      <h1 className="section-heading">Mentorship Areas</h1>
       <p className="mt-4 text-earth-700">
-        Find support in the area that matters to you. Browse mentors by category.
+        Explore mentorship opportunities in AI, technology, career development, and personal growth. 
+        Find mentors who can guide you in the areas that matter most to your future.
       </p>
 
       <div className="mt-10 grid gap-4 sm:grid-cols-2">
@@ -41,7 +42,7 @@ export default async function CategoriesPage() {
             ))
           : (
             <div className="col-span-2 rounded-lg border border-earth-200 bg-earth-50 p-8 text-center text-earth-600">
-              No categories yet. Run the Supabase seed script to add categories, or add them in the database.
+              No mentorship areas available yet. Please run the category seed script in Supabase to populate the areas.
             </div>
           )}
       </div>

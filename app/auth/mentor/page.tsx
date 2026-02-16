@@ -4,8 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import { MentorOnboardingForm } from "@/components/auth/MentorOnboardingForm";
 
 export const metadata: Metadata = {
-  title: "Mentor profile",
-  description: "Complete your mentor profile to appear in the directory.",
+  title: "Set Up Mentor Profile",
+  description: "Complete your mentor profile to start empowering youth in AI, technology, and career development.",
 };
 
 export default async function MentorOnboardingPage() {
@@ -37,9 +37,10 @@ export default async function MentorOnboardingPage() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-12 sm:py-20">
-      <h1 className="section-heading">Complete your mentor profile</h1>
+      <h1 className="section-heading">Set Up Your Mentor Profile</h1>
       <p className="mt-2 text-earth-600">
-        Tell mentees about your expertise, availability, and how you prefer to connect.
+        Share your expertise in AI, technology, and career development. Let young people know 
+        how you can help them grow and what areas you specialize in.
       </p>
       <MentorOnboardingForm className="mt-8" />
     </div>

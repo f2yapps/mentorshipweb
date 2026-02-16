@@ -5,8 +5,18 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 const CATEGORIES = [
-  "Academics", "Career", "Life", "Relationships", "Mental Health",
-  "Entrepreneurship", "Tech", "Agriculture", "Leadership", "Immigration", "Faith & Purpose",
+  "Artificial Intelligence & ML",
+  "Software Development",
+  "Data Science & Analytics",
+  "Career Development",
+  "Tech Entrepreneurship",
+  "Digital Skills",
+  "Academic Success",
+  "Personal Development",
+  "Cloud Computing & DevOps",
+  "Cybersecurity",
+  "UI/UX Design",
+  "Leadership & Impact",
 ];
 
 type Props = { className?: string };

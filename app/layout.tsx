@@ -8,20 +8,22 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
   title: {
-    default: "Mentorship Platform | Connect Mentors & Mentees Globally",
-    template: "%s | Mentorship Platform",
+    default: "Youth Mentorship Platform | AI, Tech & Career Development",
+    template: "%s | Youth Mentorship",
   },
   description:
-    "A global mentorship platform connecting volunteer mentors with mentees across Ethiopia, Africa, and the world. Get free advice and guidance in academics, career, life, and more.",
+    "Global mentorship platform empowering youth in developing countries with free guidance in AI, machine learning, software development, data science, and career growth. Connect with expert mentors worldwide.",
   keywords: [
-    "mentorship",
-    "mentor",
-    "mentee",
-    "Ethiopia",
-    "Africa",
-    "career",
-    "academics",
-    "volunteer",
+    "youth mentorship",
+    "AI mentorship",
+    "technology mentorship",
+    "career development",
+    "developing countries",
+    "machine learning",
+    "software development",
+    "data science",
+    "free mentorship",
+    "volunteer mentors",
   ],
   openGraph: {
     type: "website",

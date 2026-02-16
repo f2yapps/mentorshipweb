@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "About",
   description:
-    "Our vision, values, and impact. Connecting mentors and mentees across Ethiopia, Africa, and the world.",
+    "Empowering youth worldwide through AI and technology mentorship. Our vision, values, and impact in developing countries.",
 };
 
 export default function AboutPage() {
@@ -14,31 +14,41 @@ export default function AboutPage() {
       <section className="mt-8 space-y-6 text-earth-700">
         <h2 className="text-xl font-semibold text-earth-900">Our Vision</h2>
         <p>
-          We envision a world where everyone—regardless of location or background—has
-          access to guidance and support. By connecting volunteer mentors with mentees
-          across Ethiopia, Africa, and the globe, we help people grow in their
-          academics, careers, and lives.
+          We envision a world where every young person, regardless of location or background, 
+          has access to mentorship in AI, technology, and career development. By connecting 
+          volunteer mentors with youth worldwide—especially in developing countries—we're 
+          building the next generation of innovators, technologists, and leaders.
         </p>
 
         <h2 className="text-xl font-semibold text-earth-900">Our Values</h2>
         <ul className="list-inside list-disc space-y-2">
-          <li><strong>Access:</strong> Free mentorship for everyone.</li>
-          <li><strong>Inclusion:</strong> Welcoming mentees and mentors from all cultures and countries.</li>
-          <li><strong>Impact:</strong> Focus on real growth in academics, career, life, and purpose.</li>
-          <li><strong>Community:</strong> Building a supportive network across Ethiopia, Africa, and the world.</li>
+          <li><strong>Youth Empowerment:</strong> Investing in young people as agents of change.</li>
+          <li><strong>Technology Access:</strong> Democratizing AI and tech education globally.</li>
+          <li><strong>Global Community:</strong> Connecting mentors and mentees across borders.</li>
+          <li><strong>Free Access:</strong> No-cost mentorship for all young people.</li>
+          <li><strong>Impact Focus:</strong> Real skills, real growth, real opportunities.</li>
         </ul>
 
-        <h2 className="text-xl font-semibold text-earth-900">Impact in Ethiopia & Africa</h2>
+        <h2 className="text-xl font-semibold text-earth-900">Focus on Developing Countries</h2>
         <p>
-          Our platform is built with Ethiopia and Africa in mind. We support categories
-          from Academics and Career to Agriculture, Leadership, Immigration, and Faith &
-          Purpose. Mentors volunteer their time to offer advice in local languages and
-          contexts, helping mentees navigate study, work, and life challenges.
+          Our platform prioritizes youth in developing countries who face barriers to accessing 
+          quality education and mentorship in emerging technologies. We connect young people with 
+          mentors who understand the unique challenges and opportunities in these regions, offering 
+          guidance in AI, machine learning, software development, data science, and digital entrepreneurship.
         </p>
+
+        <h2 className="text-xl font-semibold text-earth-900">AI & Technology for Youth</h2>
         <p>
-          Whether you are a student in Addis Ababa, a professional in Nairobi, or
-          someone seeking guidance anywhere in the world, you can find a mentor and
-          request free, voluntary mentorship through this platform.
+          Artificial Intelligence is transforming the world, and we believe every young person 
+          should have the opportunity to learn, contribute, and benefit from this revolution. 
+          Our mentors provide guidance in AI fundamentals, machine learning, data science, 
+          software engineering, and how to apply these skills to solve local and global challenges.
+        </p>
+
+        <p>
+          Whether you're a student learning to code, a young professional entering tech, or an 
+          aspiring AI researcher, you can find experienced mentors ready to guide your journey—
+          completely free of charge.
         </p>
       </section>
     </div>
