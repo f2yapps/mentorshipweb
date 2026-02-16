@@ -3,7 +3,6 @@ import { createClient } from '@/lib/supabase/server'
 import { EducationForm } from '@/components/profile/EducationForm'
 import { ExperienceForm } from '@/components/profile/ExperienceForm'
 import { CertificationForm } from '@/components/profile/CertificationForm'
-import { ImageUpload } from '@/components/upload/ImageUpload'
 
 export default async function EditProfilePage() {
   const supabase = await createClient()
@@ -50,20 +49,12 @@ export default async function EditProfilePage() {
         </div>
 
         <div className="space-y-6">
-          {/* Profile Picture */}
+          {/* Profile Picture - Coming Soon */}
           <section className="bg-white rounded-lg shadow p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">Profile Picture</h2>
-            <ImageUpload
-              userId={user.id}
-              currentImageUrl={profile?.avatar_url || undefined}
-              onUploadComplete={async (url) => {
-                await supabase
-                  .from('users')
-                  .update({ avatar_url: url })
-                  .eq('id', user.id)
-                window.location.reload()
-              }}
-            />
+            <div className="text-sm text-gray-500">
+              Profile picture upload coming soon. For now, you can add your education, experience, and certifications below.
+            </div>
           </section>
 
           {/* Basic Info */}
