@@ -131,6 +131,9 @@ export function Header() {
                 <Link href={dashboardHref} className="btn-ghost text-sm">
                   Dashboard
                 </Link>
+                <Link href="/profile/edit" className="btn-ghost text-sm">
+                  Edit Profile
+                </Link>
                 <span className="hidden text-sm text-earth-600 sm:inline">{user.name}</span>
                 <button
                   type="button"
@@ -174,13 +177,22 @@ export function Header() {
             </Link>
           ))}
           {user && (
-            <Link
-              href={dashboardHref}
-              className="block rounded-lg px-3 py-2 text-sm font-medium text-earth-700 hover:bg-earth-100"
-              onClick={() => setMenuOpen(false)}
-            >
-              Dashboard
-            </Link>
+            <>
+              <Link
+                href={dashboardHref}
+                className="block rounded-lg px-3 py-2 text-sm font-medium text-earth-700 hover:bg-earth-100"
+                onClick={() => setMenuOpen(false)}
+              >
+                Dashboard
+              </Link>
+              <Link
+                href="/profile/edit"
+                className="block rounded-lg px-3 py-2 text-sm font-medium text-earth-700 hover:bg-earth-100"
+                onClick={() => setMenuOpen(false)}
+              >
+                Edit Profile
+              </Link>
+            </>
           )}
         </div>
       )}
