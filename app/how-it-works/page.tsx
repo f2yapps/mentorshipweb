@@ -31,19 +31,19 @@ export default function HowItWorksPage() {
         <div className="card p-6">
           <h2 className="text-lg font-semibold text-earth-900">For Mentors</h2>
           <ol className="mt-4 list-decimal space-y-3 pl-5 text-earth-700">
-            <li>Sign up and create your mentor account—it's completely voluntary and free.</li>
+            <li>Sign up and create your mentor account—it&apos;s completely voluntary and free.</li>
             <li>Complete your profile: share your expertise in AI, technology, career development, or other areas.</li>
             <li>Set your availability and preferred communication methods (video, email, chat).</li>
-            <li>Once approved, you'll appear in the Mentor Directory for young people to discover.</li>
+            <li>Once approved, you&apos;ll appear in the Mentor Directory for young people to discover.</li>
             <li>Receive mentorship requests and view them in your <Link href="/dashboard/mentor" className="text-primary-600 hover:underline">Mentor Dashboard</Link>.</li>
-            <li>Accept requests that align with your expertise and start making an impact in a young person's life.</li>
+            <li>Accept requests that align with your expertise and start making an impact in a young person&apos;s life.</li>
           </ol>
         </div>
 
         <div className="rounded-lg bg-primary-50 p-6">
           <h2 className="text-lg font-semibold text-primary-900">Join the Movement</h2>
           <p className="mt-2 text-primary-800">
-            Whether you're seeking guidance in AI and tech, or ready to share your expertise with the next generation, 
+            Whether you&apos;re seeking guidance in AI and tech, or ready to share your expertise with the next generation, 
             start your journey today—completely free.
           </p>
           <div className="mt-4 flex gap-4">

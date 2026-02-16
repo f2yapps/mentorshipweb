@@ -16,7 +16,7 @@ export default function AboutPage() {
         <p>
           We envision a world where every young person, regardless of location or background, 
           has access to mentorship in AI, technology, and career development. By connecting 
-          volunteer mentors with youth worldwide—especially in developing countries—we're 
+          volunteer mentors with youth worldwide—especially in developing countries—we&apos;re 
           building the next generation of innovators, technologists, and leaders.
         </p>
 
@@ -46,7 +46,7 @@ export default function AboutPage() {
         </p>
 
         <p>
-          Whether you're a student learning to code, a young professional entering tech, or an 
+          Whether you&apos;re a student learning to code, a young professional entering tech, or an 
           aspiring AI researcher, you can find experienced mentors ready to guide your journey—
           completely free of charge.
         </p>
