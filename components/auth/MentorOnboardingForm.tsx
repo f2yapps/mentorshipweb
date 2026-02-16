@@ -42,7 +42,7 @@ export function MentorOnboardingForm({ className = "" }: Props) {
       setLoading(false);
       return;
     }
-    const { error: insertError } = await supabase.from("mentors").insert({
+    const mentorData = {
       user_id: user.id,
       expertise_categories: expertiseCategories,
       interests: interestsText.split(",").map((s) => s.trim()).filter(Boolean),
@@ -51,12 +51,38 @@ export function MentorOnboardingForm({ className = "" }: Props) {
       languages: languages.length ? languages : ["English"],
       preferred_communication: preferredCommunication.length ? preferredCommunication : ["email"],
       verified: false,
-    });
-    setLoading(false);
+    };
+    
+    const { error: insertError } = await supabase.from("mentors").insert(mentorData);
+    
     if (insertError) {
-      setError(insertError.message);
-      return;
+      // If duplicate key error, update instead
+      if (insertError.code === '23505') {
+        const { error: updateError } = await supabase
+          .from("mentors")
+          .update({
+            expertise_categories: expertiseCategories,
+            interests: interestsText.split(",").map((s) => s.trim()).filter(Boolean),
+            experience_years: experienceYears,
+            availability,
+            languages: languages.length ? languages : ["English"],
+            preferred_communication: preferredCommunication.length ? preferredCommunication : ["email"],
+          })
+          .eq("user_id", user.id);
+        
+        if (updateError) {
+          setLoading(false);
+          setError(updateError.message);
+          return;
+        }
+      } else {
+        setLoading(false);
+        setError(insertError.message);
+        return;
+      }
     }
+    
+    setLoading(false);
     router.push("/dashboard/mentor");
     router.refresh();
   };

@@ -37,17 +37,40 @@ export function MenteeOnboardingForm({ className = "" }: Props) {
       setLoading(false);
       return;
     }
+    
+    // Try to insert, if it fails due to duplicate, update instead
     const { error: insertError } = await supabase.from("mentees").insert({
       user_id: user.id,
       goals: goals || null,
       preferred_categories: preferredCategories,
       background: background || null,
     });
-    setLoading(false);
+    
     if (insertError) {
-      setError(insertError.message);
-      return;
+      // If duplicate key error, update instead
+      if (insertError.code === '23505') {
+        const { error: updateError } = await supabase
+          .from("mentees")
+          .update({
+            goals: goals || null,
+            preferred_categories: preferredCategories,
+            background: background || null,
+          })
+          .eq("user_id", user.id);
+        
+        if (updateError) {
+          setLoading(false);
+          setError(updateError.message);
+          return;
+        }
+      } else {
+        setLoading(false);
+        setError(insertError.message);
+        return;
+      }
     }
+    
+    setLoading(false);
     router.push("/dashboard/mentee");
     router.refresh();
   };
