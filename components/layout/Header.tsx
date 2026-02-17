@@ -88,6 +88,7 @@ export function Header() {
     { href: "/how-it-works", label: "How It Works" },
     { href: "/categories", label: "Categories" },
     { href: "/mentors", label: "Find Mentors" },
+    { href: "/media", label: "Media Gallery" },
     { href: "/contact", label: "Contact" },
   ];
 

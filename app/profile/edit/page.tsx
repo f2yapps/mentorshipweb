@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { EducationForm } from '@/components/profile/EducationForm'
 import { ExperienceForm } from '@/components/profile/ExperienceForm'
 import { CertificationForm } from '@/components/profile/CertificationForm'
+import { SocialLinksForm } from '@/components/profile/SocialLinksForm'
 
 export default async function EditProfilePage() {
   const supabase = await createClient()
@@ -37,6 +38,13 @@ export default async function EditProfilePage() {
     .select('*')
     .eq('user_id', user.id)
     .order('issue_date', { ascending: false })
+
+  // Fetch social links
+  const { data: socialLinks } = await supabase
+    .from('external_links')
+    .select('*')
+    .eq('user_id', user.id)
+    .order('created_at', { ascending: false })
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -167,6 +175,58 @@ export default async function EditProfilePage() {
             <div className="border-t pt-4">
               <h3 className="text-lg font-medium text-gray-900 mb-4">Add Certification</h3>
               <CertificationForm userId={user.id} onSuccess={() => window.location.reload()} />
+            </div>
+          </section>
+
+          {/* Social & Professional Links */}
+          <section className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">Social & Professional Links</h2>
+            <p className="text-sm text-gray-600 mb-4">
+              Add your Zoom, WhatsApp, LinkedIn, and other professional links
+            </p>
+            
+            {socialLinks && socialLinks.length > 0 && (
+              <div className="mb-6 space-y-3">
+                {socialLinks.map((link) => (
+                  <div key={link.id} className="flex items-center justify-between border border-gray-200 rounded-lg p-3">
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">
+                        {link.platform === 'zoom' && '📹'}
+                        {link.platform === 'whatsapp' && '💬'}
+                        {link.platform === 'linkedin' && '💼'}
+                        {link.platform === 'google_scholar' && '🎓'}
+                        {link.platform === 'youtube' && '▶️'}
+                        {link.platform === 'calendly' && '📅'}
+                        {link.platform === 'twitter' && '🐦'}
+                        {link.platform === 'github' && '💻'}
+                        {link.platform === 'website' && '🌐'}
+                        {link.platform === 'other' && '🔗'}
+                      </span>
+                      <div>
+                        <p className="font-medium text-gray-900 capitalize">
+                          {link.platform.replace('_', ' ')}
+                        </p>
+                        {link.label && (
+                          <p className="text-sm text-gray-500">{link.label}</p>
+                        )}
+                      </div>
+                    </div>
+                    <a
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-blue-600 hover:underline"
+                    >
+                      Visit →
+                    </a>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="border-t pt-4">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Add New Link</h3>
+              <SocialLinksForm userId={user.id} onSuccess={() => window.location.reload()} />
             </div>
           </section>
         </div>
