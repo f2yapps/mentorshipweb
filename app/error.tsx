@@ -79,7 +79,7 @@ export default function Error({
             <ul className="mt-2 space-y-1 text-sm text-gray-600">
               <li>• Your .env.local file has valid Supabase credentials</li>
               <li>• Your Supabase project is active and accessible</li>
-              <li>• You've restarted the development server after updating .env.local</li>
+              <li>• You&apos;ve restarted the development server after updating .env.local</li>
             </ul>
           </div>
         </div>
