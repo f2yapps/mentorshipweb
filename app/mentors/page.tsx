@@ -15,10 +15,17 @@ export default async function MentorsPage({ searchParams }: Props) {
   const params = await searchParams;
   const supabase = await createClient();
 
+  // Get current user to show their own unverified profile
+  const { data: { user } } = await supabase.auth.getUser();
+
   let query = supabase
     .from("mentors")
-    .select("id, user_id, expertise_categories, experience_years, availability, languages, verified, users(id, name, country, bio)")
-    .eq("verified", true);
+    .select("id, user_id, expertise_categories, experience_years, availability, languages, verified, users(id, name, country, bio)");
+  
+  // Show verified mentors, OR show user's own profile even if unverified
+  if (!user) {
+    query = query.eq("verified", true);
+  }
 
   if (params.category) {
     query = query.contains("expertise_categories", [params.category]);
@@ -33,7 +40,7 @@ export default async function MentorsPage({ searchParams }: Props) {
   type UserRow = { id: string; name: string; country: string | null; bio: string | null } | null;
   const mentors = (mentorsRaw ?? []).map((m) => {
     const usersField: unknown = (m as { users?: unknown }).users;
-    const user: UserRow = Array.isArray(usersField)
+    const userRow: UserRow = Array.isArray(usersField)
       ? (usersField[0] ?? null) as UserRow
       : (usersField as UserRow) ?? null;
     return {
@@ -44,11 +51,13 @@ export default async function MentorsPage({ searchParams }: Props) {
       availability: m.availability,
       languages: m.languages,
       verified: m.verified,
-      users: user,
+      users: userRow,
     };
   });
 
-  let filtered = mentors;
+  // Filter: Show verified mentors OR user's own unverified profile
+  let filtered = mentors.filter(m => m.verified || (user && m.user_id === user.id));
+  
   if (params.country) {
     filtered = filtered.filter((m) => m.users?.country === params.country);
   }

@@ -36,7 +36,7 @@ export function AdminUsersList({ users, className = "" }: Props) {
               <td className="px-4 py-2">{u.name}</td>
               <td className="px-4 py-2">{u.email}</td>
               <td className="px-4 py-2">{u.role}</td>
-              <td className="px-4 py-2">{u.country ?? "—"}</td>
+              <td className="px-4 py-2">{u.country ?? "-"}</td>
               <td className="px-4 py-2">{new Date(u.created_at).toLocaleDateString()}</td>
             </tr>
           ))}

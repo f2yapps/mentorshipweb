@@ -371,50 +371,62 @@ CREATE INDEX IF NOT EXISTS idx_notifications_created ON public.notifications(cre
 -- =============================================================================
 -- UPDATED_AT TRIGGERS
 -- =============================================================================
+DROP TRIGGER IF EXISTS education_updated_at ON public.education;
 CREATE TRIGGER education_updated_at
   BEFORE UPDATE ON public.education
   FOR EACH ROW EXECUTE PROCEDURE public.handle_updated_at();
 
+DROP TRIGGER IF EXISTS experience_updated_at ON public.experience;
 CREATE TRIGGER experience_updated_at
   BEFORE UPDATE ON public.experience
   FOR EACH ROW EXECUTE PROCEDURE public.handle_updated_at();
 
+DROP TRIGGER IF EXISTS certifications_updated_at ON public.certifications;
 CREATE TRIGGER certifications_updated_at
   BEFORE UPDATE ON public.certifications
   FOR EACH ROW EXECUTE PROCEDURE public.handle_updated_at();
 
+DROP TRIGGER IF EXISTS external_links_updated_at ON public.external_links;
 CREATE TRIGGER external_links_updated_at
   BEFORE UPDATE ON public.external_links
   FOR EACH ROW EXECUTE PROCEDURE public.handle_updated_at();
 
+DROP TRIGGER IF EXISTS availability_slots_updated_at ON public.availability_slots;
 CREATE TRIGGER availability_slots_updated_at
   BEFORE UPDATE ON public.availability_slots
   FOR EACH ROW EXECUTE PROCEDURE public.handle_updated_at();
 
+DROP TRIGGER IF EXISTS mentorship_sessions_updated_at ON public.mentorship_sessions;
 CREATE TRIGGER mentorship_sessions_updated_at
   BEFORE UPDATE ON public.mentorship_sessions
   FOR EACH ROW EXECUTE PROCEDURE public.handle_updated_at();
 
+DROP TRIGGER IF EXISTS mentorship_milestones_updated_at ON public.mentorship_milestones;
 CREATE TRIGGER mentorship_milestones_updated_at
   BEFORE UPDATE ON public.mentorship_milestones
   FOR EACH ROW EXECUTE PROCEDURE public.handle_updated_at();
 
+DROP TRIGGER IF EXISTS mentorship_outcomes_updated_at ON public.mentorship_outcomes;
 CREATE TRIGGER mentorship_outcomes_updated_at
   BEFORE UPDATE ON public.mentorship_outcomes
   FOR EACH ROW EXECUTE PROCEDURE public.handle_updated_at();
 
+DROP TRIGGER IF EXISTS publications_updated_at ON public.publications;
 CREATE TRIGGER publications_updated_at
   BEFORE UPDATE ON public.publications
   FOR EACH ROW EXECUTE PROCEDURE public.handle_updated_at();
 
+DROP TRIGGER IF EXISTS success_stories_updated_at ON public.success_stories;
 CREATE TRIGGER success_stories_updated_at
   BEFORE UPDATE ON public.success_stories
   FOR EACH ROW EXECUTE PROCEDURE public.handle_updated_at();
 
+DROP TRIGGER IF EXISTS media_posts_updated_at ON public.media_posts;
 CREATE TRIGGER media_posts_updated_at
   BEFORE UPDATE ON public.media_posts
   FOR EACH ROW EXECUTE PROCEDURE public.handle_updated_at();
 
+DROP TRIGGER IF EXISTS resources_updated_at ON public.resources;
 CREATE TRIGGER resources_updated_at
   BEFORE UPDATE ON public.resources
   FOR EACH ROW EXECUTE PROCEDURE public.handle_updated_at();
@@ -455,54 +467,71 @@ ALTER TABLE public.activity_feed ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.notifications ENABLE ROW LEVEL SECURITY;
 
 -- Education policies
+DROP POLICY IF EXISTS "Users can view own education" ON public.education;
 CREATE POLICY "Users can view own education" ON public.education
   FOR SELECT USING (user_id = auth.uid());
+DROP POLICY IF EXISTS "Users can insert own education" ON public.education;
 CREATE POLICY "Users can insert own education" ON public.education
   FOR INSERT WITH CHECK (user_id = auth.uid());
+DROP POLICY IF EXISTS "Users can update own education" ON public.education;
 CREATE POLICY "Users can update own education" ON public.education
   FOR UPDATE USING (user_id = auth.uid());
+DROP POLICY IF EXISTS "Users can delete own education" ON public.education;
 CREATE POLICY "Users can delete own education" ON public.education
   FOR DELETE USING (user_id = auth.uid());
+DROP POLICY IF EXISTS "Public can view education of mentors" ON public.education;
 CREATE POLICY "Public can view education of mentors" ON public.education
   FOR SELECT USING (
     EXISTS (SELECT 1 FROM public.users WHERE id = education.user_id)
   );
 
 -- Experience policies
+DROP POLICY IF EXISTS "Users can view own experience" ON public.experience;
 CREATE POLICY "Users can view own experience" ON public.experience
   FOR SELECT USING (user_id = auth.uid());
+DROP POLICY IF EXISTS "Users can insert own experience" ON public.experience;
 CREATE POLICY "Users can insert own experience" ON public.experience
   FOR INSERT WITH CHECK (user_id = auth.uid());
+DROP POLICY IF EXISTS "Users can update own experience" ON public.experience;
 CREATE POLICY "Users can update own experience" ON public.experience
   FOR UPDATE USING (user_id = auth.uid());
+DROP POLICY IF EXISTS "Users can delete own experience" ON public.experience;
 CREATE POLICY "Users can delete own experience" ON public.experience
   FOR DELETE USING (user_id = auth.uid());
+DROP POLICY IF EXISTS "Public can view experience of mentors" ON public.experience;
 CREATE POLICY "Public can view experience of mentors" ON public.experience
   FOR SELECT USING (
     EXISTS (SELECT 1 FROM public.users WHERE id = experience.user_id)
   );
 
 -- Certifications policies
+DROP POLICY IF EXISTS "Users can manage own certifications" ON public.certifications;
 CREATE POLICY "Users can manage own certifications" ON public.certifications
   FOR ALL USING (user_id = auth.uid());
+DROP POLICY IF EXISTS "Public can view certifications" ON public.certifications;
 CREATE POLICY "Public can view certifications" ON public.certifications
   FOR SELECT USING (true);
 
 -- External links policies
+DROP POLICY IF EXISTS "Users can manage own external links" ON public.external_links;
 CREATE POLICY "Users can manage own external links" ON public.external_links
   FOR ALL USING (user_id = auth.uid());
+DROP POLICY IF EXISTS "Public can view external links" ON public.external_links;
 CREATE POLICY "Public can view external links" ON public.external_links
   FOR SELECT USING (true);
 
 -- Availability slots policies
+DROP POLICY IF EXISTS "Mentors can manage own availability" ON public.availability_slots;
 CREATE POLICY "Mentors can manage own availability" ON public.availability_slots
   FOR ALL USING (
     EXISTS (SELECT 1 FROM public.mentors WHERE id = mentor_id AND user_id = auth.uid())
   );
+DROP POLICY IF EXISTS "Public can view availability" ON public.availability_slots;
 CREATE POLICY "Public can view availability" ON public.availability_slots
   FOR SELECT USING (true);
 
 -- Mentorship sessions policies
+DROP POLICY IF EXISTS "Participants can view sessions" ON public.mentorship_sessions;
 CREATE POLICY "Participants can view sessions" ON public.mentorship_sessions
   FOR SELECT USING (
     EXISTS (
@@ -513,6 +542,7 @@ CREATE POLICY "Participants can view sessions" ON public.mentorship_sessions
       AND (m.user_id = auth.uid() OR me.user_id = auth.uid())
     )
   );
+DROP POLICY IF EXISTS "Participants can create sessions" ON public.mentorship_sessions;
 CREATE POLICY "Participants can create sessions" ON public.mentorship_sessions
   FOR INSERT WITH CHECK (
     EXISTS (
@@ -523,6 +553,7 @@ CREATE POLICY "Participants can create sessions" ON public.mentorship_sessions
       AND (m.user_id = auth.uid() OR me.user_id = auth.uid())
     )
   );
+DROP POLICY IF EXISTS "Participants can update sessions" ON public.mentorship_sessions;
 CREATE POLICY "Participants can update sessions" ON public.mentorship_sessions
   FOR UPDATE USING (
     EXISTS (
@@ -535,6 +566,7 @@ CREATE POLICY "Participants can update sessions" ON public.mentorship_sessions
   );
 
 -- Milestones policies (similar to sessions)
+DROP POLICY IF EXISTS "Participants can manage milestones" ON public.mentorship_milestones;
 CREATE POLICY "Participants can manage milestones" ON public.mentorship_milestones
   FOR ALL USING (
     EXISTS (
@@ -547,6 +579,7 @@ CREATE POLICY "Participants can manage milestones" ON public.mentorship_mileston
   );
 
 -- Outcomes policies
+DROP POLICY IF EXISTS "Participants can view outcomes" ON public.mentorship_outcomes;
 CREATE POLICY "Participants can view outcomes" ON public.mentorship_outcomes
   FOR SELECT USING (
     EXISTS (
@@ -557,6 +590,7 @@ CREATE POLICY "Participants can view outcomes" ON public.mentorship_outcomes
       AND (m.user_id = auth.uid() OR me.user_id = auth.uid())
     )
   );
+DROP POLICY IF EXISTS "Participants can create outcomes" ON public.mentorship_outcomes;
 CREATE POLICY "Participants can create outcomes" ON public.mentorship_outcomes
   FOR INSERT WITH CHECK (
     EXISTS (
@@ -569,38 +603,50 @@ CREATE POLICY "Participants can create outcomes" ON public.mentorship_outcomes
   );
 
 -- Publications policies
+DROP POLICY IF EXISTS "Users can manage own publications" ON public.publications;
 CREATE POLICY "Users can manage own publications" ON public.publications
   FOR ALL USING (user_id = auth.uid());
+DROP POLICY IF EXISTS "Public can view published publications" ON public.publications;
 CREATE POLICY "Public can view published publications" ON public.publications
   FOR SELECT USING (is_published = true);
 
 -- Success stories policies
+DROP POLICY IF EXISTS "Users can manage own stories" ON public.success_stories;
 CREATE POLICY "Users can manage own stories" ON public.success_stories
   FOR ALL USING (user_id = auth.uid());
+DROP POLICY IF EXISTS "Public can view published stories" ON public.success_stories;
 CREATE POLICY "Public can view published stories" ON public.success_stories
   FOR SELECT USING (is_published = true);
 
 -- Media posts policies
+DROP POLICY IF EXISTS "Users can manage own media" ON public.media_posts;
 CREATE POLICY "Users can manage own media" ON public.media_posts
   FOR ALL USING (user_id = auth.uid());
+DROP POLICY IF EXISTS "Public can view published media" ON public.media_posts;
 CREATE POLICY "Public can view published media" ON public.media_posts
   FOR SELECT USING (is_published = true);
 
 -- Resources policies
+DROP POLICY IF EXISTS "Users can manage own resources" ON public.resources;
 CREATE POLICY "Users can manage own resources" ON public.resources
   FOR ALL USING (user_id = auth.uid());
+DROP POLICY IF EXISTS "Public can view public resources" ON public.resources;
 CREATE POLICY "Public can view public resources" ON public.resources
   FOR SELECT USING (is_public = true);
 
 -- Activity feed policies
+DROP POLICY IF EXISTS "Public can view public activities" ON public.activity_feed;
 CREATE POLICY "Public can view public activities" ON public.activity_feed
   FOR SELECT USING (is_public = true);
+DROP POLICY IF EXISTS "Users can create activities" ON public.activity_feed;
 CREATE POLICY "Users can create activities" ON public.activity_feed
   FOR INSERT WITH CHECK (user_id = auth.uid());
 
 -- Notifications policies
+DROP POLICY IF EXISTS "Users can view own notifications" ON public.notifications;
 CREATE POLICY "Users can view own notifications" ON public.notifications
   FOR SELECT USING (user_id = auth.uid());
+DROP POLICY IF EXISTS "Users can update own notifications" ON public.notifications;
 CREATE POLICY "Users can update own notifications" ON public.notifications
   FOR UPDATE USING (user_id = auth.uid());
 
@@ -742,6 +788,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS mentorship_accepted_trigger ON public.mentorship_requests;
 CREATE TRIGGER mentorship_accepted_trigger
   AFTER UPDATE ON public.mentorship_requests
   FOR EACH ROW
@@ -772,6 +819,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS publication_created_trigger ON public.publications;
 CREATE TRIGGER publication_created_trigger
   AFTER INSERT ON public.publications
   FOR EACH ROW
@@ -802,6 +850,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS success_story_created_trigger ON public.success_stories;
 CREATE TRIGGER success_story_created_trigger
   AFTER INSERT ON public.success_stories
   FOR EACH ROW

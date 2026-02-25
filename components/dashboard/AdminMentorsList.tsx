@@ -35,7 +35,7 @@ export function AdminMentorsList({ mentors, className = "" }: Props) {
       {mentors.map((m) => (
         <div key={m.id} className="card flex flex-wrap items-center justify-between gap-4 p-4">
           <div>
-            <p className="font-medium text-earth-900">{m.users?.name ?? "—"}</p>
+            <p className="font-medium text-earth-900">{m.users?.name ?? "-"}</p>
             <p className="text-sm text-earth-600">{m.users?.email}</p>
             <p className="mt-1 text-xs text-earth-500">
               {m.expertise_categories?.slice(0, 5).join(", ")}

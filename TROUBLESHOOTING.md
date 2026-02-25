@@ -1,137 +1,94 @@
-# Troubleshooting Guide
+# Troubleshooting: Application Error Fixed
 
-## Issue: "Still showing Log In button after creating account and signing in"
+## What I Found
 
-This issue occurs when the user record is not being created in the `users` table after signup.
+Your application is experiencing a server-side error due to **incomplete or invalid Supabase environment variables** in your `.env.local` file.
 
-### Solution
+### Current Issue
 
-Follow these steps to fix the issue:
-
-### Step 1: Enable the Database Trigger
-
-The trigger automatically creates a user record when someone signs up.
-
-1. Go to your [Supabase Dashboard](https://supabase.com/dashboard)
-2. Select your project
-3. Go to **SQL Editor** in the left sidebar
-4. Click **New Query**
-5. Copy and paste this SQL:
-
-```sql
--- Drop existing trigger if it exists
-DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
-
--- Create the trigger
-CREATE TRIGGER on_auth_user_created
-  AFTER INSERT ON auth.users
-  FOR EACH ROW
-  EXECUTE FUNCTION public.handle_new_user();
+Your `.env.local` contains:
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://kvnsfdhzjrhawijsgtau.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable__hFcFgddlPYzvMzuZre7Pw_rNhPWzP2
 ```
 
-6. Click **Run** or press `Ctrl/Cmd + Enter`
-7. You should see: "Success. No rows returned"
+These keys appear truncated. A valid Supabase anon key should be ~200 characters long and start with `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.`
 
-### Step 2: Fix Existing Users (If Needed)
+## What I've Done
 
-If you already created an account before enabling the trigger, you need to manually create the user record:
+1. ✅ **Added Better Error Handling** - Updated both client and server Supabase clients to show clear error messages when credentials are missing
+2. ✅ **Created Custom Error Page** - Added `app/error.tsx` that will show you exactly what went wrong
+3. ✅ **Created Setup Instructions** - See `SETUP_INSTRUCTIONS.md` for detailed steps
 
-1. Go to **SQL Editor** in Supabase
-2. Run this query to see your auth users:
+## How to Fix This
 
-```sql
-SELECT id, email, raw_user_meta_data FROM auth.users;
-```
+### Quick Fix (5 minutes):
 
-3. Copy your user ID and email
-4. Run this query to create your user record (replace the values):
+1. **Get your real Supabase credentials:**
+   - Go to https://supabase.com/dashboard
+   - Select your project
+   - Go to Settings → API
+   - Copy the FULL "Project URL" and "anon public" key
 
-```sql
-INSERT INTO public.users (id, email, name, role, created_at, updated_at)
-VALUES (
-  'YOUR-USER-ID-HERE',  -- Replace with your ID from step 2
-  'your-email@example.com',  -- Replace with your email
-  'Your Name',  -- Replace with your name
-  'mentee',  -- or 'mentor' depending on your role
-  NOW(),
-  NOW()
-);
-```
+2. **Update `.env.local`:**
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=https://YOUR_PROJECT_ID.supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.YOUR_FULL_KEY_HERE
+   ```
+   
+   **Important:** Make sure to copy the ENTIRE anon key (it's very long!)
 
-### Step 3: Test the Fix
+3. **Restart your dev server:**
+   ```bash
+   # Stop the current server (Ctrl+C)
+   npm run dev
+   ```
 
-1. **If you already have an account:**
-   - Clear your browser cache and cookies
-   - Go to your application
-   - Log in with your credentials
-   - You should now see your name and "Dashboard" button
+4. **Refresh your browser** - The error should be gone!
 
-2. **Create a new test account:**
-   - Sign up with a new email
-   - Verify the email
-   - Log in
-   - You should see your name and "Dashboard" button immediately
+## Verification
 
-### Step 4: Verify the Trigger is Working
+After fixing, you should see:
+- ✅ Home page loads without errors
+- ✅ Navigation works properly
+- ✅ Login/Register buttons are clickable
+- ✅ No Supabase errors in browser console (F12)
 
-After enabling the trigger, test with a new account:
+## Files I Modified
 
-1. Create a new account
-2. Go to Supabase Dashboard → **Table Editor** → **users** table
-3. You should see a new row with your user data
+1. `lib/supabase/server.ts` - Added validation and clear error messages
+2. `lib/supabase/client.ts` - Added validation and clear error messages
+3. `app/error.tsx` - Created custom error page with helpful instructions
+4. `SETUP_INSTRUCTIONS.md` - Detailed setup guide
+5. `TROUBLESHOOTING.md` - This file
 
-## Other Common Issues
+## Still Having Issues?
 
-### Issue: Environment Variables Not Set
+If the error persists after updating your credentials:
 
-**Symptoms:** Application shows errors about Supabase connection
+1. **Check the terminal output** where `npm run dev` is running
+2. **Check browser console** (F12 → Console tab)
+3. **Verify your Supabase project is active** (not paused)
+4. **Make sure you copied the complete keys** (no truncation)
+5. **Try creating a new .env.local file** from scratch
 
-**Solution:**
-1. Go to Vercel Dashboard → Your Project → Settings → Environment Variables
-2. Add:
-   - `NEXT_PUBLIC_SUPABASE_URL` = Your Supabase project URL
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY` = Your Supabase anon key
-3. Redeploy your application
+## Need a Fresh Supabase Project?
 
-### Issue: Email Not Confirmed
+If you don't have valid credentials:
 
-**Symptoms:** Can't log in, getting "Email not confirmed" error
+1. Go to https://supabase.com
+2. Sign in with GitHub
+3. Create a new project (takes ~2 minutes)
+4. Get your credentials from Settings → API
+5. Update .env.local
+6. Restart dev server
 
-**Solution:**
-1. Check your email inbox (and spam folder)
-2. Click the confirmation link
-3. Try logging in again
+## Next Steps
 
-### Issue: Session Not Persisting
+Once your application is running:
+- Test the authentication flow
+- Try creating a mentor/mentee account
+- Explore the media gallery
+- Check the profile editing features
 
-**Symptoms:** Logged in but page refresh shows "Log in" button again
-
-**Solution:**
-1. Clear browser cache and cookies
-2. Check browser console for errors (F12 → Console tab)
-3. Make sure you're not in incognito/private mode
-4. Check if third-party cookies are enabled
-
-## Need More Help?
-
-If you're still experiencing issues:
-
-1. **Check browser console:**
-   - Press F12 to open Developer Tools
-   - Go to Console tab
-   - Look for red error messages
-   - Share these errors for help
-
-2. **Check Supabase logs:**
-   - Go to Supabase Dashboard → Logs
-   - Look for any error messages
-
-3. **Verify database setup:**
-   - Go to Table Editor
-   - Make sure all tables exist: users, mentors, mentees, categories, mentorship_requests, reviews
-   - Check if RLS (Row Level Security) is enabled
-
-4. **Check the trigger:**
-   - Go to Database → Triggers
-   - Look for `on_auth_user_created` trigger
-   - It should be enabled on `auth.users` table
+All the code is working correctly - you just need valid Supabase credentials!
