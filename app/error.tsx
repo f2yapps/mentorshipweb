@@ -42,6 +42,21 @@ export default function Error({
             </div>
           </div>
 
+          {(error.message.includes('Server Components') || error.message.includes('omitted in production')) && (
+            <div className="mb-6 bg-amber-50 border border-amber-200 rounded-lg p-4">
+              <h3 className="font-semibold text-amber-900 mb-2">
+                What this usually means
+              </h3>
+              <ul className="list-disc list-inside space-y-1 text-sm text-amber-800 mb-3">
+                <li><strong>Local:</strong> Supabase env vars in <code className="bg-amber-100 px-1 rounded">.env.local</code> are missing or invalid. Check the terminal where <code className="bg-amber-100 px-1 rounded">npm run dev</code> runs for the real error.</li>
+                <li><strong>Deployed (Vercel):</strong> Add <code className="bg-amber-100 px-1 rounded">NEXT_PUBLIC_SUPABASE_URL</code> and <code className="bg-amber-100 px-1 rounded">NEXT_PUBLIC_SUPABASE_ANON_KEY</code> in Vercel → Project → Settings → Environment Variables, then redeploy.</li>
+              </ul>
+              <p className="text-sm text-amber-800">
+                Local only: open <a href="/api/check-env" className="underline font-medium">/api/check-env</a> to verify your env vars (no secrets shown).
+              </p>
+            </div>
+          )}
+
           {error.message.includes('Supabase') && (
             <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
               <h3 className="font-semibold text-blue-900 mb-2">
