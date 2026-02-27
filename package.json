@@ -25,11 +25,7 @@
     "autoprefixer": "^10.4.20",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-<<<<<<< HEAD
-    "eslint": "^8.57.0",
-=======
     "eslint": "^9.0.0",
->>>>>>> 76d97c5 (chore: bump eslint to 9 for Next 16)
     "eslint-config-next": "^16.1.6",
     "lucide-react": "^0.564.0",
     "postcss": "^8.4.49",
