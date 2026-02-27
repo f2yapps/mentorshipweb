@@ -5,8 +5,13 @@
 import { createBrowserClient } from "@supabase/ssr";
 
 export function createClient() {
+<<<<<<< HEAD
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+=======
+  const supabaseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL ?? "").trim();
+  const supabaseAnonKey = (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "").trim();
+>>>>>>> 76d97c5 (chore: bump eslint to 9 for Next 16)
 
   if (!supabaseUrl || !supabaseAnonKey) {
     console.error(
