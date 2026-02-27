@@ -3,11 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-<<<<<<< HEAD
-=======
 import { EnvSetupPage } from "@/components/EnvSetupPage";
 import { isSupabaseConfigured } from "@/lib/env";
->>>>>>> 76d97c5 (chore: bump eslint to 9 for Next 16)
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -40,8 +37,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-<<<<<<< HEAD
-=======
   if (!isSupabaseConfigured()) {
     return (
       <html lang="en" className={inter.variable}>
@@ -52,7 +47,6 @@ export default function RootLayout({
     );
   }
 
->>>>>>> 76d97c5 (chore: bump eslint to 9 for Next 16)
   return (
     <html lang="en" className={inter.variable}>
       <body className="min-h-screen flex flex-col font-sans">
