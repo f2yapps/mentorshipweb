@@ -60,11 +60,25 @@ export default async function MentorDashboardPage() {
     <div>
       <h1 className="section-heading">Mentor Dashboard</h1>
       <p className="mt-2 text-earth-600">
-        View and respond to mentorship requests.
+        View and respond to mentorship requests from scholars.
       </p>
-      <div className="mt-6">
-        <MentorDashboardRequests requests={requests} />
+
+      {/* Quick actions */}
+      <div className="mt-6 flex flex-wrap gap-3">
+        <a href="/profile/edit" className="btn-primary">
+          Edit My Profile
+        </a>
+        <a href="/mentors" className="btn-secondary">
+          View Mentor Directory
+        </a>
       </div>
+
+      <section className="mt-10">
+        <h2 className="text-lg font-semibold text-earth-900">Mentorship Requests</h2>
+        <div className="mt-4">
+          <MentorDashboardRequests requests={requests} />
+        </div>
+      </section>
     </div>
     );
   } catch (e) {

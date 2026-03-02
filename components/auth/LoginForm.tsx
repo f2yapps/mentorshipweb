@@ -34,7 +34,7 @@ export function LoginForm({ className = "" }: Props) {
         return;
       }
       const next = searchParams.get("next");
-      router.push(next && next.startsWith("/") ? next : "/");
+      router.push(next && next.startsWith("/") ? next : "/dashboard");
       router.refresh();
     } catch (err: unknown) {
       setLoading(false);

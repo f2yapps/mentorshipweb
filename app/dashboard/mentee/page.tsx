@@ -59,14 +59,35 @@ export default async function MenteeDashboardPage() {
       <p className="mt-2 text-earth-600">
         Track your mentorship requests and connect with mentors.
       </p>
-      <div className="mt-6">
-        <MenteeDashboardRequests requests={requests} />
-      </div>
-      <div className="mt-8">
-        <a href="/mentors" className="btn-primary">
-          Find more mentors
+
+      {/* Quick action: Browse mentors */}
+      <div className="mt-6 flex flex-wrap gap-3">
+        <a
+          href="/mentors"
+          className="btn-primary"
+        >
+          Browse Mentor Directory →
+        </a>
+        <a
+          href="/categories"
+          className="btn-secondary"
+        >
+          Explore Areas
+        </a>
+        <a
+          href="/profile/edit"
+          className="rounded-xl border border-earth-200 px-4 py-2 text-sm font-medium text-earth-700 hover:bg-earth-50 transition"
+        >
+          Edit Profile
         </a>
       </div>
+
+      <section className="mt-10">
+        <h2 className="text-lg font-semibold text-earth-900">My Requests</h2>
+        <div className="mt-4">
+          <MenteeDashboardRequests requests={requests} />
+        </div>
+      </section>
     </div>
     );
   } catch (e) {
