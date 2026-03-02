@@ -61,6 +61,6 @@ export default async function DashboardLayout({
   } catch (e) {
     if (e && typeof e === "object" && (e as Error).message === "NEXT_REDIRECT") throw e;
     if (isSupabaseNotConfiguredError(e)) redirect("/setup");
-    redirect("/auth/login?next=" + encodeURIComponent("/dashboard"));
+    throw e;
   }
 }

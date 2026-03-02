@@ -1,11 +1,13 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { isSupabaseNotConfiguredError } from "@/lib/supabase/errors";
 import { AdminStats } from "@/components/dashboard/AdminStats";
 import { AdminUsersList } from "@/components/dashboard/AdminUsersList";
 import { AdminMentorsList } from "@/components/dashboard/AdminMentorsList";
 
 export default async function AdminDashboardPage() {
-  const supabase = await createClient();
+  try {
+    const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/auth/login");
 
@@ -74,5 +76,10 @@ export default async function AdminDashboardPage() {
         <AdminMentorsList mentors={mentors ?? []} className="mt-4" />
       </section>
     </div>
-  );
+    );
+  } catch (e) {
+    if (e && typeof e === "object" && (e as Error).message === "NEXT_REDIRECT") throw e;
+    if (isSupabaseNotConfiguredError(e)) redirect("/setup");
+    throw e;
+  }
 }

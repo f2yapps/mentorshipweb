@@ -1,9 +1,11 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { isSupabaseNotConfiguredError } from "@/lib/supabase/errors";
 import { MenteeDashboardRequests } from "@/components/dashboard/MenteeDashboardRequests";
 
 export default async function MenteeDashboardPage() {
-  const supabase = await createClient();
+  try {
+    const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/auth/login");
 
@@ -66,5 +68,10 @@ export default async function MenteeDashboardPage() {
         </a>
       </div>
     </div>
-  );
+    );
+  } catch (e) {
+    if (e && typeof e === "object" && (e as Error).message === "NEXT_REDIRECT") throw e;
+    if (isSupabaseNotConfiguredError(e)) redirect("/setup");
+    throw e;
+  }
 }

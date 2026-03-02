@@ -50,6 +50,6 @@ export default async function MentorOnboardingPage() {
   } catch (e) {
     if (e && typeof e === "object" && (e as Error).message === "NEXT_REDIRECT") throw e;
     if (isSupabaseNotConfiguredError(e)) redirect("/setup");
-    redirect("/auth/login?next=/auth/mentor");
+    throw e;
   }
 }

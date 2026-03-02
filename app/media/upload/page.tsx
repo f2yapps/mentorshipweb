@@ -33,6 +33,6 @@ export default async function UploadMediaPage() {
   } catch (e) {
     if (e && typeof e === "object" && (e as Error).message === "NEXT_REDIRECT") throw e;
     if (isSupabaseNotConfiguredError(e)) redirect("/setup");
-    redirect("/auth/login?next=/media/upload");
+    throw e;
   }
 }
