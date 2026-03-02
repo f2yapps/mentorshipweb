@@ -1,18 +1,19 @@
-import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import { isSupabaseNotConfiguredError } from "@/lib/supabase/errors";
 import { EducationForm } from '@/components/profile/EducationForm'
 import { ExperienceForm } from '@/components/profile/ExperienceForm'
 import { CertificationForm } from '@/components/profile/CertificationForm'
 import { SocialLinksForm } from '@/components/profile/SocialLinksForm'
 
 export default async function EditProfilePage() {
-  const supabase = await createClient()
-  
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/auth/login')
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) redirect("/auth/login?next=/profile/edit");
 
-  // Fetch user profile
-  const { data: profile } = await supabase
+    // Fetch user profile
+    const { data: profile } = await supabase
     .from('users')
     .select('*')
     .eq('id', user.id)
@@ -232,5 +233,10 @@ export default async function EditProfilePage() {
         </div>
       </div>
     </div>
-  )
+    );
+  } catch (e) {
+    if (e && typeof e === "object" && (e as Error).message === "NEXT_REDIRECT") throw e;
+    if (isSupabaseNotConfiguredError(e)) redirect("/setup");
+    redirect("/auth/login?next=/profile/edit");
+  }
 }

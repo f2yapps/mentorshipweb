@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { isSupabaseNotConfiguredError } from "@/lib/supabase/errors";
 import { MentorDirectoryFilters } from "@/components/mentors/MentorDirectoryFilters";
 import { MentorCard } from "@/components/mentors/MentorCard";
 
@@ -13,56 +16,50 @@ type Props = { searchParams: Promise<{ category?: string; country?: string; lang
 
 export default async function MentorsPage({ searchParams }: Props) {
   const params = await searchParams;
-  const supabase = await createClient();
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
 
-  // Get current user to show their own unverified profile
-  const { data: { user } } = await supabase.auth.getUser();
+    let query = supabase
+      .from("mentors")
+      .select("id, user_id, expertise_categories, experience_years, availability, languages, verified, users(id, name, country, bio)");
 
-  let query = supabase
-    .from("mentors")
-    .select("id, user_id, expertise_categories, experience_years, availability, languages, verified, users(id, name, country, bio)");
-  
-  // Show verified mentors, OR show user's own profile even if unverified
-  if (!user) {
-    query = query.eq("verified", true);
-  }
+    if (!user) {
+      query = query.eq("verified", true);
+    }
+    if (params.category) {
+      query = query.contains("expertise_categories", [params.category]);
+    }
+    if (params.language) {
+      query = query.contains("languages", [params.language]);
+    }
 
-  if (params.category) {
-    query = query.contains("expertise_categories", [params.category]);
-  }
-  if (params.language) {
-    query = query.contains("languages", [params.language]);
-  }
+    const { data: mentorsRaw } = await query.order("created_at", { ascending: false });
 
-  const { data: mentorsRaw } = await query.order("created_at", { ascending: false });
+    type UserRow = { id: string; name: string; country: string | null; bio: string | null } | null;
+    const mentors = (mentorsRaw ?? []).map((m) => {
+      const usersField: unknown = (m as { users?: unknown }).users;
+      const userRow: UserRow = Array.isArray(usersField)
+        ? (usersField[0] ?? null) as UserRow
+        : (usersField as UserRow) ?? null;
+      return {
+        id: m.id,
+        user_id: m.user_id,
+        expertise_categories: m.expertise_categories,
+        experience_years: m.experience_years,
+        availability: m.availability,
+        languages: m.languages,
+        verified: m.verified,
+        users: userRow,
+      };
+    });
 
-  // Normalize: Supabase relation can return users as object or array
-  type UserRow = { id: string; name: string; country: string | null; bio: string | null } | null;
-  const mentors = (mentorsRaw ?? []).map((m) => {
-    const usersField: unknown = (m as { users?: unknown }).users;
-    const userRow: UserRow = Array.isArray(usersField)
-      ? (usersField[0] ?? null) as UserRow
-      : (usersField as UserRow) ?? null;
-    return {
-      id: m.id,
-      user_id: m.user_id,
-      expertise_categories: m.expertise_categories,
-      experience_years: m.experience_years,
-      availability: m.availability,
-      languages: m.languages,
-      verified: m.verified,
-      users: userRow,
-    };
-  });
+    let filtered = mentors.filter(m => m.verified || (user && m.user_id === user.id));
+    if (params.country) {
+      filtered = filtered.filter((m) => m.users?.country === params.country);
+    }
 
-  // Filter: Show verified mentors OR user's own unverified profile
-  let filtered = mentors.filter(m => m.verified || (user && m.user_id === user.id));
-  
-  if (params.country) {
-    filtered = filtered.filter((m) => m.users?.country === params.country);
-  }
-
-  return (
+    return (
     <div className="mx-auto max-w-6xl px-4 py-12 sm:py-20">
       <h1 className="section-heading">Mentor Directory</h1>
       <p className="mt-4 text-earth-700">
@@ -99,5 +96,17 @@ export default async function MentorsPage({ searchParams }: Props) {
         )}
       </div>
     </div>
-  );
+    );
+  } catch (e) {
+    if (isSupabaseNotConfiguredError(e)) redirect("/setup");
+    return (
+      <div className="mx-auto max-w-2xl px-4 py-12 text-center">
+        <h1 className="section-heading">Mentor Directory</h1>
+        <p className="mt-4 text-earth-600">
+          We couldn’t load mentors right now. Check your connection and that Supabase is set up.
+        </p>
+        <Link href="/" className="btn-primary mt-6 inline-block">Go home</Link>
+      </div>
+    );
+  }
 }

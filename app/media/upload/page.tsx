@@ -1,14 +1,15 @@
-import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
-import { MediaUploadForm } from '@/components/media/MediaUploadForm'
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import { isSupabaseNotConfiguredError } from "@/lib/supabase/errors";
+import { MediaUploadForm } from "@/components/media/MediaUploadForm";
 
 export default async function UploadMediaPage() {
-  const supabase = await createClient()
-  
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/auth/login')
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) redirect("/auth/login?next=/media/upload");
 
-  return (
+    return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
@@ -28,5 +29,10 @@ export default async function UploadMediaPage() {
         </div>
       </div>
     </div>
-  )
+    );
+  } catch (e) {
+    if (e && typeof e === "object" && (e as Error).message === "NEXT_REDIRECT") throw e;
+    if (isSupabaseNotConfiguredError(e)) redirect("/setup");
+    redirect("/auth/login?next=/media/upload");
+  }
 }

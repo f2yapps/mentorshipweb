@@ -15,11 +15,9 @@ export function EnvSetupPage() {
           </h1>
         </div>
         <p className="text-earth-700 mb-6">
-          The app needs Supabase credentials to run. Add them to{" "}
-          <code className="bg-earth-200 px-1.5 py-0.5 rounded text-sm">
-            .env.local
-          </code>{" "}
-          and restart the dev server.
+          The app needs Supabase credentials to run.{" "}
+          <strong>Local:</strong> add them to <code className="bg-earth-200 px-1.5 py-0.5 rounded text-sm">.env.local</code> and restart the dev server.{" "}
+          <strong>Deployed (Vercel):</strong> add the same variables in Vercel → Project → Settings → Environment Variables, then redeploy.
         </p>
         <ol className="list-decimal list-inside space-y-2 text-earth-800 mb-6">
           <li>

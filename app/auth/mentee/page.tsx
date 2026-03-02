@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { isSupabaseNotConfiguredError } from "@/lib/supabase/errors";
 import { MenteeOnboardingForm } from "@/components/auth/MenteeOnboardingForm";
 
 export const metadata: Metadata = {
@@ -9,33 +10,34 @@ export const metadata: Metadata = {
 };
 
 export default async function MenteeOnboardingPage() {
-  const supabase = await createClient();
-  const { data: { user: authUser } } = await supabase.auth.getUser();
-  if (!authUser) {
-    redirect("/auth/login?next=/auth/mentee");
-  }
+  try {
+    const supabase = await createClient();
+    const { data: { user: authUser } } = await supabase.auth.getUser();
+    if (!authUser) {
+      redirect("/auth/login?next=/auth/mentee");
+    }
 
-  const { data: profile } = await supabase
-    .from("users")
-    .select("id, role")
-    .eq("id", authUser.id)
-    .single();
+    const { data: profile } = await supabase
+      .from("users")
+      .select("id, role")
+      .eq("id", authUser.id)
+      .single();
 
-  if (profile?.role !== "mentee") {
-    await supabase.from("users").update({ role: "mentee" }).eq("id", authUser.id);
-  }
+    if (profile?.role !== "mentee") {
+      await supabase.from("users").update({ role: "mentee" }).eq("id", authUser.id);
+    }
 
-  const { data: mentee } = await supabase
-    .from("mentees")
-    .select("*")
-    .eq("user_id", authUser.id)
-    .single();
+    const { data: mentee } = await supabase
+      .from("mentees")
+      .select("*")
+      .eq("user_id", authUser.id)
+      .single();
 
-  if (mentee) {
-    redirect("/dashboard/mentee");
-  }
+    if (mentee) {
+      redirect("/dashboard/mentee");
+    }
 
-  return (
+    return (
     <div className="mx-auto max-w-2xl px-4 py-12 sm:py-20">
       <h1 className="section-heading">Complete Your Profile</h1>
       <p className="mt-2 text-earth-600">
@@ -44,5 +46,10 @@ export default async function MenteeOnboardingPage() {
       </p>
       <MenteeOnboardingForm className="mt-8" />
     </div>
-  );
+    );
+  } catch (e) {
+    if (e && typeof e === "object" && (e as Error).message === "NEXT_REDIRECT") throw e;
+    if (isSupabaseNotConfiguredError(e)) redirect("/setup");
+    redirect("/auth/login?next=/auth/mentee");
+  }
 }

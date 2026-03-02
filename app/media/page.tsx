@@ -1,14 +1,15 @@
-import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
-import { formatRelativeTime } from '@/lib/utils'
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import { isSupabaseNotConfiguredError } from "@/lib/supabase/errors";
+import { formatRelativeTime } from "@/lib/utils";
 
 export default async function MediaGalleryPage() {
-  const supabase = await createClient()
-  
-  const { data: { user } } = await supabase.auth.getUser()
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
 
-  // Fetch all published media posts
-  const { data: mediaPosts } = await supabase
+    const { data: mediaPosts } = await supabase
     .from('media_posts')
     .select(`
       *,
@@ -18,7 +19,7 @@ export default async function MediaGalleryPage() {
     .order('created_at', { ascending: false })
     .limit(50)
 
-  return (
+    return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center mb-8">
@@ -120,5 +121,9 @@ export default async function MediaGalleryPage() {
         )}
       </div>
     </div>
-  )
+    );
+  } catch (e) {
+    if (isSupabaseNotConfiguredError(e)) redirect("/setup");
+    throw e;
+  }
 }

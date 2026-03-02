@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { redirect, notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { isSupabaseNotConfiguredError } from "@/lib/supabase/errors";
 import { RequestMentorshipForm } from "@/components/mentors/RequestMentorshipForm";
 
 export const metadata: Metadata = {
@@ -12,7 +13,8 @@ type Props = { params: Promise<{ id: string }> };
 
 export default async function RequestMentorshipPage({ params }: Props) {
   const { id: mentorId } = await params;
-  const supabase = await createClient();
+  try {
+    const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
     redirect(`/auth/login?next=/mentors/${mentorId}/request`);
@@ -64,5 +66,10 @@ export default async function RequestMentorshipPage({ params }: Props) {
         className="mt-8"
       />
     </div>
-  );
+    );
+  } catch (e) {
+    if (e && typeof e === "object" && (e as Error).message === "NEXT_REDIRECT") throw e;
+    if (isSupabaseNotConfiguredError(e)) redirect("/setup");
+    throw e;
+  }
 }

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { isSupabaseNotConfiguredError } from "@/lib/supabase/errors";
 
 export const metadata: Metadata = {
   title: "Mentorship Areas",
@@ -9,13 +11,14 @@ export const metadata: Metadata = {
 };
 
 export default async function CategoriesPage() {
-  const supabase = await createClient();
-  const { data: categories } = await supabase
-    .from("categories")
-    .select("id, name, slug, description, sort_order")
-    .order("sort_order", { ascending: true });
+  try {
+    const supabase = await createClient();
+    const { data: categories } = await supabase
+      .from("categories")
+      .select("id, name, slug, description, sort_order")
+      .order("sort_order", { ascending: true });
 
-  return (
+    return (
     <div className="mx-auto max-w-4xl px-4 py-12 sm:py-20">
       <h1 className="section-heading">Mentorship Areas</h1>
       <p className="mt-4 text-earth-700">
@@ -53,5 +56,15 @@ export default async function CategoriesPage() {
         </Link>
       </div>
     </div>
-  );
+    );
+  } catch (e) {
+    if (isSupabaseNotConfiguredError(e)) redirect("/setup");
+    return (
+      <div className="mx-auto max-w-2xl px-4 py-12 text-center">
+        <h1 className="section-heading">Mentorship Areas</h1>
+        <p className="mt-4 text-earth-600">We couldn’t load categories right now. Try again later.</p>
+        <Link href="/" className="btn-primary mt-6 inline-block">Go home</Link>
+      </div>
+    );
+  }
 }
