@@ -22,18 +22,19 @@ export function RegisterForm({ defaultRole, className = "" }: Props) {
     e.preventDefault();
     setError(null);
     setLoading(true);
-    const { data, error: signUpError } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { name, role },
-      },
-    });
-    setLoading(false);
-    if (signUpError) {
-      setError(signUpError.message);
-      return;
-    }
+    try {
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { name, role },
+        },
+      });
+      setLoading(false);
+      if (signUpError) {
+        setError(signUpError.message);
+        return;
+      }
     // If no session (email confirmation required), redirect to login with message
     const hasSession = !!data.session;
     if (!hasSession) {
@@ -52,6 +53,18 @@ export function RegisterForm({ defaultRole, className = "" }: Props) {
       router.push("/");
     }
     router.refresh();
+    } catch (err: unknown) {
+      setLoading(false);
+      const msg = err instanceof Error ? err.message : String(err);
+      if (msg === "Failed to fetch" || msg.includes("fetch")) {
+        setError(
+          "Cannot reach Supabase. Check: (1) You're online, (2) Supabase project is not paused (Dashboard), " +
+          "(3) If deployed, add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in Vercel → Settings → Environment Variables."
+        );
+      } else {
+        setError(msg);
+      }
+    }
   };
 
   return (
