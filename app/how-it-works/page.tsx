@@ -4,53 +4,142 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "How It Works",
   description:
-    "Learn how to get mentored in AI, technology, and career development, or become a mentor to empower youth worldwide.",
+    "Learn how to get free mentorship in AI, technology, and career development, or how to become a volunteer mentor to empower youth worldwide.",
 };
+
+const MENTEE_STEPS = [
+  { icon: "📝", title: "Create a free account", desc: "Sign up as a mentee — no payment required. Takes under 2 minutes." },
+  { icon: "🎯", title: "Complete your profile", desc: "Share your goals, interests, and areas where you want to grow (AI, tech, career, etc.)." },
+  { icon: "🔍", title: "Browse the directory", desc: "Use filters to find mentors by expertise, country, or language that fits your needs." },
+  { icon: "✉️", title: "Send a request", desc: "Write a short message explaining your goals and what you hope to learn from the mentor." },
+  { icon: "📅", title: "Connect & start", desc: "When a mentor accepts, connect via their preferred method — video, email, or chat." },
+  { icon: "📈", title: "Track your journey", desc: "View and manage your active mentorships from your personal Dashboard." },
+];
+
+const MENTOR_STEPS = [
+  { icon: "🤝", title: "Sign up as a mentor", desc: "Create an account — volunteering is free and takes just a few minutes." },
+  { icon: "💼", title: "Build your profile", desc: "Share your expertise in AI, technology, career development, or any area you can help with." },
+  { icon: "🕐", title: "Set your availability", desc: "Choose how many hours per week you can commit and your preferred communication channels." },
+  { icon: "✅", title: "Get verified & go live", desc: "Once reviewed, your profile appears in the Mentor Directory for scholars to discover." },
+  { icon: "📬", title: "Receive requests", desc: "Mentees will send you requests. Review them and accept the ones that match your expertise." },
+  { icon: "🌍", title: "Make an impact", desc: "Guide a young person across the world — one conversation can change the trajectory of a life." },
+];
 
 export default function HowItWorksPage() {
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12 sm:py-20">
-      <h1 className="section-heading">How It Works</h1>
-      <p className="mt-4 text-earth-700">
-        Getting started is simple. Choose your path below.
-      </p>
-
-      <section className="mt-10 space-y-8">
-        <div className="card p-6">
-          <h2 className="text-lg font-semibold text-earth-900">For Young People Seeking Mentorship</h2>
-          <ol className="mt-4 list-decimal space-y-3 pl-5 text-earth-700">
-            <li>Sign up and create your free account as a mentee.</li>
-            <li>Complete your profile: share your goals, interests, and areas where you want to grow (AI, tech, career, etc.).</li>
-            <li>Browse the <Link href="/mentors" className="text-primary-600 hover:underline">Mentor Directory</Link> and filter by expertise, country, or language.</li>
-            <li>Send a mentorship request with a message explaining what you hope to learn.</li>
-            <li>When a mentor accepts, connect via their preferred method (video call, email, or chat).</li>
-            <li>Track your mentorship journey in your <Link href="/dashboard/mentee" className="text-primary-600 hover:underline">Dashboard</Link>.</li>
-          </ol>
-        </div>
-
-        <div className="card p-6">
-          <h2 className="text-lg font-semibold text-earth-900">For Mentors</h2>
-          <ol className="mt-4 list-decimal space-y-3 pl-5 text-earth-700">
-            <li>Sign up and create your mentor account—it&apos;s completely voluntary and free.</li>
-            <li>Complete your profile: share your expertise in AI, technology, career development, or other areas.</li>
-            <li>Set your availability and preferred communication methods (video, email, chat).</li>
-            <li>Once approved, you&apos;ll appear in the Mentor Directory for young people to discover.</li>
-            <li>Receive mentorship requests and view them in your <Link href="/dashboard/mentor" className="text-primary-600 hover:underline">Mentor Dashboard</Link>.</li>
-            <li>Accept requests that align with your expertise and start making an impact in a young person&apos;s life.</li>
-          </ol>
-        </div>
-
-        <div className="rounded-lg bg-primary-50 p-6">
-          <h2 className="text-lg font-semibold text-primary-900">Join the Movement</h2>
-          <p className="mt-2 text-primary-800">
-            Whether you&apos;re seeking guidance in AI and tech, or ready to share your expertise with the next generation, 
-            start your journey today—completely free.
+    <div>
+      {/* ── Hero ────────────────────────────────────────────────────────── */}
+      <section className="bg-gradient-to-br from-primary-50 to-earth-100 px-4 py-16 sm:px-6 sm:py-20">
+        <div className="mx-auto max-w-3xl text-center">
+          <h1 className="section-heading">How It Works</h1>
+          <p className="mx-auto mt-4 max-w-2xl text-earth-700">
+            Getting started is simple and completely free — whether you&apos;re seeking
+            mentorship or ready to give back as a volunteer mentor.
           </p>
-          <div className="mt-4 flex gap-4">
-            <Link href="/auth/register?role=mentee" className="btn-primary">
+        </div>
+      </section>
+
+      {/* ── Mentee path ─────────────────────────────────────────────────── */}
+      <section className="mx-auto max-w-5xl px-4 py-16 sm:px-6">
+        <div className="flex items-center gap-3">
+          <span className="text-3xl">🎓</span>
+          <h2 className="text-2xl font-bold text-earth-900">For Mentees (Scholars)</h2>
+        </div>
+        <p className="mt-2 text-earth-600">
+          You&apos;re a student or young professional looking for expert guidance in tech, AI, or career growth.
+        </p>
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {MENTEE_STEPS.map(({ icon, title, desc }, i) => (
+            <div key={title} className="card p-5">
+              <div className="flex items-center gap-3">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-100 text-xs font-bold text-primary-700">
+                  {i + 1}
+                </span>
+                <span className="text-xl">{icon}</span>
+              </div>
+              <h3 className="mt-3 font-semibold text-earth-900">{title}</h3>
+              <p className="mt-1 text-sm text-earth-600">{desc}</p>
+            </div>
+          ))}
+        </div>
+        <div className="mt-8">
+          <Link href="/auth/register?role=mentee" className="btn-primary">
+            Get Free Mentorship →
+          </Link>
+        </div>
+      </section>
+
+      {/* ── Mentor path ─────────────────────────────────────────────────── */}
+      <section className="bg-earth-50 px-4 py-16 sm:px-6">
+        <div className="mx-auto max-w-5xl">
+          <div className="flex items-center gap-3">
+            <span className="text-3xl">🌟</span>
+            <h2 className="text-2xl font-bold text-earth-900">For Mentors (Volunteers)</h2>
+          </div>
+          <p className="mt-2 text-earth-600">
+            You&apos;re an experienced professional ready to share your knowledge and make a lasting impact.
+          </p>
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {MENTOR_STEPS.map(({ icon, title, desc }, i) => (
+              <div key={title} className="card p-5">
+                <div className="flex items-center gap-3">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-earth-200 text-xs font-bold text-earth-700">
+                    {i + 1}
+                  </span>
+                  <span className="text-xl">{icon}</span>
+                </div>
+                <h3 className="mt-3 font-semibold text-earth-900">{title}</h3>
+                <p className="mt-1 text-sm text-earth-600">{desc}</p>
+              </div>
+            ))}
+          </div>
+          <div className="mt-8">
+            <Link href="/auth/register?role=mentor" className="btn-secondary">
+              Volunteer as Mentor →
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ── FAQ ─────────────────────────────────────────────────────────── */}
+      <section className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
+        <h2 className="section-heading text-center">Common Questions</h2>
+        <div className="mt-8 space-y-4">
+          {[
+            { q: "Is this really free?", a: "Yes — 100% free for everyone, always. Mentors volunteer their time. There are no subscriptions, no premium tiers, no hidden fees." },
+            { q: "How long does a mentorship last?", a: "There's no fixed duration. Some mentorships are a few sessions; others become long-term relationships. It's up to you and your mentor." },
+            { q: "What languages are supported?", a: "Mentors speak many languages including English, Amharic, Oromo, Tigrinya, French, Arabic, Spanish, and more. Filter by language in the directory." },
+            { q: "How are mentors vetted?", a: "Every mentor profile is reviewed by our team before appearing in the public directory. We check for genuine expertise and professional background." },
+          ].map(({ q, a }) => (
+            <details
+              key={q}
+              className="card group cursor-pointer p-5 open:shadow-md"
+            >
+              <summary className="flex items-center justify-between font-medium text-earth-900 list-none">
+                {q}
+                <span className="ml-4 text-primary-500 transition group-open:rotate-180">▾</span>
+              </summary>
+              <p className="mt-3 text-sm text-earth-600">{a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      {/* ── CTA ─────────────────────────────────────────────────────────── */}
+      <section className="bg-primary-600 px-4 py-16 text-white sm:px-6">
+        <div className="mx-auto max-w-2xl text-center">
+          <h2 className="text-2xl font-bold sm:text-3xl">Ready to Start?</h2>
+          <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:justify-center">
+            <Link
+              href="/auth/register?role=mentee"
+              className="inline-flex items-center justify-center rounded-xl bg-white px-8 py-3 font-semibold text-primary-700 transition hover:bg-primary-50"
+            >
               Get Mentored
             </Link>
-            <Link href="/auth/register?role=mentor" className="btn-secondary">
+            <Link
+              href="/auth/register?role=mentor"
+              className="inline-flex items-center justify-center rounded-xl border-2 border-white/60 px-8 py-3 font-semibold text-white transition hover:bg-white/10"
+            >
               Become a Mentor
             </Link>
           </div>

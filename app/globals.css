@@ -10,6 +10,10 @@
   --accent-gold: 43 70% 46%;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   @apply bg-earth-50 text-earth-900 antialiased;
 }

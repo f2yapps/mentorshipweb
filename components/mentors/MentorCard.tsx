@@ -12,6 +12,14 @@ type Props = {
   verified: boolean;
 };
 
+const AVAILABILITY_LABELS: Record<string, string> = {
+  flexible: "Flexible schedule",
+  weekdays: "Weekdays",
+  weekends: "Weekends",
+  evenings: "Evenings",
+  limited: "Limited hours",
+};
+
 export function MentorCard({
   id,
   name,
@@ -23,45 +31,78 @@ export function MentorCard({
   languages,
   verified,
 }: Props) {
+  const initials = name
+    .split(" ")
+    .map((w) => w[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+
   return (
-    <article className="card flex flex-col p-6">
-      <div className="flex items-start justify-between gap-2">
-        <h2 className="font-semibold text-earth-900">{name}</h2>
-        {verified && (
-          <span className="shrink-0 rounded bg-primary-100 px-2 py-0.5 text-xs font-medium text-primary-800">
-            Verified
-          </span>
-        )}
+    <article className="card flex flex-col p-6 transition hover:shadow-md">
+      {/* Header row */}
+      <div className="flex items-start gap-3">
+        {/* Avatar */}
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary-100 text-sm font-bold text-primary-700">
+          {initials}
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <h2 className="font-semibold text-earth-900 truncate">{name}</h2>
+            {verified && (
+              <span className="shrink-0 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
+                ✓ Verified
+              </span>
+            )}
+          </div>
+          {country && (
+            <p className="mt-0.5 text-sm text-earth-500">📍 {country}</p>
+          )}
+        </div>
       </div>
-      {country && (
-        <p className="mt-1 text-sm text-earth-600">{country}</p>
-      )}
+
+      {/* Bio */}
       {bio && (
-        <p className="mt-2 line-clamp-3 text-sm text-earth-700">{bio}</p>
+        <p className="mt-4 line-clamp-3 text-sm text-earth-700 leading-relaxed">{bio}</p>
       )}
-      <div className="mt-3 flex flex-wrap gap-1.5">
+
+      {/* Categories */}
+      <div className="mt-4 flex flex-wrap gap-1.5">
         {expertiseCategories.slice(0, 4).map((cat) => (
           <span
             key={cat}
-            className="rounded-full bg-earth-100 px-2 py-0.5 text-xs text-earth-700"
+            className="rounded-full bg-primary-50 border border-primary-100 px-2.5 py-0.5 text-xs font-medium text-primary-700"
           >
             {cat}
           </span>
         ))}
+        {expertiseCategories.length > 4 && (
+          <span className="rounded-full bg-earth-100 px-2.5 py-0.5 text-xs text-earth-500">
+            +{expertiseCategories.length - 4} more
+          </span>
+        )}
       </div>
-      <p className="mt-2 text-xs text-earth-500">
-        {experienceYears} yr experience · {availability}
-      </p>
-      {languages.length > 0 && (
-        <p className="mt-1 text-xs text-earth-500">
-          Languages: {languages.slice(0, 3).join(", ")}
+
+      {/* Meta */}
+      <div className="mt-4 space-y-1 border-t border-earth-100 pt-4">
+        <p className="text-xs text-earth-500">
+          🕐 {experienceYears > 0 ? `${experienceYears} yr${experienceYears !== 1 ? "s" : ""} experience` : "Experience not listed"}{" "}
+          · {AVAILABILITY_LABELS[availability] ?? availability}
         </p>
-      )}
+        {languages.length > 0 && (
+          <p className="text-xs text-earth-500">
+            🗣️ {languages.slice(0, 3).join(", ")}
+            {languages.length > 3 && ` +${languages.length - 3}`}
+          </p>
+        )}
+      </div>
+
+      {/* CTA */}
       <Link
         href={`/mentors/${id}/request`}
-        className="btn-primary mt-4 w-full text-center text-sm"
+        className="btn-primary mt-5 w-full text-center text-sm"
       >
-        Request mentorship
+        Request Mentorship
       </Link>
     </article>
   );
