@@ -20,12 +20,7 @@ export default async function UploadMediaPage() {
         </div>
 
         <div className="bg-white rounded-lg shadow p-6">
-          <MediaUploadForm 
-            userId={user.id} 
-            onSuccess={() => {
-              window.location.href = '/media'
-            }}
-          />
+          <MediaUploadForm userId={user.id} />
         </div>
       </div>
     </div>

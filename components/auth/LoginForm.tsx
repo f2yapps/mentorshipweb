@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
+import { getSupabaseClientAsync } from "@/lib/supabase/client";
 
 type Props = { className?: string };
 
@@ -14,27 +14,39 @@ export function LoginForm({ className = "" }: Props) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const supabase = createClient();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    setLoading(false);
-    if (signInError) {
-      const msg = signInError.message.toLowerCase().includes("email not confirmed")
-        ? "Please check your email and click the confirmation link before logging in."
-        : signInError.message;
-      setError(msg);
-      return;
+    try {
+      const supabase = await getSupabaseClientAsync();
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      setLoading(false);
+      if (signInError) {
+        const msg = signInError.message.toLowerCase().includes("email not confirmed")
+          ? "Please check your email and click the confirmation link before logging in."
+          : signInError.message;
+        setError(msg);
+        return;
+      }
+      const next = searchParams.get("next");
+      router.push(next && next.startsWith("/") ? next : "/");
+      router.refresh();
+    } catch (err: unknown) {
+      setLoading(false);
+      const msg = err instanceof Error ? err.message : String(err);
+      if (msg === "Failed to fetch" || msg.includes("fetch")) {
+        setError(
+          "Cannot reach Supabase. Open your Supabase project dashboard — if the project is paused (free tier), click Restore. Then try again."
+        );
+      } else {
+        setError(msg);
+      }
     }
-    const next = searchParams.get("next");
-    router.push(next && next.startsWith("/") ? next : "/");
-    router.refresh();
   };
 
   const showConfirmMessage = searchParams.get("confirmed") === "pending";

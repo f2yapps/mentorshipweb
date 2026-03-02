@@ -1,10 +1,11 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { FileUpload } from '@/components/upload/FileUpload'
 import { uploadMedia } from '@/lib/storage'
-import { createClient } from '@/lib/supabase/client'
+import { getSupabaseClientAsync } from '@/lib/supabase/client'
 
 interface MediaUploadFormProps {
   userId: string
@@ -12,6 +13,7 @@ interface MediaUploadFormProps {
 }
 
 export function MediaUploadForm({ userId, onSuccess }: MediaUploadFormProps) {
+  const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
@@ -54,7 +56,7 @@ export function MediaUploadForm({ userId, onSuccess }: MediaUploadFormProps) {
       }
 
       // Save media post to database
-      const supabase = createClient()
+      const supabase = await getSupabaseClientAsync()
       const tagsArray = formData.tags
         .split(',')
         .map(tag => tag.trim())
@@ -79,7 +81,7 @@ export function MediaUploadForm({ userId, onSuccess }: MediaUploadFormProps) {
       setFormData({ title: '', description: '', media_type: 'image', tags: '' })
       setSelectedFile(null)
       
-      if (onSuccess) onSuccess()
+      if (onSuccess) { onSuccess() } else { router.push('/media') }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to upload media')
     } finally {

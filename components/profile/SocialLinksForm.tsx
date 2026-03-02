@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
-import { createClient } from '@/lib/supabase/client'
+import { getSupabaseClientAsync } from '@/lib/supabase/client'
 
 interface SocialLinksFormProps {
   userId: string
@@ -23,6 +24,7 @@ const PLATFORMS = [
 ]
 
 export function SocialLinksForm({ userId, onSuccess }: SocialLinksFormProps) {
+  const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [formData, setFormData] = useState({
@@ -37,7 +39,7 @@ export function SocialLinksForm({ userId, onSuccess }: SocialLinksFormProps) {
     setError(null)
 
     try {
-      const supabase = createClient()
+      const supabase = await getSupabaseClientAsync()
       const { error: insertError } = await supabase
         .from('external_links')
         .insert({
@@ -52,7 +54,7 @@ export function SocialLinksForm({ userId, onSuccess }: SocialLinksFormProps) {
       // Reset form
       setFormData({ platform: 'zoom', url: '', label: '' })
       
-      if (onSuccess) onSuccess()
+      if (onSuccess) { onSuccess() } else { router.refresh() }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to add link')
     } finally {

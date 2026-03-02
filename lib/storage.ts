@@ -2,7 +2,7 @@
  * Supabase Storage utilities for file uploads
  */
 
-import { createClient } from '@/lib/supabase/client'
+import { getSupabaseClientAsync } from '@/lib/supabase/client'
 import { generateUniqueFileName, isValidFileSize, isValidFileType } from './utils'
 
 export type StorageBucket = 'profile-images' | 'publications' | 'media' | 'resources'
@@ -112,7 +112,7 @@ export async function uploadFile({
       return { success: false, error: validation.error }
     }
     
-    const supabase = createClient()
+    const supabase = await getSupabaseClientAsync()
     
     // Generate unique file name
     const fileName = generateUniqueFileName(file.name)
@@ -159,7 +159,7 @@ export async function uploadFile({
  */
 export async function deleteFile(bucket: StorageBucket, path: string): Promise<boolean> {
   try {
-    const supabase = createClient()
+    const supabase = await getSupabaseClientAsync()
     
     const { error } = await supabase.storage
       .from(bucket)
@@ -178,10 +178,10 @@ export async function deleteFile(bucket: StorageBucket, path: string): Promise<b
 }
 
 /**
- * Get public URL for a file
+ * Get public URL for a file (client-safe; uses server config if env missing in bundle)
  */
-export function getPublicUrl(bucket: StorageBucket, path: string): string {
-  const supabase = createClient()
+export async function getPublicUrl(bucket: StorageBucket, path: string): Promise<string> {
+  const supabase = await getSupabaseClientAsync()
   const { data } = supabase.storage.from(bucket).getPublicUrl(path)
   return data.publicUrl
 }

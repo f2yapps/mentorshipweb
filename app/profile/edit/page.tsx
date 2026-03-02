@@ -110,7 +110,7 @@ export default async function EditProfilePage() {
 
             <div className="border-t pt-4">
               <h3 className="text-lg font-medium text-gray-900 mb-4">Add Education</h3>
-              <EducationForm userId={user.id} onSuccess={() => window.location.reload()} />
+              <EducationForm userId={user.id} />
             </div>
           </section>
 
@@ -140,7 +140,7 @@ export default async function EditProfilePage() {
 
             <div className="border-t pt-4">
               <h3 className="text-lg font-medium text-gray-900 mb-4">Add Experience</h3>
-              <ExperienceForm userId={user.id} onSuccess={() => window.location.reload()} />
+              <ExperienceForm userId={user.id} />
             </div>
           </section>
 
@@ -175,7 +175,7 @@ export default async function EditProfilePage() {
 
             <div className="border-t pt-4">
               <h3 className="text-lg font-medium text-gray-900 mb-4">Add Certification</h3>
-              <CertificationForm userId={user.id} onSuccess={() => window.location.reload()} />
+              <CertificationForm userId={user.id} />
             </div>
           </section>
 
@@ -227,7 +227,7 @@ export default async function EditProfilePage() {
 
             <div className="border-t pt-4">
               <h3 className="text-lg font-medium text-gray-900 mb-4">Add New Link</h3>
-              <SocialLinksForm userId={user.id} onSuccess={() => window.location.reload()} />
+              <SocialLinksForm userId={user.id} />
             </div>
           </section>
         </div>

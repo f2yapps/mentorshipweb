@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
+import { getSupabaseClientAsync } from "@/lib/supabase/client";
 import type { UserRole } from "@/types/database";
 
 type Props = { defaultRole: UserRole; className?: string };
@@ -16,13 +16,13 @@ export function RegisterForm({ defaultRole, className = "" }: Props) {
   const [role, setRole] = useState<UserRole>(defaultRole);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const supabase = createClient();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
     try {
+      const supabase = await getSupabaseClientAsync();
       const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,

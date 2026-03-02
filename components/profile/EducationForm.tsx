@@ -1,9 +1,10 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { CreateEducationInput } from '@/types/database'
-import { createClient } from '@/lib/supabase/client'
+import { getSupabaseClientAsync } from '@/lib/supabase/client'
 
 interface EducationFormProps {
   userId: string
@@ -13,6 +14,7 @@ interface EducationFormProps {
 }
 
 export function EducationForm({ userId, onSuccess, onCancel, initialData }: EducationFormProps) {
+  const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [formData, setFormData] = useState<CreateEducationInput>({
@@ -33,7 +35,7 @@ export function EducationForm({ userId, onSuccess, onCancel, initialData }: Educ
     setError(null)
 
     try {
-      const supabase = createClient()
+      const supabase = await getSupabaseClientAsync()
 
       if (initialData?.id) {
         // Update existing
@@ -52,7 +54,7 @@ export function EducationForm({ userId, onSuccess, onCancel, initialData }: Educ
         if (insertError) throw insertError
       }
 
-      if (onSuccess) onSuccess()
+      if (onSuccess) { onSuccess() } else { router.refresh() }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save education')
     } finally {

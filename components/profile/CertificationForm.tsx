@@ -1,9 +1,10 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { CreateCertificationInput } from '@/types/database'
-import { createClient } from '@/lib/supabase/client'
+import { getSupabaseClientAsync } from '@/lib/supabase/client'
 
 interface CertificationFormProps {
   userId: string
@@ -13,6 +14,7 @@ interface CertificationFormProps {
 }
 
 export function CertificationForm({ userId, onSuccess, onCancel, initialData }: CertificationFormProps) {
+  const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [formData, setFormData] = useState<CreateCertificationInput>({
@@ -30,7 +32,7 @@ export function CertificationForm({ userId, onSuccess, onCancel, initialData }: 
     setError(null)
 
     try {
-      const supabase = createClient()
+      const supabase = await getSupabaseClientAsync()
 
       if (initialData?.id) {
         const { error: updateError } = await supabase
@@ -47,7 +49,7 @@ export function CertificationForm({ userId, onSuccess, onCancel, initialData }: 
         if (insertError) throw insertError
       }
 
-      if (onSuccess) onSuccess()
+      if (onSuccess) { onSuccess() } else { router.refresh() }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save certification')
     } finally {

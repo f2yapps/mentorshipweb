@@ -1,9 +1,10 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { CreateExperienceInput } from '@/types/database'
-import { createClient } from '@/lib/supabase/client'
+import { getSupabaseClientAsync } from '@/lib/supabase/client'
 
 interface ExperienceFormProps {
   userId: string
@@ -13,6 +14,7 @@ interface ExperienceFormProps {
 }
 
 export function ExperienceForm({ userId, onSuccess, onCancel, initialData }: ExperienceFormProps) {
+  const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [formData, setFormData] = useState<CreateExperienceInput>({
@@ -33,7 +35,7 @@ export function ExperienceForm({ userId, onSuccess, onCancel, initialData }: Exp
     setError(null)
 
     try {
-      const supabase = createClient()
+      const supabase = await getSupabaseClientAsync()
 
       if (initialData?.id) {
         // Update existing
@@ -52,7 +54,7 @@ export function ExperienceForm({ userId, onSuccess, onCancel, initialData }: Exp
         if (insertError) throw insertError
       }
 
-      if (onSuccess) onSuccess()
+      if (onSuccess) { onSuccess() } else { router.refresh() }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save experience')
     } finally {
