@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/Button'
 import { FileUpload } from '@/components/upload/FileUpload'
 import { uploadMedia } from '@/lib/storage'
 import { getSupabaseClientAsync } from '@/lib/supabase/client'
@@ -98,7 +97,7 @@ export function MediaUploadForm({ userId, onSuccess }: MediaUploadFormProps) {
       )}
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-earth-700 mb-1">
           Media Type *
         </label>
         <div className="flex gap-4">
@@ -153,7 +152,7 @@ export function MediaUploadForm({ userId, onSuccess }: MediaUploadFormProps) {
       />
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-earth-700 mb-1">
           Title *
         </label>
         <input
@@ -161,40 +160,40 @@ export function MediaUploadForm({ userId, onSuccess }: MediaUploadFormProps) {
           required
           value={formData.title}
           onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="input"
           placeholder="My awesome photo/video"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-earth-700 mb-1">
           Description
         </label>
         <textarea
           value={formData.description}
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
           rows={3}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="input"
           placeholder="Tell us about this media..."
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-earth-700 mb-1">
           Tags (comma-separated)
         </label>
         <input
           type="text"
           value={formData.tags}
           onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="input"
           placeholder="mentorship, success, inspiration"
         />
       </div>
 
-      <Button type="submit" disabled={loading || !selectedFile}>
+      <button type="submit" disabled={loading || !selectedFile} className="btn-primary">
         {loading ? 'Uploading...' : 'Upload & Publish'}
-      </Button>
+      </button>
     </form>
   )
 }

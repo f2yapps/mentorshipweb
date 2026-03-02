@@ -32,7 +32,14 @@ export function RegisterForm({ defaultRole, className = "" }: Props) {
       });
       setLoading(false);
       if (signUpError) {
-        setError(signUpError.message);
+        const msg = signUpError.message.toLowerCase();
+        const friendly =
+          msg.includes("rate limit") || msg.includes("email rate")
+            ? "Too many sign-up emails sent. Please wait a few minutes and try again, or use a different email address."
+            : msg.includes("already registered") || msg.includes("user already registered")
+            ? "An account with this email already exists. Try logging in instead."
+            : signUpError.message;
+        setError(friendly);
         return;
       }
     // If no session (email confirmation required), redirect to login with message

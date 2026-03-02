@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/Button'
 import { CreateCertificationInput } from '@/types/database'
 import { getSupabaseClientAsync } from '@/lib/supabase/client'
 
@@ -66,7 +65,7 @@ export function CertificationForm({ userId, onSuccess, onCancel, initialData }: 
       )}
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-earth-700 mb-1">
           Certification Name *
         </label>
         <input
@@ -74,13 +73,13 @@ export function CertificationForm({ userId, onSuccess, onCancel, initialData }: 
           required
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="input"
           placeholder="AWS Certified Solutions Architect"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-earth-700 mb-1">
           Issuing Organization *
         </label>
         <input
@@ -88,14 +87,14 @@ export function CertificationForm({ userId, onSuccess, onCancel, initialData }: 
           required
           value={formData.issuing_organization}
           onChange={(e) => setFormData({ ...formData, issuing_organization: e.target.value })}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="input"
           placeholder="Amazon Web Services"
         />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-earth-700 mb-1">
             Issue Date *
           </label>
           <input
@@ -103,57 +102,57 @@ export function CertificationForm({ userId, onSuccess, onCancel, initialData }: 
             required
             value={formData.issue_date}
             onChange={(e) => setFormData({ ...formData, issue_date: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="input"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-earth-700 mb-1">
             Expiration Date
           </label>
           <input
             type="month"
             value={formData.expiration_date || ''}
             onChange={(e) => setFormData({ ...formData, expiration_date: e.target.value || null })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="input"
           />
         </div>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-earth-700 mb-1">
           Credential ID
         </label>
         <input
           type="text"
           value={formData.credential_id || ''}
           onChange={(e) => setFormData({ ...formData, credential_id: e.target.value || null })}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="input"
           placeholder="ABC123XYZ"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-earth-700 mb-1">
           Credential URL
         </label>
         <input
           type="url"
           value={formData.credential_url || ''}
           onChange={(e) => setFormData({ ...formData, credential_url: e.target.value || null })}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="input"
           placeholder="https://www.credly.com/badges/..."
         />
       </div>
 
       <div className="flex gap-3 pt-4">
-        <Button type="submit" disabled={loading}>
+        <button type="submit" disabled={loading} className="btn-primary">
           {loading ? 'Saving...' : initialData?.id ? 'Update' : 'Add Certification'}
-        </Button>
+        </button>
         {onCancel && (
-          <Button type="button" variant="outline" onClick={onCancel}>
+          <button type="button" onClick={onCancel} className="btn-secondary">
             Cancel
-          </Button>
+          </button>
         )}
       </div>
     </form>

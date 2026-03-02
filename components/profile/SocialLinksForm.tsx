@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/Button'
 import { getSupabaseClientAsync } from '@/lib/supabase/client'
 
 interface SocialLinksFormProps {
@@ -71,13 +70,13 @@ export function SocialLinksForm({ userId, onSuccess }: SocialLinksFormProps) {
       )}
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-earth-700 mb-1">
           Platform *
         </label>
         <select
           value={formData.platform}
           onChange={(e) => setFormData({ ...formData, platform: e.target.value })}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="input"
         >
           {PLATFORMS.map(platform => (
             <option key={platform.value} value={platform.value}>
@@ -88,7 +87,7 @@ export function SocialLinksForm({ userId, onSuccess }: SocialLinksFormProps) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-earth-700 mb-1">
           URL *
         </label>
         <input
@@ -96,10 +95,10 @@ export function SocialLinksForm({ userId, onSuccess }: SocialLinksFormProps) {
           required
           value={formData.url}
           onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="input"
           placeholder="https://zoom.us/j/123456789"
         />
-        <p className="mt-1 text-xs text-gray-500">
+        <p className="mt-1 text-xs text-earth-500">
           {formData.platform === 'zoom' && 'Example: https://zoom.us/j/123456789'}
           {formData.platform === 'whatsapp' && 'Example: https://wa.me/1234567890'}
           {formData.platform === 'linkedin' && 'Example: https://linkedin.com/in/yourname'}
@@ -108,21 +107,21 @@ export function SocialLinksForm({ userId, onSuccess }: SocialLinksFormProps) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-earth-700 mb-1">
           Label (Optional)
         </label>
         <input
           type="text"
           value={formData.label}
           onChange={(e) => setFormData({ ...formData, label: e.target.value })}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="input"
           placeholder="My Meeting Room"
         />
       </div>
 
-      <Button type="submit" disabled={loading}>
-        {loading ? 'Adding...' : 'Add Link'}
-      </Button>
+      <button type="submit" disabled={loading} className="btn-primary">
+          {loading ? 'Adding...' : 'Add Link'}
+        </button>
     </form>
   )
 }

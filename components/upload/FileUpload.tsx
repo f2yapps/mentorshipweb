@@ -122,8 +122,8 @@ export function FileUpload({
       <div
         className={`
           relative border-2 border-dashed rounded-lg p-6 transition-colors
-          ${isDragging ? 'border-blue-500 bg-blue-50' : 'border-gray-300'}
-          ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:border-gray-400'}
+          ${isDragging ? 'border-primary-500 bg-primary-50' : 'border-earth-300'}
+          ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:border-earth-300'}
         `}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -159,7 +159,7 @@ export function FileUpload({
           ) : (
             <div className="flex flex-col items-center">
               <svg
-                className="w-12 h-12 text-gray-400 mb-3"
+                className="w-12 h-12 text-earth-400 mb-3"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -171,18 +171,18 @@ export function FileUpload({
                   d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
                 />
               </svg>
-              <p className="text-sm text-gray-600 font-medium">{label}</p>
+              <p className="text-sm text-earth-600 font-medium">{label}</p>
             </div>
           )}
 
           {description && (
-            <p className="text-xs text-gray-500 mt-2">{description}</p>
+            <p className="text-xs text-earth-500 mt-2">{description}</p>
           )}
 
           {selectedFile && (
-            <div className="mt-3 text-sm text-gray-600">
+            <div className="mt-3 text-sm text-earth-600">
               <p className="font-medium">{selectedFile.name}</p>
-              <p className="text-xs text-gray-500">{formatFileSize(selectedFile.size)}</p>
+              <p className="text-xs text-earth-500">{formatFileSize(selectedFile.size)}</p>
             </div>
           )}
         </div>

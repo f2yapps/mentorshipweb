@@ -50,9 +50,9 @@ export function ProfilePictureSection({ userId, currentAvatarUrl }: ProfilePictu
           <img
             src={avatarUrl}
             alt="Profile picture"
-            className="h-20 w-20 rounded-full object-cover border-2 border-gray-200"
+            className="h-20 w-20 rounded-full object-cover border-2 border-earth-200"
           />
-          <span className="text-sm text-gray-500">Current profile picture</span>
+          <span className="text-sm text-earth-500">Current profile picture</span>
         </div>
       )}
 
@@ -64,7 +64,7 @@ export function ProfilePictureSection({ userId, currentAvatarUrl }: ProfilePictu
       />
 
       {saving && (
-        <p className="text-sm text-gray-500">Saving to profile...</p>
+        <p className="text-sm text-earth-500">Saving to profile...</p>
       )}
     </div>
   )

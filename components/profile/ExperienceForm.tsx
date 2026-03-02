@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/Button'
 import { CreateExperienceInput } from '@/types/database'
 import { getSupabaseClientAsync } from '@/lib/supabase/client'
 
@@ -71,7 +70,7 @@ export function ExperienceForm({ userId, onSuccess, onCancel, initialData }: Exp
       )}
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-earth-700 mb-1">
           Company *
         </label>
         <input
@@ -79,13 +78,13 @@ export function ExperienceForm({ userId, onSuccess, onCancel, initialData }: Exp
           required
           value={formData.company}
           onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="input"
           placeholder="Google"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-earth-700 mb-1">
           Job Title *
         </label>
         <input
@@ -93,20 +92,20 @@ export function ExperienceForm({ userId, onSuccess, onCancel, initialData }: Exp
           required
           value={formData.title}
           onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="input"
           placeholder="Software Engineer"
         />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-earth-700 mb-1">
             Employment Type
           </label>
           <select
             value={formData.employment_type || 'Full-time'}
             onChange={(e) => setFormData({ ...formData, employment_type: e.target.value || null })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="input"
           >
             <option value="Full-time">Full-time</option>
             <option value="Part-time">Part-time</option>
@@ -117,14 +116,14 @@ export function ExperienceForm({ userId, onSuccess, onCancel, initialData }: Exp
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-earth-700 mb-1">
             Location
           </label>
           <input
             type="text"
             value={formData.location || ''}
             onChange={(e) => setFormData({ ...formData, location: e.target.value || null })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="input"
             placeholder="San Francisco, CA"
           />
         </div>
@@ -132,7 +131,7 @@ export function ExperienceForm({ userId, onSuccess, onCancel, initialData }: Exp
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-earth-700 mb-1">
             Start Date *
           </label>
           <input
@@ -140,12 +139,12 @@ export function ExperienceForm({ userId, onSuccess, onCancel, initialData }: Exp
             required
             value={formData.start_date}
             onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="input"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-earth-700 mb-1">
             End Date {formData.is_current && '(or expected)'}
           </label>
           <input
@@ -153,7 +152,7 @@ export function ExperienceForm({ userId, onSuccess, onCancel, initialData }: Exp
             value={formData.end_date || ''}
             onChange={(e) => setFormData({ ...formData, end_date: e.target.value || null })}
             disabled={formData.is_current}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+            className="input disabled:bg-earth-100 disabled:text-earth-400"
           />
         </div>
       </div>
@@ -168,28 +167,28 @@ export function ExperienceForm({ userId, onSuccess, onCancel, initialData }: Exp
             is_current: e.target.checked,
             end_date: e.target.checked ? null : formData.end_date
           })}
-          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+          className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-earth-300 rounded"
         />
-        <label htmlFor="is_current" className="ml-2 block text-sm text-gray-700">
+        <label htmlFor="is_current" className="ml-2 block text-sm text-earth-700">
           I currently work here
         </label>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-earth-700 mb-1">
           Description
         </label>
         <textarea
           value={formData.description || ''}
           onChange={(e) => setFormData({ ...formData, description: e.target.value || null })}
           rows={4}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="input"
           placeholder="Describe your role, responsibilities, and achievements..."
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-earth-700 mb-1">
           Skills (comma-separated)
         </label>
         <input
@@ -201,19 +200,19 @@ export function ExperienceForm({ userId, onSuccess, onCancel, initialData }: Exp
               skills: e.target.value.split(',').map((s) => s.trim()).filter(Boolean),
             })
           }
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="input"
           placeholder="React, TypeScript, Node.js"
         />
       </div>
 
       <div className="flex gap-3 pt-4">
-        <Button type="submit" disabled={loading}>
+        <button type="submit" disabled={loading} className="btn-primary">
           {loading ? 'Saving...' : initialData?.id ? 'Update' : 'Add Experience'}
-        </Button>
+        </button>
         {onCancel && (
-          <Button type="button" variant="outline" onClick={onCancel}>
+          <button type="button" onClick={onCancel} className="btn-secondary">
             Cancel
-          </Button>
+          </button>
         )}
       </div>
     </form>

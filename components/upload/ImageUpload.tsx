@@ -90,13 +90,13 @@ export function ImageUpload({
 
       {uploading && (
         <div className="space-y-2">
-          <div className="w-full bg-gray-200 rounded-full h-2">
+          <div className="w-full bg-earth-200 rounded-full h-2">
             <div
-              className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+              className="bg-primary-600 h-2 rounded-full transition-all duration-300"
               style={{ width: `${progress}%` }}
             />
           </div>
-          <p className="text-sm text-gray-600 text-center">
+          <p className="text-sm text-earth-600 text-center">
             Uploading... {progress}%
           </p>
         </div>
