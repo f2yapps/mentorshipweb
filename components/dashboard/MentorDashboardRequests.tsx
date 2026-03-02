@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { getSupabaseClientAsync } from "@/lib/supabase/client";
 
 type RequestRow = {
   id: string;
@@ -18,9 +18,9 @@ type Props = { requests: RequestRow[] };
 
 export function MentorDashboardRequests({ requests }: Props) {
   const router = useRouter();
-  const supabase = createClient();
 
   const updateStatus = async (requestId: string, status: "accepted" | "declined") => {
+    const supabase = await getSupabaseClientAsync();
     await supabase
       .from("mentorship_requests")
       .update({ status })

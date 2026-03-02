@@ -3,79 +3,83 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { getSupabaseClientAsync } from "@/lib/supabase/client";
+import type { User as AuthUser } from "@supabase/supabase-js";
 
-type User = { id: string; name: string; role: string } | null;
+type UserProfile = { id: string; name: string; role: string } | null;
 
 export function Header() {
   const pathname = usePathname();
   const router = useRouter();
-  const [user, setUser] = useState<User>(null);
+  const [user, setUser] = useState<UserProfile>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const supabase = createClient();
-    
-    const fetchUserProfile = async (authUser: any) => {
-      const { data, error } = await supabase
-        .from("users")
-        .select("id, name, role")
-        .eq("id", authUser.id)
-        .single();
-      
-      if (error) {
-        console.error("Error fetching user profile:", error);
-        // If user doesn't exist in users table, create it from auth metadata
-        if (error.code === "PGRST116") {
-          const metadata = authUser.user_metadata;
-          const { error: insertError } = await supabase
-            .from("users")
-            .insert({
-              id: authUser.id,
-              email: authUser.email,
-              name: metadata?.name || "User",
-              role: metadata?.role || "mentee",
-            });
-          
-          if (!insertError) {
-            // Fetch again after insert
-            const { data: newData } = await supabase
+    let subscription: { unsubscribe: () => void } | null = null;
+
+    getSupabaseClientAsync().then((supabase) => {
+      const fetchUserProfile = async (authUser: AuthUser) => {
+        const { data, error } = await supabase
+          .from("users")
+          .select("id, name, role")
+          .eq("id", authUser.id)
+          .single();
+
+        if (error) {
+          console.error("Error fetching user profile:", error);
+          if (error.code === "PGRST116") {
+            const metadata = authUser.user_metadata;
+            const { error: insertError } = await supabase
               .from("users")
-              .select("id, name, role")
-              .eq("id", authUser.id)
-              .single();
-            setUser(newData ?? null);
+              .insert({
+                id: authUser.id,
+                email: authUser.email,
+                name: metadata?.name || "User",
+                role: metadata?.role || "mentee",
+              });
+
+            if (!insertError) {
+              const { data: newData } = await supabase
+                .from("users")
+                .select("id, name, role")
+                .eq("id", authUser.id)
+                .single();
+              setUser(newData ?? null);
+            }
           }
+        } else {
+          setUser(data ?? null);
         }
-      } else {
-        setUser(data ?? null);
-      }
+      };
+
+      supabase.auth.getUser().then(({ data: { user: authUser } }) => {
+        if (authUser) {
+          fetchUserProfile(authUser);
+        } else {
+          setUser(null);
+        }
+        setLoading(false);
+      });
+
+      const { data: { subscription: sub } } = supabase.auth.onAuthStateChange((_e, session) => {
+        if (session?.user) {
+          fetchUserProfile(session.user);
+        } else {
+          setUser(null);
+        }
+      });
+
+      subscription = sub;
+    });
+
+    return () => {
+      subscription?.unsubscribe();
     };
-    
-    supabase.auth.getUser().then(({ data: { user: authUser } }) => {
-      if (authUser) {
-        fetchUserProfile(authUser);
-      } else {
-        setUser(null);
-      }
-      setLoading(false);
-    });
-    
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_e, session) => {
-      if (session?.user) {
-        fetchUserProfile(session.user);
-      } else {
-        setUser(null);
-      }
-    });
-    return () => subscription?.unsubscribe();
   }, []);
 
   const handleSignOut = async () => {
-    const supabase = createClient();
+    const supabase = await getSupabaseClientAsync();
     await supabase.auth.signOut();
     setUser(null);
     router.push("/");

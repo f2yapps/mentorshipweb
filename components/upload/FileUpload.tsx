@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, ChangeEvent } from 'react'
+import { useState, useRef, useEffect, ChangeEvent } from 'react'
 import { Button } from '@/components/ui/Button'
 import { formatFileSize, isValidFileSize, isValidFileType } from '@/lib/utils'
 import { StorageBucket, validateFile } from '@/lib/storage'
@@ -33,6 +33,15 @@ export function FileUpload({
   const [error, setError] = useState<string | null>(null)
   const [isDragging, setIsDragging] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const objectUrlRef = useRef<string | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (objectUrlRef.current) {
+        URL.revokeObjectURL(objectUrlRef.current)
+      }
+    }
+  }, [])
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -62,7 +71,11 @@ export function FileUpload({
       }
       reader.readAsDataURL(file)
     } else if (preview && file.type.startsWith('video/')) {
+      if (objectUrlRef.current) {
+        URL.revokeObjectURL(objectUrlRef.current)
+      }
       const videoUrl = URL.createObjectURL(file)
+      objectUrlRef.current = videoUrl
       setPreviewUrl(videoUrl)
     }
   }
@@ -93,6 +106,10 @@ export function FileUpload({
 
   const handleRemove = () => {
     setSelectedFile(null)
+    if (objectUrlRef.current) {
+      URL.revokeObjectURL(objectUrlRef.current)
+      objectUrlRef.current = null
+    }
     setPreviewUrl(currentFileUrl || null)
     setError(null)
     if (fileInputRef.current) {

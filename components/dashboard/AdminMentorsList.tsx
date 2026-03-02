@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { getSupabaseClientAsync } from "@/lib/supabase/client";
 
 type Mentor = {
   id: string;
@@ -15,9 +15,9 @@ type Props = { mentors: Mentor[]; className?: string };
 
 export function AdminMentorsList({ mentors, className = "" }: Props) {
   const router = useRouter();
-  const supabase = createClient();
 
   const setVerified = async (mentorId: string, verified: boolean) => {
+    const supabase = await getSupabaseClientAsync();
     await supabase.from("mentors").update({ verified }).eq("id", mentorId);
     router.refresh();
   };

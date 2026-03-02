@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { getSupabaseClientAsync } from "@/lib/supabase/client";
 
 type Props = {
   mentorId: string;
@@ -22,12 +22,12 @@ export function RequestMentorshipForm({
   const [message, setMessage] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const supabase = createClient();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
+    const supabase = await getSupabaseClientAsync();
     const { error: insertError } = await supabase.from("mentorship_requests").insert({
       mentee_id: menteeId,
       mentor_id: mentorId,
