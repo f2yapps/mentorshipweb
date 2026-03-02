@@ -38,28 +38,22 @@ export default function Error({
             </div>
           )}
 
-          {(isSupabaseSetup || error.message.includes("Server Components") || error.message.includes("omitted in production")) && (
-          <div className="mb-6 rounded-lg bg-amber-50 border border-amber-200 p-4">
-            {isSupabaseSetup ? (
+          {isSupabaseSetup && (
+            <div className="mb-6 rounded-lg bg-amber-50 border border-amber-200 p-4">
               <p className="text-amber-900 text-sm">{error.message}</p>
-            ) : (
-              <>
-                <p className="text-amber-900 text-sm">
-                  A page hit an error. Often this is due to Supabase: wrong or missing env vars, or the project is paused.
-                </p>
-                <p className="mt-2 text-amber-800 text-sm">
-                  <strong>Local:</strong> Check <code className="bg-amber-100 px-1 rounded">.env.local</code> and the terminal running <code className="bg-amber-100 px-1 rounded">npm run dev</code>. You can also open <a href="/api/check-env" className="underline font-medium">/api/check-env</a> to verify env (no secrets shown).
-                </p>
-                <p className="mt-2 text-amber-800 text-sm">
-                  <strong>Deployed:</strong> In Vercel add <code className="bg-amber-100 px-1 rounded">NEXT_PUBLIC_SUPABASE_URL</code> and <code className="bg-amber-100 px-1 rounded">NEXT_PUBLIC_SUPABASE_ANON_KEY</code>, then redeploy.
-                </p>
-              </>
-            )}
-            <p className="mt-3 text-amber-800 text-sm">
-              <a href="/setup" className="underline font-medium">Go to setup instructions →</a>
-            </p>
-          </div>
-        )}
+              <p className="mt-3 text-amber-800 text-sm">
+                <a href="/setup" className="underline font-medium">Go to setup instructions →</a>
+              </p>
+            </div>
+          )}
+
+          {!isSupabaseSetup && (error.message.includes("Server Components") || error.message.includes("omitted in production")) && (
+            <div className="mb-6 rounded-lg bg-slate-100 border border-slate-300 p-4">
+              <p className="text-slate-800 text-sm">
+                The real error is hidden here. To see it: run <code className="bg-slate-200 px-1 rounded">npm run dev</code> locally, do the same action again, and check the <strong>terminal</strong> or the red error overlay in the browser for the actual message.
+              </p>
+            </div>
+          )}
 
         <div className="flex gap-4">
           <button onClick={reset} className="btn-primary">
