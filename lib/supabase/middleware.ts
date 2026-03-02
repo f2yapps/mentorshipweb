@@ -25,6 +25,9 @@ export async function updateSession(request: NextRequest) {
             return request.cookies.getAll();
           },
           setAll(cookiesToSet: { name: string; value: string; options?: Record<string, unknown> }[]) {
+            // Update request cookies so downstream handlers see the refreshed token
+            cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
+            response = NextResponse.next({ request });
             cookiesToSet.forEach(({ name, value, options }) =>
               response.cookies.set(name, value, options)
             );

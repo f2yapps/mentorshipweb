@@ -1,12 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-
-const CATEGORIES = [
-  "Academics", "Career", "Life", "Relationships", "Mental Health",
-  "Entrepreneurship", "Tech", "Agriculture", "Leadership", "Immigration", "Faith & Purpose",
-];
-const LANGUAGES = ["English", "Amharic", "Oromo", "Tigrinya", "French", "Arabic"];
+import { MENTORSHIP_CATEGORIES, LANGUAGES } from "@/lib/constants";
 
 type Props = {
   currentCategory?: string;
@@ -41,7 +36,7 @@ export function MentorDirectoryFilters({
           className="input mt-1 w-40 text-sm"
         >
           <option value="">All</option>
-          {CATEGORIES.map((c) => (
+          {MENTORSHIP_CATEGORIES.map((c) => (
             <option key={c} value={c}>{c}</option>
           ))}
         </select>

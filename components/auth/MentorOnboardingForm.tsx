@@ -2,24 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { getSupabaseClientAsync } from "@/lib/supabase/client";
+import { MENTORSHIP_CATEGORIES, LANGUAGES } from "@/lib/constants";
 
-const CATEGORIES = [
-  "Artificial Intelligence & ML",
-  "Software Development",
-  "Data Science & Analytics",
-  "Career Development",
-  "Tech Entrepreneurship",
-  "Digital Skills",
-  "Academic Success",
-  "Personal Development",
-  "Cloud Computing & DevOps",
-  "Cybersecurity",
-  "UI/UX Design",
-  "Leadership & Impact",
-];
 const COMM_OPTIONS = ["chat", "email", "video"];
-const LANGUAGES = ["English", "Spanish", "French", "Arabic", "Portuguese", "Hindi", "Swahili", "Chinese", "Other"];
 
 type Props = { className?: string };
 
@@ -33,8 +19,6 @@ export function MentorOnboardingForm({ className = "" }: Props) {
   const [preferredCommunication, setPreferredCommunication] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const supabase = createClient();
-
   const toggleArray = (arr: string[], value: string) =>
     arr.includes(value) ? arr.filter((x) => x !== value) : [...arr, value];
 
@@ -46,6 +30,7 @@ export function MentorOnboardingForm({ className = "" }: Props) {
     }
     setError(null);
     setLoading(true);
+    const supabase = await getSupabaseClientAsync();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       setError("You must be logged in.");
@@ -110,7 +95,7 @@ export function MentorOnboardingForm({ className = "" }: Props) {
           Expertise categories (select at least one) *
         </label>
         <div className="mt-2 flex flex-wrap gap-2">
-          {CATEGORIES.map((cat) => (
+          {MENTORSHIP_CATEGORIES.map((cat) => (
             <label key={cat} className="inline-flex items-center gap-1 rounded-full border border-earth-300 bg-white px-3 py-1.5 text-sm">
               <input
                 type="checkbox"

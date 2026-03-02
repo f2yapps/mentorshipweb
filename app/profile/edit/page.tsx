@@ -5,6 +5,7 @@ import { EducationForm } from '@/components/profile/EducationForm'
 import { ExperienceForm } from '@/components/profile/ExperienceForm'
 import { CertificationForm } from '@/components/profile/CertificationForm'
 import { SocialLinksForm } from '@/components/profile/SocialLinksForm'
+import { ProfilePictureSection } from '@/components/profile/ProfilePictureSection'
 
 export default async function EditProfilePage() {
   try {
@@ -58,12 +59,13 @@ export default async function EditProfilePage() {
         </div>
 
         <div className="space-y-6">
-          {/* Profile Picture - Coming Soon */}
+          {/* Profile Picture */}
           <section className="bg-white rounded-lg shadow p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">Profile Picture</h2>
-            <div className="text-sm text-gray-500">
-              Profile picture upload coming soon. For now, you can add your education, experience, and certifications below.
-            </div>
+            <ProfilePictureSection
+              userId={user.id}
+              currentAvatarUrl={profile?.avatar_url ?? null}
+            />
           </section>
 
           {/* Basic Info */}
