@@ -24,9 +24,11 @@ export default async function MentorsPage({ searchParams }: Props) {
       .from("mentors")
       .select("id, user_id, expertise_categories, experience_years, availability, languages, verified, users(id, name, country, bio)");
 
+    // Unauthenticated visitors see only verified mentors
     if (!user) {
       query = query.eq("verified", true);
     }
+
     if (params.category) {
       query = query.contains("expertise_categories", [params.category]);
     }
@@ -37,7 +39,7 @@ export default async function MentorsPage({ searchParams }: Props) {
     const { data: mentorsRaw } = await query.order("created_at", { ascending: false });
 
     type UserRow = { id: string; name: string; country: string | null; bio: string | null } | null;
-    const mentors = (mentorsRaw ?? []).map((m) => {
+    let mentors = (mentorsRaw ?? []).map((m) => {
       const usersField: unknown = (m as { users?: unknown }).users;
       const userRow: UserRow = Array.isArray(usersField)
         ? (usersField[0] ?? null) as UserRow
@@ -54,48 +56,59 @@ export default async function MentorsPage({ searchParams }: Props) {
       };
     });
 
-    let filtered = mentors.filter(m => m.verified || (user && m.user_id === user.id));
+    // Apply country filter
     if (params.country) {
-      filtered = filtered.filter((m) => m.users?.country === params.country);
+      const c = params.country.toLowerCase();
+      mentors = mentors.filter((m) => m.users?.country?.toLowerCase().includes(c));
     }
 
     return (
-    <div className="mx-auto max-w-6xl px-4 py-12 sm:py-20">
-      <h1 className="section-heading">Mentor Directory</h1>
-      <p className="mt-4 text-earth-700">
-        Browse verified mentors. Filter by category, country, or language, then send a request.
-      </p>
+      <div className="mx-auto max-w-6xl px-4 py-12 sm:py-20">
+        <h1 className="section-heading">Mentor Directory</h1>
+        <p className="mt-4 text-earth-700">
+          Browse our volunteer mentors from around the world. Filter by area, country, or language.
+        </p>
 
-      <MentorDirectoryFilters
-        currentCategory={params.category}
-        currentCountry={params.country}
-        currentLanguage={params.language}
-        className="mt-8"
-      />
+        <MentorDirectoryFilters
+          currentCategory={params.category}
+          currentCountry={params.country}
+          currentLanguage={params.language}
+          className="mt-8"
+        />
 
-      <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {filtered.length > 0 ? (
-          filtered.map((mentor) => (
-            <MentorCard
-              key={mentor.id}
-              id={mentor.id}
-              name={mentor.users?.name ?? "Mentor"}
-              country={mentor.users?.country ?? undefined}
-              bio={mentor.users?.bio ?? undefined}
-              expertiseCategories={mentor.expertise_categories}
-              experienceYears={mentor.experience_years}
-              availability={mentor.availability}
-              languages={mentor.languages}
-              verified={mentor.verified}
-            />
-          ))
-        ) : (
-          <div className="col-span-full rounded-lg border border-earth-200 bg-earth-50 p-8 text-center text-earth-600">
-            No mentors match your filters. Try changing filters or check back later.
-          </div>
-        )}
+        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {mentors.length > 0 ? (
+            mentors.map((mentor) => (
+              <MentorCard
+                key={mentor.id}
+                id={mentor.id}
+                name={mentor.users?.name ?? "Mentor"}
+                country={mentor.users?.country ?? undefined}
+                bio={mentor.users?.bio ?? undefined}
+                expertiseCategories={mentor.expertise_categories}
+                experienceYears={mentor.experience_years}
+                availability={mentor.availability}
+                languages={mentor.languages}
+                verified={mentor.verified}
+              />
+            ))
+          ) : (
+            <div className="col-span-full rounded-xl border border-earth-200 bg-earth-50 p-10 text-center">
+              <p className="text-earth-600 text-lg font-medium">No mentors found</p>
+              <p className="mt-2 text-sm text-earth-500">
+                {params.category || params.country || params.language
+                  ? "Try adjusting your filters."
+                  : "No mentors have registered yet. Check back soon!"}
+              </p>
+              {(params.category || params.country || params.language) && (
+                <Link href="/mentors" className="btn-secondary mt-4 inline-block">
+                  Clear filters
+                </Link>
+              )}
+            </div>
+          )}
+        </div>
       </div>
-    </div>
     );
   } catch (e) {
     if (isSupabaseNotConfiguredError(e)) redirect("/setup");
@@ -103,7 +116,7 @@ export default async function MentorsPage({ searchParams }: Props) {
       <div className="mx-auto max-w-2xl px-4 py-12 text-center">
         <h1 className="section-heading">Mentor Directory</h1>
         <p className="mt-4 text-earth-600">
-          We couldn’t load mentors right now. Check your connection and that Supabase is set up.
+          We couldn't load mentors right now. Check your connection and that Supabase is set up.
         </p>
         <Link href="/" className="btn-primary mt-6 inline-block">Go home</Link>
       </div>

@@ -5,81 +5,81 @@ import { useRouter } from "next/navigation";
 import { getSupabaseClientAsync } from "@/lib/supabase/client";
 import { MENTORSHIP_CATEGORIES, LANGUAGES } from "@/lib/constants";
 
-const COMM_OPTIONS = ["chat", "email", "video"];
-
 type Props = { className?: string };
 
 export function MentorOnboardingForm({ className = "" }: Props) {
   const router = useRouter();
+
+  // Core fields
+  const [country, setCountry] = useState("");
+  const [bio, setBio] = useState("");
   const [expertiseCategories, setExpertiseCategories] = useState<string[]>([]);
-  const [interestsText, setInterestsText] = useState("");
   const [experienceYears, setExperienceYears] = useState(0);
   const [availability, setAvailability] = useState("flexible");
-  const [languages, setLanguages] = useState<string[]>([]);
-  const [preferredCommunication, setPreferredCommunication] = useState<string[]>([]);
+  const [languages, setLanguages] = useState<string[]>(["English"]);
+
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const toggleArray = (arr: string[], value: string) =>
+
+  const toggle = (arr: string[], value: string) =>
     arr.includes(value) ? arr.filter((x) => x !== value) : [...arr, value];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (expertiseCategories.length === 0) {
-      setError("Select at least one expertise category.");
+      setError("Please select at least one area of expertise.");
       return;
     }
     setError(null);
     setLoading(true);
-    const supabase = await getSupabaseClientAsync();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      setError("You must be logged in.");
-      setLoading(false);
-      return;
-    }
-    const mentorData = {
-      user_id: user.id,
-      expertise_categories: expertiseCategories,
-      interests: interestsText.split(",").map((s) => s.trim()).filter(Boolean),
-      experience_years: experienceYears,
-      availability,
-      languages: languages.length ? languages : ["English"],
-      preferred_communication: preferredCommunication.length ? preferredCommunication : ["email"],
-      verified: false,
-    };
-    
-    const { error: insertError } = await supabase.from("mentors").insert(mentorData);
-    
-    if (insertError) {
-      // If duplicate key error, update instead
-      if (insertError.code === '23505') {
-        const { error: updateError } = await supabase
-          .from("mentors")
-          .update({
-            expertise_categories: expertiseCategories,
-            interests: interestsText.split(",").map((s) => s.trim()).filter(Boolean),
-            experience_years: experienceYears,
-            availability,
-            languages: languages.length ? languages : ["English"],
-            preferred_communication: preferredCommunication.length ? preferredCommunication : ["email"],
-          })
-          .eq("user_id", user.id);
-        
-        if (updateError) {
-          setLoading(false);
-          setError(updateError.message);
-          return;
+
+    try {
+      const supabase = await getSupabaseClientAsync();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { setError("You must be logged in."); setLoading(false); return; }
+
+      // Update user profile with country + bio
+      await supabase.from("users").update({
+        ...(country.trim() && { country: country.trim() }),
+        ...(bio.trim() && { bio: bio.trim() }),
+      }).eq("id", user.id);
+
+      // Create or update mentor row — verified: true so they appear immediately
+      const mentorData = {
+        user_id: user.id,
+        expertise_categories: expertiseCategories,
+        experience_years: experienceYears,
+        availability,
+        languages: languages.length ? languages : ["English"],
+        verified: true,
+      };
+
+      const { error: insertError } = await supabase.from("mentors").insert(mentorData);
+
+      if (insertError) {
+        if (insertError.code === "23505") {
+          // Already exists — update
+          const { error: updateError } = await supabase
+            .from("mentors")
+            .update({
+              expertise_categories: expertiseCategories,
+              experience_years: experienceYears,
+              availability,
+              languages: languages.length ? languages : ["English"],
+            })
+            .eq("user_id", user.id);
+          if (updateError) throw updateError;
+        } else {
+          throw insertError;
         }
-      } else {
-        setLoading(false);
-        setError(insertError.message);
-        return;
       }
+
+      router.push("/dashboard/mentor");
+      router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+      setLoading(false);
     }
-    
-    setLoading(false);
-    router.push("/dashboard/mentor");
-    router.refresh();
   };
 
   return (
@@ -90,18 +90,59 @@ export function MentorOnboardingForm({ className = "" }: Props) {
         </div>
       )}
 
+      {/* Country */}
+      <div>
+        <label htmlFor="country" className="block text-sm font-medium text-earth-700">
+          Your country
+        </label>
+        <input
+          id="country"
+          type="text"
+          placeholder="e.g. United States, Canada, Germany"
+          value={country}
+          onChange={(e) => setCountry(e.target.value)}
+          className="input mt-1"
+        />
+        <p className="mt-1 text-xs text-earth-500">Shown on your mentor card so scholars know where you're based.</p>
+      </div>
+
+      {/* Bio */}
+      <div>
+        <label htmlFor="bio" className="block text-sm font-medium text-earth-700">
+          Short bio
+        </label>
+        <textarea
+          id="bio"
+          rows={2}
+          placeholder="e.g. Software engineer at Google with 8 years experience. Passionate about helping students break into tech."
+          value={bio}
+          onChange={(e) => setBio(e.target.value)}
+          className="input mt-1"
+        />
+        <p className="mt-1 text-xs text-earth-500">1–2 sentences. Shown on your mentor card.</p>
+      </div>
+
+      {/* Expertise categories */}
       <div>
         <label className="block text-sm font-medium text-earth-700">
-          Expertise categories (select at least one) *
+          Areas of expertise <span className="text-red-500">*</span>
         </label>
-        <div className="mt-2 flex flex-wrap gap-2">
+        <p className="mt-0.5 mb-2 text-xs text-earth-500">Pick the areas you can best guide scholars in.</p>
+        <div className="flex flex-wrap gap-2">
           {MENTORSHIP_CATEGORIES.map((cat) => (
-            <label key={cat} className="inline-flex items-center gap-1 rounded-full border border-earth-300 bg-white px-3 py-1.5 text-sm">
+            <label
+              key={cat}
+              className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition-colors ${
+                expertiseCategories.includes(cat)
+                  ? "border-primary-500 bg-primary-50 text-primary-800"
+                  : "border-earth-300 bg-white text-earth-700 hover:border-primary-300"
+              }`}
+            >
               <input
                 type="checkbox"
                 checked={expertiseCategories.includes(cat)}
-                onChange={() => setExpertiseCategories(toggleArray(expertiseCategories, cat))}
-                className="h-4 w-4 rounded text-primary-600"
+                onChange={() => setExpertiseCategories(toggle(expertiseCategories, cat))}
+                className="sr-only"
               />
               {cat}
             </label>
@@ -109,64 +150,61 @@ export function MentorOnboardingForm({ className = "" }: Props) {
         </div>
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-earth-700">
-          Additional interests (optional)
-        </label>
-        <input
-          type="text"
-          placeholder="e.g. startups, study abroad"
-          value={interestsText}
-          onChange={(e) => setInterestsText(e.target.value)}
-          className="input mt-1"
-        />
+      {/* Experience + Availability side by side */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label htmlFor="experience" className="block text-sm font-medium text-earth-700">
+            Years of experience
+          </label>
+          <input
+            id="experience"
+            type="number"
+            min={0}
+            max={50}
+            value={experienceYears}
+            onChange={(e) => setExperienceYears(parseInt(e.target.value, 10) || 0)}
+            className="input mt-1"
+          />
+        </div>
+        <div>
+          <label htmlFor="availability" className="block text-sm font-medium text-earth-700">
+            Availability
+          </label>
+          <select
+            id="availability"
+            value={availability}
+            onChange={(e) => setAvailability(e.target.value)}
+            className="input mt-1"
+          >
+            <option value="flexible">Flexible</option>
+            <option value="weekdays">Weekdays</option>
+            <option value="weekends">Weekends</option>
+            <option value="evenings">Evenings</option>
+            <option value="limited">Limited (a few hours/week)</option>
+          </select>
+        </div>
       </div>
 
-      <div>
-        <label htmlFor="experience" className="block text-sm font-medium text-earth-700">
-          Years of experience
-        </label>
-        <input
-          id="experience"
-          type="number"
-          min={0}
-          max={50}
-          value={experienceYears}
-          onChange={(e) => setExperienceYears(parseInt(e.target.value, 10) || 0)}
-          className="input mt-1 w-24"
-        />
-      </div>
-
-      <div>
-        <label htmlFor="availability" className="block text-sm font-medium text-earth-700">
-          Availability
-        </label>
-        <select
-          id="availability"
-          value={availability}
-          onChange={(e) => setAvailability(e.target.value)}
-          className="input mt-1"
-        >
-          <option value="flexible">Flexible</option>
-          <option value="weekdays">Weekdays</option>
-          <option value="weekends">Weekends</option>
-          <option value="evenings">Evenings</option>
-          <option value="limited">Limited (a few hours/week)</option>
-        </select>
-      </div>
-
+      {/* Languages */}
       <div>
         <label className="block text-sm font-medium text-earth-700">
           Languages you can mentor in
         </label>
         <div className="mt-2 flex flex-wrap gap-2">
           {LANGUAGES.map((lang) => (
-            <label key={lang} className="inline-flex items-center gap-1 rounded-full border border-earth-300 bg-white px-3 py-1.5 text-sm">
+            <label
+              key={lang}
+              className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition-colors ${
+                languages.includes(lang)
+                  ? "border-primary-500 bg-primary-50 text-primary-800"
+                  : "border-earth-300 bg-white text-earth-700 hover:border-primary-300"
+              }`}
+            >
               <input
                 type="checkbox"
                 checked={languages.includes(lang)}
-                onChange={() => setLanguages(toggleArray(languages, lang))}
-                className="h-4 w-4 rounded text-primary-600"
+                onChange={() => setLanguages(toggle(languages, lang))}
+                className="sr-only"
               />
               {lang}
             </label>
@@ -174,29 +212,8 @@ export function MentorOnboardingForm({ className = "" }: Props) {
         </div>
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-earth-700">
-          Preferred communication
-        </label>
-        <div className="mt-2 flex flex-wrap gap-2">
-          {COMM_OPTIONS.map((opt) => (
-            <label key={opt} className="inline-flex items-center gap-1 rounded-full border border-earth-300 bg-white px-3 py-1.5 text-sm">
-              <input
-                type="checkbox"
-                checked={preferredCommunication.includes(opt)}
-                onChange={() =>
-                  setPreferredCommunication(toggleArray(preferredCommunication, opt))
-                }
-                className="h-4 w-4 rounded text-primary-600"
-              />
-              {opt}
-            </label>
-          ))}
-        </div>
-      </div>
-
       <button type="submit" disabled={loading} className="btn-primary w-full">
-        {loading ? "Saving…" : "Complete profile"}
+        {loading ? "Saving…" : "Join as Mentor →"}
       </button>
     </form>
   );
