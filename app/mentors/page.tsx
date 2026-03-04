@@ -62,6 +62,15 @@ export default async function MentorsPage({ searchParams }: Props) {
       mentors = mentors.filter((m) => m.users?.country?.toLowerCase().includes(c));
     }
 
+    const { data: profile } = user
+      ? await supabase
+          .from("users")
+          .select("role")
+          .eq("id", user.id)
+          .maybeSingle()
+      : { data: null };
+    const isMentorUser = profile?.role === "mentor";
+
     return (
       <div className="mx-auto max-w-6xl px-4 py-12 sm:py-20">
         <h1 className="section-heading">Mentor Directory</h1>
@@ -98,7 +107,9 @@ export default async function MentorsPage({ searchParams }: Props) {
               <p className="mt-2 text-sm text-earth-500">
                 {params.category || params.country || params.language
                   ? "Try adjusting your filters."
-                  : "No mentors have registered yet. Check back soon!"}
+                  : isMentorUser
+                    ? "You’re signed in as a mentor. Once you finish your mentor profile, you’ll appear here. For now there are no mentors in the directory."
+                    : "No mentors have registered yet. Check back soon!"}
               </p>
               {(params.category || params.country || params.language) && (
                 <Link href="/mentors" className="btn-secondary mt-4 inline-block">

@@ -1,12 +1,10 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseNotConfiguredError } from "@/lib/supabase/errors";
-import { EducationForm } from '@/components/profile/EducationForm'
-import { ExperienceForm } from '@/components/profile/ExperienceForm'
-import { CertificationForm } from '@/components/profile/CertificationForm'
-import { SocialLinksForm } from '@/components/profile/SocialLinksForm'
-import { ProfilePictureSection } from '@/components/profile/ProfilePictureSection'
-import { DeleteItemButton } from '@/components/profile/DeleteItemButton'
+import type { UserRole } from "@/types/database";
+import { ProfilePictureSection } from "@/components/profile/ProfilePictureSection";
+import { MentorProfileForm } from "@/components/profile/MentorProfileForm";
+import { MenteeProfileForm } from "@/components/profile/MenteeProfileForm";
 
 export default async function EditProfilePage() {
   try {
@@ -15,34 +13,30 @@ export default async function EditProfilePage() {
     if (!user) redirect("/auth/login?next=/profile/edit");
 
     const { data: profile } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', user.id)
-      .single()
+      .from("users")
+      .select("id, name, email, role, country, bio")
+      .eq("id", user.id)
+      .single();
 
-    const { data: education } = await supabase
-      .from('education')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('start_date', { ascending: false })
+    const role = (profile?.role ?? "mentee") as UserRole;
 
-    const { data: experience } = await supabase
-      .from('experience')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('start_date', { ascending: false })
+    const { data: mentor } =
+      role === "mentor"
+        ? await supabase
+            .from("mentors")
+            .select("expertise_categories, experience_years, availability, languages")
+            .eq("user_id", user.id)
+            .maybeSingle()
+        : { data: null };
 
-    const { data: certifications } = await supabase
-      .from('certifications')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('issue_date', { ascending: false })
-
-    const { data: socialLinks } = await supabase
-      .from('external_links')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
+    const { data: mentee } =
+      role === "mentee"
+        ? await supabase
+            .from("mentees")
+            .select("goals, preferred_categories")
+            .eq("user_id", user.id)
+            .maybeSingle()
+        : { data: null };
 
     return (
       <div className="min-h-screen bg-earth-50 py-8">
@@ -50,7 +44,7 @@ export default async function EditProfilePage() {
           <div className="mb-8">
             <h1 className="section-heading">Edit Profile</h1>
             <p className="mt-2 text-earth-600">
-              Build your professional profile to connect with mentors or mentees around the world.
+              Keep your profile short and focused so it&apos;s easy for mentors and mentees to understand you.
             </p>
           </div>
 
@@ -64,7 +58,6 @@ export default async function EditProfilePage() {
               />
             </section>
 
-            {/* Basic Info */}
             <section className="card p-6">
               <h2 className="text-lg font-semibold text-earth-900 mb-4">Basic Information</h2>
               <div className="space-y-4">
@@ -83,166 +76,33 @@ export default async function EditProfilePage() {
               </div>
             </section>
 
-            {/* Education */}
             <section className="card p-6">
-              <h2 className="text-lg font-semibold text-earth-900 mb-4">Education</h2>
-
-              {education && education.length > 0 && (
-                <div className="mb-6 space-y-3">
-                  {education.map((edu) => (
-                    <div key={edu.id} className="flex items-start justify-between gap-4 border border-earth-200 rounded-xl p-4">
-                      <div>
-                        <h3 className="font-semibold text-earth-900">
-                          {edu.degree} in {edu.field_of_study}
-                        </h3>
-                        <p className="text-earth-700">{edu.institution}</p>
-                        <p className="text-sm text-earth-500">
-                          {edu.start_date} – {edu.is_current ? 'Present' : edu.end_date}
-                          {edu.location && ` · ${edu.location}`}
-                        </p>
-                        {edu.grade && <p className="text-sm text-earth-500">Grade: {edu.grade}</p>}
-                      </div>
-                      <DeleteItemButton table="education" id={edu.id} />
-                    </div>
-                  ))}
-                </div>
+              {role === "mentor" ? (
+                <MentorProfileForm
+                  userId={user.id}
+                  name={profile?.name ?? ""}
+                  email={profile?.email ?? ""}
+                  initialCountry={profile?.country ?? null}
+                  initialBio={profile?.bio ?? null}
+                  initialExpertiseCategories={mentor?.expertise_categories ?? []}
+                  initialExperienceYears={mentor?.experience_years ?? null}
+                  initialAvailability={mentor?.availability ?? "flexible"}
+                  initialLanguages={mentor?.languages ?? null}
+                />
+              ) : role === "mentee" ? (
+                <MenteeProfileForm
+                  userId={user.id}
+                  name={profile?.name ?? ""}
+                  email={profile?.email ?? ""}
+                  initialCountry={profile?.country ?? null}
+                  initialGoals={mentee?.goals ?? null}
+                  initialPreferredCategories={mentee?.preferred_categories ?? []}
+                />
+              ) : (
+                <p className="text-sm text-earth-600">
+                  There is no dedicated profile form for this role yet.
+                </p>
               )}
-
-              <div className="border-t border-earth-100 pt-5">
-                <h3 className="text-base font-medium text-earth-900 mb-4">Add Education</h3>
-                <EducationForm userId={user.id} />
-              </div>
-            </section>
-
-            {/* Work Experience */}
-            <section className="card p-6">
-              <h2 className="text-lg font-semibold text-earth-900 mb-4">Work Experience</h2>
-
-              {experience && experience.length > 0 && (
-                <div className="mb-6 space-y-3">
-                  {experience.map((exp) => (
-                    <div key={exp.id} className="flex items-start justify-between gap-4 border border-earth-200 rounded-xl p-4">
-                      <div>
-                        <h3 className="font-semibold text-earth-900">{exp.title}</h3>
-                        <p className="text-earth-700">{exp.company}</p>
-                        <p className="text-sm text-earth-500">
-                          {exp.employment_type} · {exp.start_date} – {exp.is_current ? 'Present' : exp.end_date}
-                          {exp.location && ` · ${exp.location}`}
-                        </p>
-                        {exp.description && (
-                          <p className="mt-1 text-sm text-earth-600 line-clamp-2">{exp.description}</p>
-                        )}
-                        {exp.skills && exp.skills.length > 0 && (
-                          <div className="mt-2 flex flex-wrap gap-1">
-                            {exp.skills.slice(0, 5).map((s: string) => (
-                              <span key={s} className="rounded-full bg-earth-100 px-2 py-0.5 text-xs text-earth-700">{s}</span>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                      <DeleteItemButton table="experience" id={exp.id} />
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              <div className="border-t border-earth-100 pt-5">
-                <h3 className="text-base font-medium text-earth-900 mb-4">Add Experience</h3>
-                <ExperienceForm userId={user.id} />
-              </div>
-            </section>
-
-            {/* Certifications */}
-            <section className="card p-6">
-              <h2 className="text-lg font-semibold text-earth-900 mb-4">Certifications</h2>
-
-              {certifications && certifications.length > 0 && (
-                <div className="mb-6 space-y-3">
-                  {certifications.map((cert) => (
-                    <div key={cert.id} className="flex items-start justify-between gap-4 border border-earth-200 rounded-xl p-4">
-                      <div>
-                        <h3 className="font-semibold text-earth-900">{cert.name}</h3>
-                        <p className="text-earth-700">{cert.issuing_organization}</p>
-                        <p className="text-sm text-earth-500">
-                          Issued: {cert.issue_date}
-                          {cert.expiration_date && ` · Expires: ${cert.expiration_date}`}
-                        </p>
-                        {cert.credential_url && (
-                          <a
-                            href={cert.credential_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-sm text-primary-600 hover:underline"
-                          >
-                            View Credential →
-                          </a>
-                        )}
-                      </div>
-                      <DeleteItemButton table="certifications" id={cert.id} />
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              <div className="border-t border-earth-100 pt-5">
-                <h3 className="text-base font-medium text-earth-900 mb-4">Add Certification</h3>
-                <CertificationForm userId={user.id} />
-              </div>
-            </section>
-
-            {/* Social & Professional Links */}
-            <section className="card p-6">
-              <h2 className="text-lg font-semibold text-earth-900 mb-4">Social & Professional Links</h2>
-              <p className="text-sm text-earth-600 mb-4">
-                Add your Zoom, WhatsApp, LinkedIn, and other professional links so mentees can reach you.
-              </p>
-
-              {socialLinks && socialLinks.length > 0 && (
-                <div className="mb-6 space-y-3">
-                  {socialLinks.map((link) => (
-                    <div key={link.id} className="flex items-center justify-between gap-4 border border-earth-200 rounded-xl p-3">
-                      <div className="flex items-center gap-3">
-                        <span className="text-2xl">
-                          {link.platform === 'zoom' && '📹'}
-                          {link.platform === 'whatsapp' && '💬'}
-                          {link.platform === 'linkedin' && '💼'}
-                          {link.platform === 'google_scholar' && '🎓'}
-                          {link.platform === 'youtube' && '▶️'}
-                          {link.platform === 'calendly' && '📅'}
-                          {link.platform === 'twitter' && '🐦'}
-                          {link.platform === 'github' && '💻'}
-                          {link.platform === 'website' && '🌐'}
-                          {link.platform === 'other' && '🔗'}
-                        </span>
-                        <div>
-                          <p className="font-medium text-earth-900 capitalize">
-                            {link.platform.replace('_', ' ')}
-                          </p>
-                          {link.label && (
-                            <p className="text-sm text-earth-500">{link.label}</p>
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <a
-                          href={link.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-sm text-primary-600 hover:underline"
-                        >
-                          Visit →
-                        </a>
-                        <DeleteItemButton table="external_links" id={link.id} />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              <div className="border-t border-earth-100 pt-5">
-                <h3 className="text-base font-medium text-earth-900 mb-4">Add New Link</h3>
-                <SocialLinksForm userId={user.id} />
-              </div>
             </section>
           </div>
         </div>
