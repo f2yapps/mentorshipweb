@@ -224,6 +224,13 @@ export function unique<T>(array: T[]): T[] {
 }
 
 /**
+ * Toggle an item in an array — adds it if absent, removes it if present.
+ */
+export function toggleArrayItem<T>(array: T[], item: T): T[] {
+  return array.includes(item) ? array.filter((x) => x !== item) : [...array, item]
+}
+
+/**
  * Check if string is valid URL
  */
 export function isValidUrl(string: string): boolean {

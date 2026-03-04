@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getSupabaseClientAsync } from "@/lib/supabase/client";
+import { toggleArrayItem } from "@/lib/utils";
 import { MENTORSHIP_CATEGORIES, LANGUAGES } from "@/lib/constants";
 
 type Props = { className?: string };
@@ -10,19 +11,14 @@ type Props = { className?: string };
 export function MentorOnboardingForm({ className = "" }: Props) {
   const router = useRouter();
 
-  // Core fields
   const [country, setCountry] = useState("");
   const [bio, setBio] = useState("");
   const [expertiseCategories, setExpertiseCategories] = useState<string[]>([]);
   const [experienceYears, setExperienceYears] = useState(0);
   const [availability, setAvailability] = useState("flexible");
   const [languages, setLanguages] = useState<string[]>(["English"]);
-
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-
-  const toggle = (arr: string[], value: string) =>
-    arr.includes(value) ? arr.filter((x) => x !== value) : [...arr, value];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,35 +34,34 @@ export function MentorOnboardingForm({ className = "" }: Props) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { setError("You must be logged in."); setLoading(false); return; }
 
-      // Update user profile with country + bio
-      await supabase.from("users").update({
-        ...(country.trim() && { country: country.trim() }),
-        ...(bio.trim() && { bio: bio.trim() }),
-      }).eq("id", user.id);
+      const finalLanguages = languages.length ? languages : ["English"];
 
-      // Create or update mentor row — verified: true so they appear immediately
       const mentorData = {
         user_id: user.id,
         expertise_categories: expertiseCategories,
         experience_years: experienceYears,
         availability,
-        languages: languages.length ? languages : ["English"],
+        languages: finalLanguages,
         verified: true,
       };
 
-      const { error: insertError } = await supabase.from("mentors").insert(mentorData);
+      const profileUpdate: Record<string, string> = {};
+      if (country.trim()) profileUpdate.country = country.trim();
+      if (bio.trim()) profileUpdate.bio = bio.trim();
+
+      // Run user profile update and mentor insert in parallel
+      const [, { error: insertError }] = await Promise.all([
+        Object.keys(profileUpdate).length > 0
+          ? supabase.from("users").update(profileUpdate).eq("id", user.id)
+          : Promise.resolve({ error: null, data: null }),
+        supabase.from("mentors").insert(mentorData),
+      ]);
 
       if (insertError) {
         if (insertError.code === "23505") {
-          // Already exists — update
           const { error: updateError } = await supabase
             .from("mentors")
-            .update({
-              expertise_categories: expertiseCategories,
-              experience_years: experienceYears,
-              availability,
-              languages: languages.length ? languages : ["English"],
-            })
+            .update({ expertise_categories: expertiseCategories, experience_years: experienceYears, availability, languages: finalLanguages })
             .eq("user_id", user.id);
           if (updateError) throw updateError;
         } else {
@@ -90,7 +85,6 @@ export function MentorOnboardingForm({ className = "" }: Props) {
         </div>
       )}
 
-      {/* Country */}
       <div>
         <label htmlFor="country" className="block text-sm font-medium text-earth-700">
           Your country
@@ -106,7 +100,6 @@ export function MentorOnboardingForm({ className = "" }: Props) {
         <p className="mt-1 text-xs text-earth-500">Shown on your mentor card so scholars know where you're based.</p>
       </div>
 
-      {/* Bio */}
       <div>
         <label htmlFor="bio" className="block text-sm font-medium text-earth-700">
           Short bio
@@ -122,7 +115,6 @@ export function MentorOnboardingForm({ className = "" }: Props) {
         <p className="mt-1 text-xs text-earth-500">1–2 sentences. Shown on your mentor card.</p>
       </div>
 
-      {/* Expertise categories */}
       <div>
         <label className="block text-sm font-medium text-earth-700">
           Areas of expertise <span className="text-red-500">*</span>
@@ -141,7 +133,7 @@ export function MentorOnboardingForm({ className = "" }: Props) {
               <input
                 type="checkbox"
                 checked={expertiseCategories.includes(cat)}
-                onChange={() => setExpertiseCategories(toggle(expertiseCategories, cat))}
+                onChange={() => setExpertiseCategories(toggleArrayItem(expertiseCategories, cat))}
                 className="sr-only"
               />
               {cat}
@@ -150,7 +142,6 @@ export function MentorOnboardingForm({ className = "" }: Props) {
         </div>
       </div>
 
-      {/* Experience + Availability side by side */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label htmlFor="experience" className="block text-sm font-medium text-earth-700">
@@ -185,7 +176,6 @@ export function MentorOnboardingForm({ className = "" }: Props) {
         </div>
       </div>
 
-      {/* Languages */}
       <div>
         <label className="block text-sm font-medium text-earth-700">
           Languages you can mentor in
@@ -203,7 +193,7 @@ export function MentorOnboardingForm({ className = "" }: Props) {
               <input
                 type="checkbox"
                 checked={languages.includes(lang)}
-                onChange={() => setLanguages(toggle(languages, lang))}
+                onChange={() => setLanguages(toggleArrayItem(languages, lang))}
                 className="sr-only"
               />
               {lang}

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { getSupabaseClientAsync } from '@/lib/supabase/client'
 
@@ -13,13 +13,22 @@ export function DeleteItemButton({ table, id }: Props) {
   const router = useRouter()
   const [deleting, setDeleting] = useState(false)
   const [confirmed, setConfirmed] = useState(false)
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current)
+    }
+  }, [])
 
   const handleDelete = async () => {
     if (!confirmed) {
+      if (timerRef.current) clearTimeout(timerRef.current)
       setConfirmed(true)
-      setTimeout(() => setConfirmed(false), 3000)
+      timerRef.current = setTimeout(() => setConfirmed(false), 3000)
       return
     }
+    if (timerRef.current) clearTimeout(timerRef.current)
     setDeleting(true)
     try {
       const supabase = await getSupabaseClientAsync()

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getSupabaseClientAsync } from "@/lib/supabase/client";
 
@@ -22,6 +22,13 @@ export function MentorDashboardRequests({ requests }: Props) {
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [successId, setSuccessId] = useState<string | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
 
   const updateStatus = async (requestId: string, status: "accepted" | "declined") => {
     setPendingId(requestId);
@@ -35,7 +42,8 @@ export function MentorDashboardRequests({ requests }: Props) {
         .eq("id", requestId);
       if (error) throw error;
       setSuccessId(requestId);
-      setTimeout(() => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+      timerRef.current = setTimeout(() => {
         setSuccessId(null);
         router.refresh();
       }, 1200);

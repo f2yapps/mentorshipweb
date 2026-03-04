@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { getSupabaseClientAsync } from "@/lib/supabase/client";
+import { toggleArrayItem } from "@/lib/utils";
 import { MENTORSHIP_CATEGORIES } from "@/lib/constants";
 
 type Props = { className?: string };
@@ -14,9 +15,6 @@ export function MenteeOnboardingForm({ className = "" }: Props) {
   const [preferredCategories, setPreferredCategories] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-
-  const toggle = (arr: string[], value: string) =>
-    arr.includes(value) ? arr.filter((x) => x !== value) : [...arr, value];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,26 +30,25 @@ export function MenteeOnboardingForm({ className = "" }: Props) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { setError("You must be logged in."); setLoading(false); return; }
 
-      // Update user profile with country
-      if (country.trim()) {
-        await supabase.from("users").update({ country: country.trim() }).eq("id", user.id);
-      }
-
-      // Create or update mentee row
-      const { error: insertError } = await supabase.from("mentees").insert({
+      const insertData = {
         user_id: user.id,
         goals: goals.trim() || null,
         preferred_categories: preferredCategories,
-      });
+      };
+
+      // Run user profile update and mentee insert in parallel
+      const [, { error: insertError }] = await Promise.all([
+        country.trim()
+          ? supabase.from("users").update({ country: country.trim() }).eq("id", user.id)
+          : Promise.resolve({ error: null, data: null }),
+        supabase.from("mentees").insert(insertData),
+      ]);
 
       if (insertError) {
         if (insertError.code === "23505") {
           const { error: updateError } = await supabase
             .from("mentees")
-            .update({
-              goals: goals.trim() || null,
-              preferred_categories: preferredCategories,
-            })
+            .update({ goals: insertData.goals, preferred_categories: preferredCategories })
             .eq("user_id", user.id);
           if (updateError) throw updateError;
         } else {
@@ -75,7 +72,6 @@ export function MenteeOnboardingForm({ className = "" }: Props) {
         </div>
       )}
 
-      {/* Country */}
       <div>
         <label htmlFor="country" className="block text-sm font-medium text-earth-700">
           Your country
@@ -90,7 +86,6 @@ export function MenteeOnboardingForm({ className = "" }: Props) {
         />
       </div>
 
-      {/* Goals */}
       <div>
         <label htmlFor="goals" className="block text-sm font-medium text-earth-700">
           What do you hope to achieve? <span className="font-normal text-earth-500">(optional)</span>
@@ -105,7 +100,6 @@ export function MenteeOnboardingForm({ className = "" }: Props) {
         />
       </div>
 
-      {/* Categories */}
       <div>
         <label className="block text-sm font-medium text-earth-700">
           Areas you want mentorship in <span className="text-red-500">*</span>
@@ -124,7 +118,7 @@ export function MenteeOnboardingForm({ className = "" }: Props) {
               <input
                 type="checkbox"
                 checked={preferredCategories.includes(cat)}
-                onChange={() => setPreferredCategories(toggle(preferredCategories, cat))}
+                onChange={() => setPreferredCategories(toggleArrayItem(preferredCategories, cat))}
                 className="sr-only"
               />
               {cat}

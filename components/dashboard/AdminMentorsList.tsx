@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getSupabaseClientAsync } from "@/lib/supabase/client";
 
@@ -19,9 +19,16 @@ export function AdminMentorsList({ mentors, className = "" }: Props) {
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [successId, setSuccessId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
 
   const setVerified = async (mentorId: string, verified: boolean) => {
-    if (!verified && !confirm(`Unverify this mentor? They will no longer appear as verified.`)) return;
+    if (!verified && !confirm("Unverify this mentor? They will no longer appear as verified.")) return;
     setPendingId(mentorId);
     setError(null);
     try {
@@ -32,10 +39,11 @@ export function AdminMentorsList({ mentors, className = "" }: Props) {
         .eq("id", mentorId);
       if (updateError) throw updateError;
       setSuccessId(mentorId);
-      setTimeout(() => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+      timerRef.current = setTimeout(() => {
         setSuccessId(null);
         router.refresh();
-      }, 1500);
+      }, 1200);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to update mentor");
     } finally {
