@@ -14,7 +14,7 @@ export default async function EditProfilePage() {
 
     const { data: profile } = await supabase
       .from("users")
-      .select("id, name, email, role, country, bio")
+      .select("id, name, email, role, country, bio, avatar_url")
       .eq("id", user.id)
       .single();
 
