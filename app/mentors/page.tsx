@@ -69,7 +69,8 @@ export default async function MentorsPage({ searchParams }: Props) {
           .eq("id", user.id)
           .maybeSingle()
       : { data: null };
-    const isMentorUser = profile?.role === "mentor";
+    const currentUserRole = profile?.role ?? null;
+    const isMentorUser = currentUserRole === "mentor";
 
     return (
       <div className="mx-auto max-w-6xl px-4 py-12 sm:py-20">
@@ -99,6 +100,7 @@ export default async function MentorsPage({ searchParams }: Props) {
                 availability={mentor.availability}
                 languages={mentor.languages}
                 verified={mentor.verified}
+                currentUserRole={profile?.role as "mentor" | "mentee" | "admin" | undefined}
               />
             ))
           ) : (

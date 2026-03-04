@@ -31,12 +31,14 @@ export default async function MentorDashboardPage() {
       message,
       status,
       created_at,
+      meeting_link,
+      meeting_provider,
+      meeting_scheduled_at,
       mentees(id, goals, user_id, users(id, name, email))
     `)
     .eq("mentor_id", mentor.id)
     .order("created_at", { ascending: false });
 
-  // Normalize: Supabase relations can return as object or array
   const requests = (requestsRaw ?? []).map((r) => {
     const menteesField: unknown = (r as { mentees?: unknown }).mentees;
     const mentee = Array.isArray(menteesField) ? menteesField[0] : menteesField;
@@ -50,6 +52,9 @@ export default async function MentorDashboardPage() {
       message: r.message,
       status: r.status,
       created_at: r.created_at,
+      meeting_link: (r as { meeting_link?: string | null }).meeting_link ?? null,
+      meeting_provider: (r as { meeting_provider?: string | null }).meeting_provider ?? null,
+      meeting_scheduled_at: (r as { meeting_scheduled_at?: string | null }).meeting_scheduled_at ?? null,
       menteeName: u?.name ?? "Mentee",
       menteeEmail: u?.email,
       menteeGoals: m?.goals ?? null,
@@ -70,6 +75,9 @@ export default async function MentorDashboardPage() {
         </a>
         <a href="/mentors" className="btn-secondary">
           View Mentor Directory
+        </a>
+        <a href="/mentees" className="btn-secondary">
+          Browse Mentees
         </a>
       </div>
 

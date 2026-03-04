@@ -54,7 +54,7 @@ export default async function EditProfilePage() {
               <h2 className="text-lg font-semibold text-earth-900 mb-4">Profile Picture</h2>
               <ProfilePictureSection
                 userId={user.id}
-                currentAvatarUrl={profile?.avatar_url ?? null}
+                currentAvatarUrl={(profile as any)?.avatar_url ?? null}
               />
             </section>
 

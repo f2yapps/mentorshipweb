@@ -2,6 +2,8 @@ type Props = {
   usersCount: number;
   mentorsCount: number;
   menteesCount: number;
+  /** Mentees who had a request in the last 30 days */
+  activeMenteesCount: number;
   requestsCount: number;
   className?: string;
 };
@@ -10,13 +12,15 @@ export function AdminStats({
   usersCount,
   mentorsCount,
   menteesCount,
+  activeMenteesCount,
   requestsCount,
   className = "",
 }: Props) {
   const stats = [
-    { label: "Users", value: usersCount },
-    { label: "Mentors", value: mentorsCount },
-    { label: "Mentees", value: menteesCount },
+    { label: "Total users", value: usersCount },
+    { label: "Total mentors", value: mentorsCount },
+    { label: "Total registered mentees", value: menteesCount },
+    { label: "Active mentees (30d)", value: activeMenteesCount },
     { label: "Mentorship requests", value: requestsCount },
   ];
 

@@ -19,16 +19,15 @@ export default async function AdminDashboardPage() {
   if (profile?.role !== "admin") redirect("/dashboard");
 
   const [
-    { count: usersCount },
-    { count: mentorsCount },
-    { count: menteesCount },
-    { count: requestsCount },
+    { count: totalMentees },
+    { count: totalMentors },
+    { data: requestMenteeIds },
   ] = await Promise.all([
-    supabase.from("users").select("id", { count: "exact", head: true }),
-    supabase.from("mentors").select("id", { count: "exact", head: true }),
     supabase.from("mentees").select("id", { count: "exact", head: true }),
-    supabase.from("mentorship_requests").select("id", { count: "exact", head: true }),
+    supabase.from("mentors").select("id", { count: "exact", head: true }),
+    supabase.from("mentorship_requests").select("mentee_id"),
   ]);
+  const activeMentees = new Set((requestMenteeIds ?? []).map((r) => (r as { mentee_id: string }).mentee_id)).size;
 
   const { data: users } = await supabase
     .from("users")
@@ -59,10 +58,9 @@ export default async function AdminDashboardPage() {
       </p>
 
       <AdminStats
-        usersCount={usersCount ?? 0}
-        mentorsCount={mentorsCount ?? 0}
-        menteesCount={menteesCount ?? 0}
-        requestsCount={requestsCount ?? 0}
+        totalMentees={totalMentees ?? 0}
+        activeMentees={activeMentees}
+        totalMentors={totalMentors ?? 0}
         className="mt-8"
       />
 

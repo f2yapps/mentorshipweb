@@ -40,9 +40,8 @@ export default async function RequestMentorshipPage({ params }: Props) {
 
   const { data: mentor } = await supabase
     .from("mentors")
-    .select("id, expertise_categories, users(name)")
+    .select("id, expertise_categories, verified, users(name)")
     .eq("id", mentorId)
-    .eq("verified", true)
     .single();
 
   if (!mentor) {

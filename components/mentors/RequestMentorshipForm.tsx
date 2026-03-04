@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { getSupabaseClientAsync } from "@/lib/supabase/client";
+import { createMentorshipRequest } from "@/app/actions/mentorship";
 
 type Props = {
   mentorId: string;
@@ -27,17 +27,10 @@ export function RequestMentorshipForm({
     e.preventDefault();
     setError(null);
     setLoading(true);
-    const supabase = await getSupabaseClientAsync();
-    const { error: insertError } = await supabase.from("mentorship_requests").insert({
-      mentee_id: menteeId,
-      mentor_id: mentorId,
-      category,
-      message: message || null,
-      status: "pending",
-    });
+    const result = await createMentorshipRequest(mentorId, menteeId, category, message || null);
     setLoading(false);
-    if (insertError) {
-      setError(insertError.message);
+    if (!result.ok) {
+      setError(result.error);
       return;
     }
     router.push("/dashboard/mentee");

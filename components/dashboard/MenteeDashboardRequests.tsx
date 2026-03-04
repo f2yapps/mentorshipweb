@@ -4,6 +4,9 @@ type RequestRow = {
   message: string | null;
   status: string;
   created_at: string;
+  meeting_link: string | null;
+  meeting_provider: string | null;
+  meeting_scheduled_at: string | null;
   mentorName: string;
 };
 
@@ -49,6 +52,29 @@ export function MenteeDashboardRequests({ requests }: Props) {
           </div>
           {r.message && (
             <p className="mt-3 text-sm text-earth-700">{r.message}</p>
+          )}
+          {(r.meeting_link || r.meeting_provider || r.meeting_scheduled_at) && r.status === "accepted" && (
+            <div className="mt-3 border-t border-earth-100 pt-3">
+              <p className="text-xs font-medium text-earth-600">Virtual meeting</p>
+              {r.meeting_provider && (
+                <p className="text-xs text-earth-500 capitalize">{r.meeting_provider.replace(/_/g, " ")}</p>
+              )}
+              {r.meeting_scheduled_at && (
+                <p className="text-sm text-earth-600">
+                  Scheduled: {new Date(r.meeting_scheduled_at).toLocaleString()}
+                </p>
+              )}
+              {r.meeting_link && (
+                <a
+                  href={r.meeting_link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-primary-600 hover:underline break-all"
+                >
+                  Join meeting
+                </a>
+              )}
+            </div>
           )}
         </li>
       ))}

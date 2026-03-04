@@ -147,6 +147,17 @@ export interface Mentee {
   updated_at: string
 }
 
+export type MentorInterestStatus = 'pending' | 'accepted' | 'declined'
+
+export interface MentorInterest {
+  id: string
+  mentor_id: string
+  mentee_id: string
+  status: MentorInterestStatus
+  created_at: string
+  updated_at: string
+}
+
 export interface AvailabilitySlot {
   id: string
   mentor_id: string
@@ -185,6 +196,9 @@ export interface MentorshipRequest {
   accepted_at: string | null
   declined_at: string | null
   completed_at: string | null
+  meeting_link: string | null
+  meeting_provider: string | null
+  meeting_scheduled_at: string | null
   created_at: string
   updated_at: string
 }
@@ -357,9 +371,12 @@ export interface Notification {
   type: string
   title: string
   message: string
+  body: string | null
   link: string | null
   is_read: boolean
   read_at: string | null
+  related_entity_type: string | null
+  related_entity_id: string | null
   created_at: string
 }
 

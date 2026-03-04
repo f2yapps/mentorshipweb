@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { getSupabaseClientAsync } from "@/lib/supabase/client";
 import type { User as AuthUser } from "@supabase/supabase-js";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 
 type UserProfile = { id: string; name: string; role: string } | null;
 
@@ -92,6 +93,7 @@ export function Header() {
     { href: "/how-it-works", label: "How It Works" },
     { href: "/categories", label: "Categories" },
     { href: "/mentors", label: "Find Mentors" },
+    ...(user?.role === "mentor" || user?.role === "admin" ? [{ href: "/mentees", label: "Mentees" }] : []),
     { href: "/media", label: "Media Gallery" },
     { href: "/contact", label: "Contact" },
   ];
@@ -139,6 +141,7 @@ export function Header() {
                 <Link href="/profile/edit" className="btn-ghost text-sm">
                   Edit Profile
                 </Link>
+                <NotificationBell userId={user.id} />
                 <span className="hidden text-sm text-earth-600 sm:inline">{user.name}</span>
                 <button
                   type="button"
@@ -183,6 +186,13 @@ export function Header() {
           ))}
           {user && (
             <>
+              <Link
+                href="/notifications"
+                className="block rounded-lg px-3 py-2 text-sm font-medium text-earth-700 hover:bg-earth-100"
+                onClick={() => setMenuOpen(false)}
+              >
+                Notifications
+              </Link>
               <Link
                 href={dashboardHref}
                 className="block rounded-lg px-3 py-2 text-sm font-medium text-earth-700 hover:bg-earth-100"

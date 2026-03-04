@@ -10,6 +10,8 @@ type Props = {
   availability: string;
   languages: string[];
   verified: boolean;
+  /** When "mentor", hide Request Mentorship (mentors don't request themselves). When "mentee" or undefined, show it. */
+  currentUserRole?: "mentor" | "mentee" | "admin" | null;
 };
 
 const AVAILABILITY_LABELS: Record<string, string> = {
@@ -30,7 +32,9 @@ export function MentorCard({
   availability,
   languages,
   verified,
+  currentUserRole,
 }: Props) {
+  const showRequestButton = currentUserRole === "mentee";
   const initials = name
     .split(" ")
     .map((w) => w[0])
@@ -97,13 +101,15 @@ export function MentorCard({
         )}
       </div>
 
-      {/* CTA */}
-      <Link
-        href={`/mentors/${id}/request`}
-        className="btn-primary mt-5 w-full text-center text-sm"
-      >
-        Request Mentorship
-      </Link>
+      {/* CTA: only mentees (or guests) see Request Mentorship; mentors do not */}
+      {showRequestButton && (
+        <Link
+          href={`/mentors/${id}/request`}
+          className="btn-primary mt-5 w-full text-center text-sm"
+        >
+          Request Mentorship
+        </Link>
+      )}
     </article>
   );
 }
