@@ -27,6 +27,27 @@ export default async function MentorDashboardPage() {
   // Track last active time for admin metrics
   await supabase.from("users").update({ last_active_at: new Date().toISOString() }).eq("id", user.id);
 
+  // Interests this mentor has expressed in mentees
+  const { data: interestsRaw } = await supabase
+    .from("mentor_interests")
+    .select("id, status, created_at, mentees(id, user_id, users(name))")
+    .eq("mentor_id", mentor.id)
+    .order("created_at", { ascending: false });
+
+  const expressedInterests = (interestsRaw ?? []).map((i) => {
+    const m = (i as { mentees?: unknown }).mentees;
+    const mentee = Array.isArray(m) ? m[0] : m;
+    const menteeObj = mentee as { id?: string; users?: unknown } | null;
+    const u = menteeObj?.users;
+    const userObj = Array.isArray(u) ? u[0] : u;
+    return {
+      id: i.id,
+      status: i.status,
+      created_at: i.created_at,
+      menteeName: (userObj as { name?: string } | null)?.name ?? "Mentee",
+    };
+  });
+
   const { data: requestsRaw } = await supabase
     .from("mentorship_requests")
     .select(`
@@ -86,6 +107,40 @@ export default async function MentorDashboardPage() {
           Mentor Directory
         </Link>
       </div>
+
+      {expressedInterests.length > 0 && (
+        <section className="mt-8">
+          <h2 className="text-lg font-semibold text-earth-900">Mentees I expressed interest in</h2>
+          <div className="mt-4 space-y-3">
+            {expressedInterests.map((i) => (
+              <div key={i.id} className="card flex flex-wrap items-center justify-between gap-3 p-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-green-100 text-sm font-bold text-green-700">
+                    {i.menteeName.slice(0, 2).toUpperCase()}
+                  </div>
+                  <div>
+                    <p className="font-medium text-earth-900">{i.menteeName}</p>
+                    <p className="text-xs text-earth-500">
+                      {new Date(i.created_at).toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
+                <span
+                  className={`rounded-full px-3 py-0.5 text-xs font-semibold ${
+                    i.status === "pending"
+                      ? "bg-amber-100 text-amber-700"
+                      : i.status === "accepted"
+                      ? "bg-green-100 text-green-700"
+                      : "bg-earth-100 text-earth-500"
+                  }`}
+                >
+                  {i.status === "pending" ? "Awaiting response" : i.status === "accepted" ? "Accepted" : "Declined"}
+                </span>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       <section className="mt-8">
         <h2 className="text-lg font-semibold text-earth-900">Mentorship Requests</h2>

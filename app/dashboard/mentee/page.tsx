@@ -73,13 +73,15 @@ export default async function MenteeDashboardPage() {
   const interests = (interestsRaw ?? []).map((i) => {
     const m = (i as { mentors?: unknown }).mentors;
     const mentor = Array.isArray(m) ? m[0] : m;
-    const u = (mentor as { users?: unknown })?.users;
-    const user = Array.isArray(u) ? u[0] : u;
+    const mentorObj = mentor as { id?: string; users?: unknown } | null;
+    const u = mentorObj?.users;
+    const userObj = Array.isArray(u) ? u[0] : u;
     return {
       id: i.id,
       status: i.status,
       created_at: i.created_at,
-      mentorName: (user as { name?: string } | null)?.name ?? "Mentor",
+      mentorName: (userObj as { name?: string } | null)?.name ?? "Mentor",
+      mentorProfileId: mentorObj?.id ?? null,
     };
   });
 
@@ -116,7 +118,13 @@ export default async function MenteeDashboardPage() {
       <section className="mt-8">
         <h2 className="text-lg font-semibold text-earth-900">Mentors interested in you</h2>
         <div className="mt-4">
-          <MenteeMentorInterests interests={interests} />
+          {interests.length === 0 ? (
+            <div className="rounded-xl border border-earth-200 bg-earth-50 px-4 py-8 text-center text-sm text-earth-500">
+              No mentors have expressed interest yet. Check back soon!
+            </div>
+          ) : (
+            <MenteeMentorInterests interests={interests} />
+          )}
         </div>
       </section>
 
