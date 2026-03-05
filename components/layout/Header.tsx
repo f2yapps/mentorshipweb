@@ -94,8 +94,8 @@ export function Header() {
     { href: "/categories", label: "Categories" },
     { href: "/mentors", label: "Find Mentors" },
     ...(user?.role === "mentor" || user?.role === "admin" ? [{ href: "/mentees", label: "Mentees" }] : []),
+    { href: "/events", label: "Events" },
     { href: "/media", label: "Media Gallery" },
-    { href: "/contact", label: "Contact" },
   ];
 
   const dashboardHref =

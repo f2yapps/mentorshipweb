@@ -3,6 +3,7 @@ import Link from "next/link";
 const LINKS = {
   Platform: [
     { href: "/mentors", label: "Find Mentors" },
+    { href: "/events", label: "Events & Workshops" },
     { href: "/categories", label: "Mentorship Areas" },
     { href: "/media", label: "Media Gallery" },
     { href: "/auth/register?role=mentee", label: "Join as Mentee" },
