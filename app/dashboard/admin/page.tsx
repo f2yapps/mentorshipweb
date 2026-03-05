@@ -75,7 +75,7 @@ export default async function AdminDashboardPage() {
         usersCount={usersCount ?? 0}
         mentorsCount={totalMentors ?? 0}
         menteesCount={totalMentees ?? 0}
-        activeMenteesCount={activeMenteesCount}
+        activeMenteesCount={activeMenteesCount ?? 0}
         requestsCount={requestsCount ?? 0}
         newMenteesCount={newMenteesCount ?? 0}
         newMentorsCount={newMentorsCount ?? 0}
