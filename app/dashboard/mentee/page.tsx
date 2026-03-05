@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseNotConfiguredError } from "@/lib/supabase/errors";
 import { MenteeDashboardRequests } from "@/components/dashboard/MenteeDashboardRequests";
@@ -12,7 +13,7 @@ export default async function MenteeDashboardPage() {
 
   const { data: profile } = await supabase
     .from("users")
-    .select("id, role")
+    .select("id, name, role")
     .eq("id", user.id)
     .single();
   if (profile?.role !== "mentee") redirect("/dashboard");
@@ -82,43 +83,62 @@ export default async function MenteeDashboardPage() {
     };
   });
 
+  const acceptedRequests = requests.filter((r) => r.status === "accepted").length;
+  const pendingRequests = requests.filter((r) => r.status === "pending").length;
+  const pendingInterests = interests.filter((i) => i.status === "pending").length;
+
   return (
     <div>
-      <h1 className="section-heading">Mentee Dashboard</h1>
-      <p className="mt-2 text-earth-600">
-        Track your mentorship requests and connect with mentors.
-      </p>
-
-      {/* Quick action: Browse mentors */}
-      <div className="mt-6 flex flex-wrap gap-3">
-        <a
-          href="/mentors"
-          className="btn-primary"
-        >
-          Browse Mentor Directory →
-        </a>
-        <a
-          href="/categories"
-          className="btn-secondary"
-        >
-          Explore Areas
-        </a>
-        <a
-          href="/profile/edit"
-          className="rounded-xl border border-earth-200 px-4 py-2 text-sm font-medium text-earth-700 hover:bg-earth-50 transition"
-        >
-          Edit Profile
-        </a>
+      {/* Welcome banner */}
+      <div className="rounded-2xl bg-gradient-to-r from-primary-600 to-primary-800 px-6 py-5 text-white">
+        <p className="text-sm text-primary-100">Welcome back</p>
+        <h1 className="text-2xl font-bold">{profile?.name ?? "Scholar"}</h1>
+        <p className="mt-1 text-sm text-primary-200">Keep growing — your next breakthrough is one mentorship away.</p>
       </div>
 
-      <section className="mt-10">
+      {/* Stats */}
+      <div className="mt-5 grid grid-cols-3 gap-3">
+        <div className="card p-4 text-center">
+          <p className="text-2xl font-bold text-green-600">{acceptedRequests}</p>
+          <p className="mt-0.5 text-xs text-earth-500">Active</p>
+        </div>
+        <div className="card p-4 text-center">
+          <p className="text-2xl font-bold text-amber-600">{pendingRequests}</p>
+          <p className="mt-0.5 text-xs text-earth-500">Pending</p>
+        </div>
+        <div className="card p-4 text-center">
+          <p className="text-2xl font-bold text-primary-600">{pendingInterests}</p>
+          <p className="mt-0.5 text-xs text-earth-500">New Offers</p>
+        </div>
+      </div>
+
+      {/* Quick actions */}
+      <div className="mt-5 flex flex-wrap gap-3">
+        <Link href="/mentors" className="btn-primary text-sm">
+          Find a Mentor →
+        </Link>
+        <Link href="/profile" className="btn-secondary text-sm">
+          My Profile
+        </Link>
+        <Link href="/categories" className="btn-ghost text-sm">
+          Explore Areas
+        </Link>
+      </div>
+
+      {pendingInterests > 0 && (
+        <div className="mt-5 rounded-xl border border-primary-200 bg-primary-50 px-4 py-3 text-sm text-primary-800">
+          🎉 <strong>{pendingInterests} mentor{pendingInterests !== 1 ? "s" : ""}</strong> {pendingInterests !== 1 ? "are" : "is"} interested in mentoring you — scroll down to respond!
+        </div>
+      )}
+
+      <section className="mt-8">
         <h2 className="text-lg font-semibold text-earth-900">Mentors interested in you</h2>
         <div className="mt-4">
           <MenteeMentorInterests interests={interests} />
         </div>
       </section>
 
-      <section className="mt-10">
+      <section className="mt-8">
         <h2 className="text-lg font-semibold text-earth-900">My Requests</h2>
         <div className="mt-4">
           <MenteeDashboardRequests requests={requests} />

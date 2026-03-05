@@ -192,6 +192,55 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ── Testimonials ──────────────────────────────────────────────────── */}
+      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
+        <div className="text-center">
+          <h2 className="section-heading">Voices from Our Community</h2>
+          <p className="mx-auto mt-3 max-w-xl text-earth-600">
+            Real stories from mentors and scholars who are making it happen.
+          </p>
+        </div>
+        <div className="mt-10 grid gap-6 sm:grid-cols-3">
+          {[
+            {
+              quote: "My mentor helped me land my first software engineering role in just four months. Having someone who believed in me made all the difference.",
+              name: "Aisha M.",
+              role: "Mentee · Ethiopia",
+              initials: "AM",
+              color: "bg-primary-100 text-primary-700",
+            },
+            {
+              quote: "Giving back through this platform is the most fulfilling thing I do. Watching scholars grow into confident professionals is deeply rewarding.",
+              name: "David K.",
+              role: "Mentor · Canada",
+              initials: "DK",
+              color: "bg-green-100 text-green-700",
+            },
+            {
+              quote: "I got into a top graduate program with my mentor's guidance on my application. I never thought it was possible from where I started.",
+              name: "Fatima N.",
+              role: "Mentee · Nigeria",
+              initials: "FN",
+              color: "bg-amber-100 text-amber-700",
+            },
+          ].map(({ quote, name, role, initials, color }) => (
+            <div key={name} className="card flex flex-col p-6">
+              <span className="text-3xl text-primary-200">"</span>
+              <p className="mt-2 flex-1 text-sm text-earth-700 leading-relaxed italic">{quote}</p>
+              <div className="mt-5 flex items-center gap-3 border-t border-earth-100 pt-4">
+                <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold ${color}`}>
+                  {initials}
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-earth-900">{name}</p>
+                  <p className="text-xs text-earth-500">{role}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* ── CTA ───────────────────────────────────────────────────────────── */}
       <section className="bg-gradient-to-br from-primary-600 to-primary-800 px-4 py-16 text-white sm:px-6 sm:py-20">
         <div className="mx-auto max-w-3xl text-center">

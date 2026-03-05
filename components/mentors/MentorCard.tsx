@@ -101,15 +101,23 @@ export function MentorCard({
         )}
       </div>
 
-      {/* CTA: only mentees (or guests) see Request Mentorship; mentors do not */}
-      {showRequestButton && (
+      {/* CTA buttons */}
+      <div className="mt-5 flex gap-2">
         <Link
-          href={`/mentors/${id}/request`}
-          className="btn-primary mt-5 w-full text-center text-sm"
+          href={`/mentors/${id}`}
+          className="flex-1 rounded-xl border border-earth-200 px-3 py-2 text-center text-sm font-medium text-earth-700 hover:bg-earth-50 hover:border-earth-300 transition-colors"
         >
-          Request Mentorship
+          View Profile
         </Link>
-      )}
+        {showRequestButton && (
+          <Link
+            href={`/mentors/${id}/request`}
+            className="btn-primary flex-1 text-center text-sm"
+          >
+            Request
+          </Link>
+        )}
+      </div>
     </article>
   );
 }
