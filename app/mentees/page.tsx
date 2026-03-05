@@ -32,9 +32,10 @@ export default async function MenteesPage() {
 
     type UserRow = { name: string; country: string | null } | null;
     const mentees = (menteesRaw ?? []).map((m) => {
-      const u: UserRow = Array.isArray((m as { users?: unknown }).users)
-        ? ((m as { users?: unknown }).users?.[0] ?? null) as UserRow
-        : ((m as { users?: unknown }).users as UserRow) ?? null;
+      const usersField: unknown = (m as { users?: unknown }).users;
+      const u: UserRow = Array.isArray(usersField)
+        ? (usersField[0] ?? null) as UserRow
+        : (usersField as UserRow) ?? null;
       return {
         id: m.id,
         user_id: m.user_id,
