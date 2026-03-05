@@ -36,11 +36,11 @@ export function MenteeCard({
     setError(null);
     try {
       const supabase = await getSupabaseClientAsync();
-      const { error: insertError } = await supabase.from("mentor_interests").insert({
-        mentor_id: mentorId,
-        mentee_id: id,
-        status: "pending",
-      });
+      const { data: insertedInterest, error: insertError } = await supabase
+        .from("mentor_interests")
+        .insert({ mentor_id: mentorId, mentee_id: id, status: "pending" })
+        .select("id")
+        .single();
       if (insertError) throw insertError;
       setInterested(true);
       const { data: menteeRow } = await supabase.from("mentees").select("user_id").eq("id", id).single();
@@ -53,7 +53,7 @@ export function MenteeCard({
           message: notifMsg,
           body: notifMsg,
           related_entity_type: "mentor_interest",
-          related_entity_id: id,
+          related_entity_id: insertedInterest?.id ?? null,
         });
       }
       router.refresh();

@@ -20,8 +20,9 @@ type RequestRow = {
 
 type Props = { requests: RequestRow[] };
 
-export function MentorDashboardRequests({ requests }: Props) {
+export function MentorDashboardRequests({ requests: initialRequests }: Props) {
   const router = useRouter();
+  const [requests, setRequests] = useState(initialRequests);
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [successId, setSuccessId] = useState<string | null>(null);
@@ -73,6 +74,10 @@ export function MentorDashboardRequests({ requests }: Props) {
         .update({ status })
         .eq("id", requestId);
       if (error) throw error;
+      // Optimistically update local state so stats update immediately
+      setRequests((prev) =>
+        prev.map((r) => (r.id === requestId ? { ...r, status } : r))
+      );
       setSuccessId(requestId);
       if (timerRef.current) clearTimeout(timerRef.current);
       timerRef.current = setTimeout(() => {
@@ -85,6 +90,9 @@ export function MentorDashboardRequests({ requests }: Props) {
       setPendingId(null);
     }
   };
+
+  const pendingCount = requests.filter((r) => r.status === "pending").length;
+  const acceptedCount = requests.filter((r) => r.status === "accepted").length;
 
   if (requests.length === 0) {
     return (
@@ -99,6 +107,21 @@ export function MentorDashboardRequests({ requests }: Props) {
 
   return (
     <div className="space-y-4">
+      {/* Live stats bar */}
+      <div className="grid grid-cols-3 gap-3">
+        <div className="card p-4 text-center">
+          <p className="text-2xl font-bold text-amber-600">{pendingCount}</p>
+          <p className="mt-0.5 text-xs text-earth-500">Pending</p>
+        </div>
+        <div className="card p-4 text-center">
+          <p className="text-2xl font-bold text-green-600">{acceptedCount}</p>
+          <p className="mt-0.5 text-xs text-earth-500">Accepted</p>
+        </div>
+        <div className="card p-4 text-center">
+          <p className="text-2xl font-bold text-earth-500">{requests.length}</p>
+          <p className="mt-0.5 text-xs text-earth-500">Total</p>
+        </div>
+      </div>
       {actionError && (
         <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
           {actionError}

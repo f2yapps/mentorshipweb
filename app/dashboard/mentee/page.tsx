@@ -83,8 +83,6 @@ export default async function MenteeDashboardPage() {
     };
   });
 
-  const acceptedRequests = requests.filter((r) => r.status === "accepted").length;
-  const pendingRequests = requests.filter((r) => r.status === "pending").length;
   const pendingInterests = interests.filter((i) => i.status === "pending").length;
 
   return (
@@ -94,22 +92,6 @@ export default async function MenteeDashboardPage() {
         <p className="text-sm text-primary-100">Welcome back</p>
         <h1 className="text-2xl font-bold">{profile?.name ?? "Scholar"}</h1>
         <p className="mt-1 text-sm text-primary-200">Keep growing — your next breakthrough is one mentorship away.</p>
-      </div>
-
-      {/* Stats */}
-      <div className="mt-5 grid grid-cols-3 gap-3">
-        <div className="card p-4 text-center">
-          <p className="text-2xl font-bold text-green-600">{acceptedRequests}</p>
-          <p className="mt-0.5 text-xs text-earth-500">Active</p>
-        </div>
-        <div className="card p-4 text-center">
-          <p className="text-2xl font-bold text-amber-600">{pendingRequests}</p>
-          <p className="mt-0.5 text-xs text-earth-500">Pending</p>
-        </div>
-        <div className="card p-4 text-center">
-          <p className="text-2xl font-bold text-primary-600">{pendingInterests}</p>
-          <p className="mt-0.5 text-xs text-earth-500">New Offers</p>
-        </div>
       </div>
 
       {/* Quick actions */}

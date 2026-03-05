@@ -13,8 +13,9 @@ type Interest = {
 
 type Props = { interests: Interest[] };
 
-export function MenteeMentorInterests({ interests }: Props) {
+export function MenteeMentorInterests({ interests: initialInterests }: Props) {
   const router = useRouter();
+  const [interests, setInterests] = useState(initialInterests);
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,6 +29,10 @@ export function MenteeMentorInterests({ interests }: Props) {
         .update({ status, updated_at: new Date().toISOString() })
         .eq("id", interestId);
       if (updateError) throw updateError;
+      // Optimistically update local state so the card disappears immediately
+      setInterests((prev) =>
+        prev.map((i) => (i.id === interestId ? { ...i, status } : i))
+      );
       router.refresh();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to update");

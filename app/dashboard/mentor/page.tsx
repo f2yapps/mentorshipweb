@@ -65,10 +65,6 @@ export default async function MentorDashboardPage() {
     };
   });
 
-  const pending = requests.filter((r) => r.status === "pending").length;
-  const accepted = requests.filter((r) => r.status === "accepted").length;
-  const declined = requests.filter((r) => r.status === "declined").length;
-
   return (
     <div>
       {/* Welcome banner */}
@@ -76,22 +72,6 @@ export default async function MentorDashboardPage() {
         <p className="text-sm text-primary-100">Welcome back</p>
         <h1 className="text-2xl font-bold">{profile?.name ?? "Mentor"}</h1>
         <p className="mt-1 text-sm text-primary-200">Thank you for volunteering your time to shape the next generation.</p>
-      </div>
-
-      {/* Stats */}
-      <div className="mt-5 grid grid-cols-3 gap-3">
-        <div className="card p-4 text-center">
-          <p className="text-2xl font-bold text-amber-600">{pending}</p>
-          <p className="mt-0.5 text-xs text-earth-500">Pending</p>
-        </div>
-        <div className="card p-4 text-center">
-          <p className="text-2xl font-bold text-green-600">{accepted}</p>
-          <p className="mt-0.5 text-xs text-earth-500">Accepted</p>
-        </div>
-        <div className="card p-4 text-center">
-          <p className="text-2xl font-bold text-earth-500">{requests.length}</p>
-          <p className="mt-0.5 text-xs text-earth-500">Total</p>
-        </div>
       </div>
 
       {/* Quick actions */}
@@ -109,9 +89,6 @@ export default async function MentorDashboardPage() {
 
       <section className="mt-8">
         <h2 className="text-lg font-semibold text-earth-900">Mentorship Requests</h2>
-        {pending > 0 && (
-          <p className="mt-0.5 text-sm text-amber-600">{pending} request{pending !== 1 ? "s" : ""} waiting for your response</p>
-        )}
         <div className="mt-4">
           <MentorDashboardRequests requests={requests} />
         </div>
