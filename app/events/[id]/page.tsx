@@ -12,9 +12,10 @@ const TYPE_LABELS: Record<string, string> = {
 export default async function EventDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   try {
+    const { id } = await params;
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -25,7 +26,7 @@ export default async function EventDetailPage({
         host:users!host_id(id, name),
         event_rsvps(id, user_id, status)
       `)
-      .eq("id", params.id)
+      .eq("id", id)
       .single();
 
     if (!ev) notFound();

@@ -43,7 +43,7 @@ export default async function EventsPage() {
         timezone, duration_minutes, location, is_online, language,
         max_attendees, tags,
         host:users!host_id(name),
-        event_rsvps(count)
+        event_rsvps(id, status)
       `)
       .eq("is_published", true)
       .gte("event_date", new Date().toISOString().slice(0, 10))
@@ -83,7 +83,9 @@ export default async function EventsPage() {
         ) : (
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {events.map((ev) => {
-              const rsvpCount = (ev.event_rsvps as unknown as { count: number }[])?.[0]?.count ?? 0;
+              const rsvps = (ev.event_rsvps as unknown as { id: string; status: string }[]) ?? [];
+              const attendingCount = rsvps.filter((r) => r.status === "attending").length;
+              const interestedCount = rsvps.filter((r) => r.status === "interested").length;
               const hostName = (ev.host as unknown as { name?: string } | null)?.name ?? "Community";
               const dateStr = new Date(ev.event_date + "T" + ev.event_time).toLocaleDateString(
                 undefined,
@@ -146,7 +148,12 @@ export default async function EventsPage() {
 
                     <div className="mt-auto flex items-center justify-between border-t border-earth-100 pt-3 text-xs text-earth-500 mt-4">
                       <span>By {hostName}</span>
-                      <span>{rsvpCount} attending</span>
+                      <span>
+                        {attendingCount > 0 && <>{attendingCount} attending</>}
+                        {attendingCount > 0 && interestedCount > 0 && " · "}
+                        {interestedCount > 0 && <>{interestedCount} interested</>}
+                        {attendingCount === 0 && interestedCount === 0 && "Be the first to RSVP"}
+                      </span>
                     </div>
                   </div>
                 </Link>
