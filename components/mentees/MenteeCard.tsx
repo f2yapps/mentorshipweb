@@ -43,13 +43,21 @@ export function MenteeCard({
         .single();
       if (insertError) throw insertError;
       setInterested(true);
+      // Fetch mentor's name for a personalised notification
+      const { data: mentorRow } = await supabase.from("mentors").select("user_id").eq("id", mentorId).single();
+      const { data: mentorUser } = mentorRow?.user_id
+        ? await supabase.from("users").select("name").eq("id", mentorRow.user_id).single()
+        : { data: null };
+      const mentorName = mentorUser?.name ?? "A mentor";
+
       const { data: menteeRow } = await supabase.from("mentees").select("user_id").eq("id", id).single();
       if (menteeRow?.user_id) {
-        const notifMsg = "A mentor has expressed interest in mentoring you. Visit your dashboard to accept or decline.";
+        const notifTitle = `${mentorName} is interested in mentoring you`;
+        const notifMsg = `${mentorName} would like to be your mentor. View their profile and decide if you'd like to accept.`;
         await supabase.from("notifications").insert({
           user_id: menteeRow.user_id,
           type: "mentor_interest",
-          title: "A mentor is interested in you",
+          title: notifTitle,
           message: notifMsg,
           body: notifMsg,
           related_entity_type: "mentor_interest",

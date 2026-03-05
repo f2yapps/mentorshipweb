@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseNotConfiguredError } from "@/lib/supabase/errors";
 import { formatRelativeTime } from "@/lib/utils";
+import { MediaDeleteButton } from "@/components/media/MediaDeleteButton";
 
 export const metadata: Metadata = {
   title: "Media Gallery",
@@ -14,6 +15,11 @@ export default async function MediaGalleryPage() {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
+
+    const { data: currentUserRow } = user
+      ? await supabase.from("users").select("role").eq("id", user.id).single()
+      : { data: null };
+    const isAdmin = currentUserRow?.role === "admin";
 
     const { data: mediaPosts } = await supabase
       .from("media_posts")
@@ -130,7 +136,12 @@ export default async function MediaGalleryPage() {
                       </span>
                       <span>{post.user?.name ?? "Community Member"}</span>
                     </div>
-                    <span>{formatRelativeTime(post.created_at)}</span>
+                    <div className="flex items-center gap-3">
+                      <span>{formatRelativeTime(post.created_at)}</span>
+                      {(isAdmin || post.user_id === user?.id) && (
+                        <MediaDeleteButton postId={post.id} />
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
