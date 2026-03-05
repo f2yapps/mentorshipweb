@@ -18,20 +18,30 @@ export default async function AdminDashboardPage() {
     .single();
   if (profile?.role !== "admin") redirect("/dashboard");
 
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+
   const [
     { count: totalMentees },
     { count: totalMentors },
     { count: requestsCount },
-    { data: requestMenteeIds },
     { count: usersCount },
+    { count: newMenteesCount },
+    { count: newMentorsCount },
+    { count: activeMenteesCount },
   ] = await Promise.all([
     supabase.from("mentees").select("id", { count: "exact", head: true }),
     supabase.from("mentors").select("id", { count: "exact", head: true }),
     supabase.from("mentorship_requests").select("id", { count: "exact", head: true }),
-    supabase.from("mentorship_requests").select("mentee_id"),
     supabase.from("users").select("id", { count: "exact", head: true }),
+    supabase.from("mentees").select("id", { count: "exact", head: true }).gte("created_at", thirtyDaysAgo),
+    supabase.from("mentors").select("id", { count: "exact", head: true }).gte("created_at", thirtyDaysAgo),
+    // Active mentees = mentee users who visited their dashboard in last 30 days (last_active_at)
+    supabase
+      .from("users")
+      .select("id", { count: "exact", head: true })
+      .eq("role", "mentee")
+      .gte("last_active_at", thirtyDaysAgo),
   ]);
-  const activeMenteesCount = new Set((requestMenteeIds ?? []).map((r) => (r as { mentee_id: string }).mentee_id)).size;
 
   const { data: users } = await supabase
     .from("users")
@@ -67,6 +77,8 @@ export default async function AdminDashboardPage() {
         menteesCount={totalMentees ?? 0}
         activeMenteesCount={activeMenteesCount}
         requestsCount={requestsCount ?? 0}
+        newMenteesCount={newMenteesCount ?? 0}
+        newMentorsCount={newMentorsCount ?? 0}
         className="mt-8"
       />
 

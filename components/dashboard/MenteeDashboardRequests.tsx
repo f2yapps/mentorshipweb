@@ -53,15 +53,17 @@ export function MenteeDashboardRequests({ requests }: Props) {
           {r.message && (
             <p className="mt-3 text-sm text-earth-700">{r.message}</p>
           )}
-          {(r.meeting_link || r.meeting_provider || r.meeting_scheduled_at) && r.status === "accepted" && (
-            <div className="mt-3 border-t border-earth-100 pt-3">
-              <p className="text-xs font-medium text-earth-600">Virtual meeting</p>
+          {r.status === "accepted" && (r.meeting_link || r.meeting_provider || r.meeting_scheduled_at) && (
+            <div className="mt-3 rounded-xl border border-green-100 bg-green-50 px-4 py-3">
+              <p className="text-xs font-semibold text-green-800 mb-1">Virtual Meeting Scheduled</p>
               {r.meeting_provider && (
-                <p className="text-xs text-earth-500 capitalize">{r.meeting_provider.replace(/_/g, " ")}</p>
+                <p className="text-xs text-green-700 capitalize mb-1">
+                  Platform: {r.meeting_provider.replace(/_/g, " ")}
+                </p>
               )}
               {r.meeting_scheduled_at && (
-                <p className="text-sm text-earth-600">
-                  Scheduled: {new Date(r.meeting_scheduled_at).toLocaleString()}
+                <p className="text-sm text-green-700 mb-2">
+                  📅 {new Date(r.meeting_scheduled_at).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })}
                 </p>
               )}
               {r.meeting_link && (
@@ -69,12 +71,17 @@ export function MenteeDashboardRequests({ requests }: Props) {
                   href={r.meeting_link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm text-primary-600 hover:underline break-all"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-green-700 px-3 py-1.5 text-sm font-medium text-white hover:bg-green-800 transition"
                 >
-                  Join meeting
+                  🎥 Join Meeting
                 </a>
               )}
             </div>
+          )}
+          {r.status === "accepted" && !r.meeting_link && (
+            <p className="mt-2 text-xs text-earth-400 italic">
+              Your mentor hasn&apos;t added a meeting link yet.
+            </p>
           )}
         </li>
       ))}

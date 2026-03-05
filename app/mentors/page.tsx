@@ -72,19 +72,20 @@ export default async function MentorsPage({ searchParams }: Props) {
     const currentUserRole = profile?.role ?? null;
     const isMentorUser = currentUserRole === "mentor";
 
-    const showMentorDirectoryCopy = currentUserRole === "mentor" || currentUserRole === "admin";
-
     return (
       <div className="mx-auto max-w-6xl px-4 py-12 sm:py-20">
         <h1 className="section-heading">Mentor Directory</h1>
-        {showMentorDirectoryCopy ? (
-          <p className="mt-4 text-earth-700">
-            Browse our volunteer mentors from around the world. Filter by area, country, or language.
-          </p>
-        ) : (
-          <p className="mt-4 text-earth-700">
-            Find a mentor. Filter by area, country, or language.
-          </p>
+        <p className="mt-4 text-earth-700">
+          Browse our volunteer mentors from around the world. Filter by area, country, or language.
+        </p>
+
+        {isMentorUser && (
+          <div className="mt-4 rounded-xl border border-primary-100 bg-primary-50 px-4 py-3 text-sm text-primary-800">
+            You are signed in as a mentor.{" "}
+            <Link href="/mentees" className="font-semibold underline underline-offset-2">
+              Browse the mentee list →
+            </Link>
+          </div>
         )}
 
         <MentorDirectoryFilters
@@ -108,7 +109,7 @@ export default async function MentorsPage({ searchParams }: Props) {
                 availability={mentor.availability}
                 languages={mentor.languages}
                 verified={mentor.verified}
-                currentUserRole={profile?.role as "mentor" | "mentee" | "admin" | undefined}
+                currentUserRole={currentUserRole as "mentor" | "mentee" | "admin" | null}
               />
             ))
           ) : (
@@ -117,9 +118,7 @@ export default async function MentorsPage({ searchParams }: Props) {
               <p className="mt-2 text-sm text-earth-500">
                 {params.category || params.country || params.language
                   ? "Try adjusting your filters."
-                  : isMentorUser
-                    ? "You’re signed in as a mentor. Once you finish your mentor profile, you’ll appear here. For now there are no mentors in the directory."
-                    : "No mentors have registered yet. Check back soon!"}
+                  : "No mentors have registered yet. Check back soon!"}
               </p>
               {(params.category || params.country || params.language) && (
                 <Link href="/mentors" className="btn-secondary mt-4 inline-block">
@@ -129,6 +128,15 @@ export default async function MentorsPage({ searchParams }: Props) {
             </div>
           )}
         </div>
+
+        {!user && (
+          <p className="mt-8 text-center text-sm text-earth-500">
+            <Link href="/auth/login" className="font-medium text-primary-600 hover:underline">Sign in</Link>
+            {" "}or{" "}
+            <Link href="/auth/register" className="font-medium text-primary-600 hover:underline">register</Link>
+            {" "}to send a mentorship request.
+          </p>
+        )}
       </div>
     );
   } catch (e) {

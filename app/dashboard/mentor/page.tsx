@@ -23,6 +23,9 @@ export default async function MentorDashboardPage() {
     .single();
   if (!mentor) redirect("/auth/mentor");
 
+  // Track last active time for admin metrics
+  await supabase.from("users").update({ last_active_at: new Date().toISOString() }).eq("id", user.id);
+
   const { data: requestsRaw } = await supabase
     .from("mentorship_requests")
     .select(`

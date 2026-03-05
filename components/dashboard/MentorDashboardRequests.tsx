@@ -195,7 +195,26 @@ export function MentorDashboardRequests({ requests }: Props) {
 
             {r.status === "accepted" && (
               <div className="mt-4 border-t border-earth-100 pt-4">
-                <p className="text-sm font-medium text-earth-700 mb-2">Set or update meeting</p>
+                <p className="text-sm font-medium text-earth-700 mb-2">Schedule virtual meeting</p>
+                <div className="mb-3 flex flex-wrap gap-2">
+                  <a
+                    href="https://zoom.us/start/videomeeting"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-700 hover:bg-blue-100 transition"
+                  >
+                    <span>📹</span> Start Zoom Meeting
+                  </a>
+                  <a
+                    href="https://meet.google.com/new"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-green-200 bg-green-50 px-3 py-1.5 text-xs font-medium text-green-700 hover:bg-green-100 transition"
+                  >
+                    <span>🎥</span> Start Google Meet
+                  </a>
+                </div>
+                <p className="mb-2 text-xs text-earth-500">Create a meeting above, then paste the link here:</p>
                 <div className="space-y-2">
                   <div>
                     <label className="block text-xs text-earth-500 mb-0.5">Provider</label>
@@ -204,13 +223,13 @@ export function MentorDashboardRequests({ requests }: Props) {
                       onChange={(e) => setMeetingProviderValue((prev) => ({ ...prev, [r.id]: e.target.value }))}
                       className="input text-sm"
                     >
-                      <option value="">Select</option>
+                      <option value="">Select provider</option>
                       <option value="zoom">Zoom</option>
                       <option value="google_meet">Google Meet</option>
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs text-earth-500 mb-0.5">Meeting link (paste or add later)</label>
+                    <label className="block text-xs text-earth-500 mb-0.5">Meeting link</label>
                     <input
                       type="url"
                       placeholder="https://zoom.us/j/... or https://meet.google.com/..."
@@ -220,7 +239,7 @@ export function MentorDashboardRequests({ requests }: Props) {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs text-earth-500 mb-0.5">Scheduled at (optional)</label>
+                    <label className="block text-xs text-earth-500 mb-0.5">Scheduled date & time (optional)</label>
                     <input
                       type="datetime-local"
                       value={meetingScheduledValue[r.id] ?? (r.meeting_scheduled_at ? new Date(r.meeting_scheduled_at).toISOString().slice(0, 16) : "")}
@@ -234,7 +253,7 @@ export function MentorDashboardRequests({ requests }: Props) {
                     onClick={() => saveMeeting(r.id)}
                     className="btn-secondary text-sm"
                   >
-                    {meetingLinkSaving === r.id ? "Saving…" : "Save meeting"}
+                    {meetingLinkSaving === r.id ? "Saving…" : "Save meeting details"}
                   </button>
                 </div>
               </div>

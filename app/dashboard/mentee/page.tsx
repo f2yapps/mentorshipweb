@@ -24,6 +24,9 @@ export default async function MenteeDashboardPage() {
     .single();
   if (!mentee) redirect("/auth/mentee");
 
+  // Track last active time for admin metrics (fire-and-forget)
+  supabase.from("users").update({ last_active_at: new Date().toISOString() }).eq("id", user.id);
+
   const { data: requestsRaw } = await supabase
     .from("mentorship_requests")
     .select(`
