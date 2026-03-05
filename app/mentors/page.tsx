@@ -72,12 +72,20 @@ export default async function MentorsPage({ searchParams }: Props) {
     const currentUserRole = profile?.role ?? null;
     const isMentorUser = currentUserRole === "mentor";
 
+    const showMentorDirectoryCopy = currentUserRole === "mentor" || currentUserRole === "admin";
+
     return (
       <div className="mx-auto max-w-6xl px-4 py-12 sm:py-20">
         <h1 className="section-heading">Mentor Directory</h1>
-        <p className="mt-4 text-earth-700">
-          Browse our volunteer mentors from around the world. Filter by area, country, or language.
-        </p>
+        {showMentorDirectoryCopy ? (
+          <p className="mt-4 text-earth-700">
+            Browse our volunteer mentors from around the world. Filter by area, country, or language.
+          </p>
+        ) : (
+          <p className="mt-4 text-earth-700">
+            Find a mentor. Filter by area, country, or language.
+          </p>
+        )}
 
         <MentorDirectoryFilters
           currentCategory={params.category}
@@ -129,7 +137,7 @@ export default async function MentorsPage({ searchParams }: Props) {
       <div className="mx-auto max-w-2xl px-4 py-12 text-center">
         <h1 className="section-heading">Mentor Directory</h1>
         <p className="mt-4 text-earth-600">
-          We couldn't load mentors right now. Check your connection and that Supabase is set up.
+          We couldn&apos;t load mentors right now. Check your connection and that Supabase is set up.
         </p>
         <Link href="/" className="btn-primary mt-6 inline-block">Go home</Link>
       </div>

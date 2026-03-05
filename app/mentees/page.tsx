@@ -60,7 +60,7 @@ export default async function MenteesPage() {
         <h1 className="section-heading">Mentee list</h1>
         <p className="mt-2 text-earth-600">
           {role === "mentor"
-            ? "Express interest to mentor a mentee. They can accept or decline."
+            ? "Browse mentees and express interest to mentor. Filter by area, country, or language."
             : "All registered mentees."}
         </p>
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
