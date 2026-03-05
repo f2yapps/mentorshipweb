@@ -138,9 +138,6 @@ export function Header() {
                 <Link href={dashboardHref} className="btn-ghost text-sm">
                   Dashboard
                 </Link>
-                <Link href="/profile/edit" className="btn-ghost text-sm">
-                  Edit Profile
-                </Link>
                 <NotificationBell userId={user.id} />
                 <Link href="/profile" className="hidden text-sm text-earth-600 hover:text-primary-600 transition-colors sm:inline">{user.name}</Link>
                 <button
@@ -201,11 +198,11 @@ export function Header() {
                 Dashboard
               </Link>
               <Link
-                href="/profile/edit"
+                href="/profile"
                 className="block rounded-lg px-3 py-2 text-sm font-medium text-earth-700 hover:bg-earth-100"
                 onClick={() => setMenuOpen(false)}
               >
-                Edit Profile
+                My Profile
               </Link>
             </>
           )}

@@ -1,29 +1,66 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { getSupabaseClientAsync } from "@/lib/supabase/client";
 
 type Props = { userId: string | null };
 
 export function NotificationBell({ userId }: Props) {
   const [unreadCount, setUnreadCount] = useState(0);
+  const channelRef = useRef<ReturnType<Awaited<ReturnType<typeof getSupabaseClientAsync>>["channel"]> | null>(null);
 
   useEffect(() => {
     if (!userId) {
       setUnreadCount(0);
       return;
     }
-    const fetchCount = async () => {
+
+    let cancelled = false;
+
+    const setup = async () => {
       const supabase = await getSupabaseClientAsync();
-      const { count } = await supabase
-        .from("notifications")
-        .select("id", { count: "exact", head: true })
-        .eq("user_id", userId)
-        .is("read_at", null);
-      setUnreadCount(count ?? 0);
+
+      const fetchCount = async () => {
+        const { count } = await supabase
+          .from("notifications")
+          .select("id", { count: "exact", head: true })
+          .eq("user_id", userId)
+          .is("read_at", null);
+        if (!cancelled) setUnreadCount(count ?? 0);
+      };
+
+      await fetchCount();
+
+      // Real-time: re-fetch count whenever notifications table changes for this user
+      const channel = supabase
+        .channel(`notifications-bell-${userId}`)
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "notifications",
+            filter: `user_id=eq.${userId}`,
+          },
+          () => {
+            fetchCount();
+          }
+        )
+        .subscribe();
+
+      channelRef.current = channel;
     };
-    fetchCount();
+
+    setup();
+
+    return () => {
+      cancelled = true;
+      if (channelRef.current) {
+        channelRef.current.unsubscribe();
+        channelRef.current = null;
+      }
+    };
   }, [userId]);
 
   if (!userId) return null;

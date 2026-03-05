@@ -71,11 +71,21 @@ export default async function MediaGalleryPage() {
                     />
                   )}
                   {post.media_type === "video" && (
-                    <video
-                      src={post.media_url}
-                      controls
-                      className="h-full w-full object-cover"
-                    />
+                    post.media_url?.includes("youtube.com/embed") || post.media_url?.includes("player.vimeo.com") ? (
+                      <iframe
+                        src={post.media_url}
+                        title={post.title}
+                        className="h-full w-full"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    ) : (
+                      <video
+                        src={post.media_url}
+                        controls
+                        className="h-full w-full object-cover"
+                      />
+                    )
                   )}
                   {post.media_type === "audio" && (
                     <div className="flex h-full flex-col items-center justify-center gap-3 p-4">
