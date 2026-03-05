@@ -17,6 +17,9 @@ export async function createMentorshipRequest(
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, error: "Not authenticated" };
 
+  const { data: menteeUser } = await supabase.from("users").select("name").eq("id", user.id).single();
+  const menteeName = menteeUser?.name ?? "A mentee";
+
   const { data: request, error: insertError } = await supabase
     .from("mentorship_requests")
     .insert({
@@ -39,11 +42,13 @@ export async function createMentorshipRequest(
     .eq("id", mentorId)
     .single();
   if (mentor?.user_id) {
+    const notifMsg = `${menteeName} sent you a mentorship request in ${category}.`;
     await supabase.from("notifications").insert({
       user_id: mentor.user_id,
       type: "mentorship_request",
       title: "New mentorship request",
-      body: message || `A mentee requested mentorship in ${category}.`,
+      message: notifMsg,
+      body: notifMsg,
       related_entity_type: "mentorship_request",
       related_entity_id: request.id,
     });

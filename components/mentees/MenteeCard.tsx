@@ -45,11 +45,13 @@ export function MenteeCard({
       setInterested(true);
       const { data: menteeRow } = await supabase.from("mentees").select("user_id").eq("id", id).single();
       if (menteeRow?.user_id) {
+        const notifMsg = "A mentor has expressed interest in mentoring you. Visit your dashboard to accept or decline.";
         await supabase.from("notifications").insert({
           user_id: menteeRow.user_id,
           type: "mentor_interest",
           title: "A mentor is interested in you",
-          body: "A mentor has expressed interest in mentoring you. Check your dashboard or accept/decline from the interests section.",
+          message: notifMsg,
+          body: notifMsg,
           related_entity_type: "mentor_interest",
           related_entity_id: id,
         });

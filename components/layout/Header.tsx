@@ -142,7 +142,7 @@ export function Header() {
                   Edit Profile
                 </Link>
                 <NotificationBell userId={user.id} />
-                <span className="hidden text-sm text-earth-600 sm:inline">{user.name}</span>
+                <Link href="/profile" className="hidden text-sm text-earth-600 hover:text-primary-600 transition-colors sm:inline">{user.name}</Link>
                 <button
                   type="button"
                   onClick={handleSignOut}

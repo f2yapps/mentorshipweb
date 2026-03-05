@@ -19,6 +19,13 @@ const LINKS = {
     { href: "/dashboard", label: "Dashboard" },
     { href: "/profile/edit", label: "Edit Profile" },
   ],
+  Legal: [
+    { href: "/privacy", label: "Privacy Policy" },
+    { href: "/terms", label: "Terms & Conditions" },
+    { href: "/cookies", label: "Cookie Policy" },
+    { href: "/best-practices", label: "Best Practices" },
+    { href: "/disclaimer", label: "Disclaimer" },
+  ],
 };
 
 export function Footer() {
@@ -26,7 +33,7 @@ export function Footer() {
     <footer className="border-t border-earth-200 bg-earth-950 text-earth-300">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         {/* Top row */}
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
           {/* Brand */}
           <div className="sm:col-span-2 lg:col-span-1">
             <Link href="/" className="flex items-center gap-2 font-bold text-white">
