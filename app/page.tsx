@@ -112,6 +112,55 @@ export default function HomePage() {
         </Link>
       </section>
 
+      {/* ── Intro Video ───────────────────────────────────────────────────── */}
+      <section className="bg-earth-50 px-4 py-16 sm:px-6 sm:py-20">
+        <div className="mx-auto max-w-6xl">
+          <div className="flex flex-col items-center gap-10 lg:flex-row lg:items-center lg:gap-16">
+            {/* Text */}
+            <div className="flex-1 text-center lg:text-left">
+              <span className="inline-block rounded-full bg-primary-100 px-4 py-1 text-sm font-medium text-primary-700">
+                🎬 Watch Our Story
+              </span>
+              <h2 className="mt-4 text-3xl font-bold text-earth-900 sm:text-4xl">
+                See How We&apos;re Changing Lives
+              </h2>
+              <p className="mt-4 text-earth-600 sm:text-lg">
+                A short introduction to our global mentorship platform — connecting
+                volunteer mentors worldwide with scholars in developing countries,
+                completely free.
+              </p>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start">
+                <Link
+                  href="/auth/register?role=mentee"
+                  className="inline-flex items-center justify-center rounded-xl bg-primary-600 px-6 py-3 font-semibold text-white shadow transition hover:bg-primary-700"
+                >
+                  Get Started Free →
+                </Link>
+                <Link
+                  href="/about"
+                  className="inline-flex items-center justify-center rounded-xl border border-earth-200 bg-white px-6 py-3 font-semibold text-earth-700 transition hover:bg-earth-50"
+                >
+                  Learn More
+                </Link>
+              </div>
+            </div>
+
+            {/* Vertical video (YouTube Shorts) */}
+            <div className="w-full max-w-[280px] shrink-0 lg:max-w-[300px]">
+              <div className="relative overflow-hidden rounded-2xl shadow-2xl" style={{ aspectRatio: "9/16" }}>
+                <iframe
+                  src="https://www.youtube.com/embed/SCg8oW3cifA?rel=0&modestbranding=1"
+                  title="Global Mentorship Introduction"
+                  className="absolute inset-0 h-full w-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── How It Works ──────────────────────────────────────────────────── */}
       <section className="bg-earth-50 px-4 py-16 sm:px-6 sm:py-20">
         <div className="mx-auto max-w-6xl">
