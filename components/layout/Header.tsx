@@ -5,7 +5,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { getSupabaseClientAsync } from "@/lib/supabase/client";
 import type { User as AuthUser } from "@supabase/supabase-js";
-import { NotificationBell } from "@/components/notifications/NotificationBell";
 import {
   Menu,
   X,
@@ -241,15 +240,6 @@ export function Header() {
                 <Link href="/become-a-mentor" className="hidden text-sm font-medium text-earth-600 hover:text-primary-600 sm:inline">
                   Become a Mentor
                 </Link>
-                <Link href={dashboardHref} className="btn-ghost hidden items-center gap-2 text-sm sm:inline-flex">
-                  <LayoutDashboard className="h-4 w-4" />
-                  Dashboard
-                </Link>
-                <Link href="/messages" className="btn-ghost hidden items-center gap-2 text-sm sm:inline-flex">
-                  <Mail className="h-4 w-4" />
-                  Messages
-                </Link>
-                <NotificationBell userId={user.id} />
                 <div className="relative" ref={userMenuRef}>
                   <button
                     type="button"
