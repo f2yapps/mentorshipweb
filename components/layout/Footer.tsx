@@ -31,13 +31,18 @@ const SUPPORT_LINKS = [
 
 export function Footer() {
   return (
-    <footer className="border-t border-earth-200 bg-earth-950 text-earth-300">
-      <div className="container-wide py-12 lg:py-16">
+    <footer className="relative bg-earth-950 text-earth-300">
+      {/* Gradient top border */}
+      <div className="h-px w-full bg-gradient-to-r from-transparent via-primary-500 to-transparent" />
+
+      <div className="container-wide py-14 lg:py-20">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
           <div className="sm:col-span-2 lg:col-span-1">
-            <Link href="/" className="flex items-center gap-2 font-bold text-white">
-              <span className="text-2xl">🌍</span>
-              <span className="text-lg">Mentorship Platform</span>
+            <Link href="/" className="flex items-center gap-2.5 font-extrabold text-white">
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 text-lg shadow-md">
+                🌍
+              </span>
+              <span className="text-lg">Mentorship</span>
             </Link>
             <p className="mt-4 text-sm leading-relaxed text-earth-400">
               Connecting volunteer mentors worldwide with scholars in developing
@@ -46,7 +51,7 @@ export function Footer() {
             <div className="mt-6 flex gap-3">
               <a
                 href="mailto:f2yapps@support.com"
-                className="rounded-xl bg-earth-800 px-4 py-2 text-sm font-medium text-earth-300 transition hover:bg-earth-700 hover:text-white"
+                className="inline-flex items-center gap-2 rounded-xl bg-earth-800 px-4 py-2.5 text-sm font-semibold text-earth-300 transition hover:bg-primary-700 hover:text-white"
               >
                 ✉️ Email Us
               </a>
@@ -62,7 +67,7 @@ export function Footer() {
                 <li key={href}>
                   <Link
                     href={href}
-                    className="text-sm text-earth-400 transition hover:text-white"
+                    className="text-sm font-medium text-earth-400 transition hover:text-primary-300"
                   >
                     {label}
                   </Link>
@@ -80,7 +85,7 @@ export function Footer() {
                 <li key={href}>
                   <Link
                     href={href}
-                    className="text-sm text-earth-400 transition hover:text-white"
+                    className="text-sm font-medium text-earth-400 transition hover:text-primary-300"
                   >
                     {label}
                   </Link>
@@ -109,12 +114,12 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col gap-4 border-t border-earth-800 pt-8 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-14 flex flex-col gap-4 border-t border-earth-800/60 pt-8 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-xs text-earth-500">
             © {new Date().getFullYear()} Mentorship Platform. All rights reserved.
           </p>
-          <p className="text-xs text-earth-600">
-            Built to bridge the mentorship gap across Africa, Asia, and the world.
+          <p className="text-xs font-medium text-earth-600">
+            Built to bridge the mentorship gap across Africa, Asia, and the world. 🌍
           </p>
         </div>
       </div>

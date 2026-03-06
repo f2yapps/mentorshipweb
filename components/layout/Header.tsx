@@ -23,7 +23,6 @@ import {
   MessageCircle,
   Image,
   LayoutDashboard,
-  Mail,
   Bell,
   User,
   Settings,
@@ -75,8 +74,8 @@ function NavLink({
     <Link
       href={href}
       onClick={onClick}
-      className={`flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition-colors ${
-        active ? "bg-primary-100 text-primary-800" : "text-earth-700 hover:bg-earth-100"
+      className={`flex items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-semibold transition-colors ${
+        active ? "bg-primary-100 text-primary-700" : "text-earth-600 hover:bg-earth-100 hover:text-earth-900"
       }`}
     >
       {Icon && <Icon className="h-4 w-4 shrink-0" />}
@@ -183,14 +182,18 @@ export function Header() {
     : visibleLinks;
 
   return (
-    <header className="sticky top-0 z-50 border-b border-earth-100/80 bg-white/98 backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b border-earth-100/60 bg-white/95 shadow-sm backdrop-blur-lg">
       <div className="container-wide flex h-16 items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 font-bold text-primary-600">
-          <span className="text-2xl">🌍</span>
-          <span className="hidden sm:inline">Mentorship</span>
+        <Link href="/" className="flex items-center gap-2.5 font-extrabold">
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 text-lg shadow-md">
+            🌍
+          </span>
+          <span className="hidden bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-lg text-transparent sm:inline">
+            Mentorship
+          </span>
         </Link>
 
-        <nav className="hidden lg:flex lg:items-center lg:gap-1">
+        <nav className="hidden lg:flex lg:items-center lg:gap-0.5">
           {mainNavLinks.map(({ href, label, icon }) => (
             <NavLink key={href} href={href} label={label} icon={icon} pathname={pathname} />
           ))}
@@ -198,17 +201,17 @@ export function Header() {
             <button
               type="button"
               onClick={() => setMoreOpen(!moreOpen)}
-              className={`flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition-colors ${
+              className={`flex items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-semibold transition-colors ${
                 MORE_LINKS.some((l) => l.href === pathname)
-                  ? "bg-primary-100 text-primary-800"
-                  : "text-earth-700 hover:bg-earth-100"
+                  ? "bg-primary-100 text-primary-700"
+                  : "text-earth-600 hover:bg-earth-100 hover:text-earth-900"
               }`}
             >
               {EXPLORE_LABEL}
-              <ChevronDown className="h-3.5 w-3" />
+              <ChevronDown className="h-3.5 w-3.5" />
             </button>
             {moreOpen && (
-              <div className="absolute right-0 top-full mt-1 w-56 rounded-2xl border border-earth-100 bg-white py-2 shadow-soft-lg">
+              <div className="absolute right-0 top-full mt-2 w-56 rounded-2xl border border-earth-100 bg-white py-2 shadow-soft-xl ring-1 ring-black/5">
                 {MORE_LINKS.map(({ href, label, icon }) => (
                   <Link
                     key={href}
@@ -238,29 +241,22 @@ export function Header() {
                   <button
                     type="button"
                     onClick={() => setUserMenuOpen(!userMenuOpen)}
-                    className="flex items-center gap-2 rounded-xl border border-earth-200 bg-earth-50/80 px-3 py-2 text-sm font-medium text-earth-800 hover:bg-earth-100"
+                    className="flex items-center gap-2 rounded-xl border border-earth-200 bg-earth-50 px-3 py-1.5 text-sm font-semibold text-earth-800 transition hover:bg-earth-100 hover:border-earth-300"
                   >
                     <span className="hidden max-w-[100px] truncate sm:inline">{user.name}</span>
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-100 text-sm font-semibold text-primary-700">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-primary-700 text-sm font-bold text-white shadow-sm">
                       {user.name.slice(0, 1).toUpperCase()}
                     </div>
-                    <ChevronDown className="h-4 w-4" />
+                    <ChevronDown className="h-3.5 w-3.5 text-earth-500" />
                   </button>
                   {userMenuOpen && (
-                    <div className="absolute right-0 top-full mt-2 w-52 rounded-2xl border border-earth-100 bg-white py-2 shadow-soft-lg">
+                    <div className="absolute right-0 top-full mt-2 w-52 rounded-2xl border border-earth-100 bg-white py-2 shadow-soft-xl ring-1 ring-black/5">
                       <Link
                         href={dashboardHref}
                         onClick={() => setUserMenuOpen(false)}
                         className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-earth-700 hover:bg-earth-50"
                       >
                         <LayoutDashboard className="h-4 w-4" /> Dashboard
-                      </Link>
-                      <Link
-                        href="/messages"
-                        onClick={() => setUserMenuOpen(false)}
-                        className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-earth-700 hover:bg-earth-50"
-                      >
-                        <Mail className="h-4 w-4" /> Messages
                       </Link>
                       <Link
                         href="/notifications"
@@ -296,11 +292,11 @@ export function Header() {
               </>
             ) : (
               <>
-                <Link href="/auth/login" className="btn-ghost text-sm">
+                <Link href="/auth/login" className="btn-ghost text-sm font-semibold">
                   Log in
                 </Link>
-                <Link href="/auth/register" className="btn-primary text-sm">
-                  Get Started
+                <Link href="/auth/register" className="btn-primary text-sm px-5">
+                  Get Started →
                 </Link>
               </>
             ))}
@@ -353,7 +349,6 @@ export function Header() {
           {user && (
             <div className="mt-4 border-t border-earth-100 pt-4">
               <Link href={dashboardHref} className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-earth-700 hover:bg-earth-100" onClick={() => setMenuOpen(false)}>Dashboard</Link>
-              <Link href="/messages" className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-earth-700 hover:bg-earth-100" onClick={() => setMenuOpen(false)}>Messages</Link>
               <Link href="/notifications" className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-earth-700 hover:bg-earth-100" onClick={() => setMenuOpen(false)}>Notifications</Link>
               <Link href="/profile" className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-earth-700 hover:bg-earth-100" onClick={() => setMenuOpen(false)}>Profile</Link>
               <Link href="/settings" className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-earth-700 hover:bg-earth-100" onClick={() => setMenuOpen(false)}>Settings</Link>
