@@ -49,15 +49,8 @@ const MAIN_LINKS = [
   { href: "/media", label: "Media Gallery", icon: Image },
 ];
 
-const VISIBLE_MAIN = [
-  "/",
-  "/about",
-  "/how-it-works",
-  "/categories",
-  "/mentors",
-  "/events",
-];
-const MORE_LINKS = MAIN_LINKS.filter((l) => !["/", "/about", "/how-it-works", "/categories", "/mentors", "/events"].includes(l.href));
+const VISIBLE_MAIN = ["/", "/about", "/how-it-works", "/categories", "/mentors"];
+const MORE_LINKS = MAIN_LINKS.filter((l) => !VISIBLE_MAIN.includes(l.href));
 
 function NavLink({
   href,
@@ -185,7 +178,7 @@ export function Header() {
     : visibleLinks;
 
   return (
-    <header className="sticky top-0 z-50 border-b border-earth-100 bg-white/95 backdrop-blur-md shadow-soft">
+    <header className="sticky top-0 z-50 border-b border-earth-100/80 bg-white/98 backdrop-blur-md">
       <div className="container-wide flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center gap-2 font-bold text-primary-600">
           <span className="text-2xl">🌍</span>
@@ -237,9 +230,6 @@ export function Header() {
           {!loading &&
             (user ? (
               <>
-                <Link href="/become-a-mentor" className="hidden text-sm font-medium text-earth-600 hover:text-primary-600 sm:inline">
-                  Become a Mentor
-                </Link>
                 <div className="relative" ref={userMenuRef}>
                   <button
                     type="button"

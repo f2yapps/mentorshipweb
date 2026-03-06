@@ -16,6 +16,7 @@ html {
 
 body {
   @apply bg-earth-50 text-earth-900 antialiased;
+  font-feature-settings: "kern" 1, "liga" 1;
 }
 
 @layer components {
@@ -41,7 +42,10 @@ body {
     @apply card hover:shadow-soft-lg hover:border-earth-200;
   }
   .section-heading {
-    @apply text-2xl font-bold tracking-tight text-earth-900 sm:text-3xl;
+    @apply text-2xl font-bold tracking-tight text-earth-900 sm:text-3xl lg:text-4xl;
+  }
+  .prose-earth p {
+    @apply text-earth-700 leading-relaxed;
   }
   .container-narrow {
     @apply mx-auto max-w-5xl px-4 sm:px-6 lg:px-8;
