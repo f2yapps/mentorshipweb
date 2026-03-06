@@ -28,7 +28,6 @@ import {
   User,
   Settings,
   LogOut,
-  MoreHorizontal,
 } from "lucide-react";
 
 type UserProfile = { id: string; name: string; role: string } | null;
@@ -205,7 +204,6 @@ export function Header() {
                   : "text-earth-700 hover:bg-earth-100"
               }`}
             >
-              <MoreHorizontal className="h-4 w-4" />
               {EXPLORE_LABEL}
               <ChevronDown className="h-3.5 w-3" />
             </button>
