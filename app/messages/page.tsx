@@ -42,11 +42,8 @@ export default function MessagesPage() {
         .single();
       setUser(profile ?? null);
 
-      // Mock conversations for UI demo (replace with real conversations from DB when table exists)
-      setConversations([
-        { id: "1", otherName: "David K.", otherId: "d1", lastMessage: "Sounds good! Let's meet Thursday.", lastAt: "2025-03-04" },
-        { id: "2", otherName: "Jennifer L.", otherId: "d2", lastMessage: "Here's the resource I mentioned.", lastAt: "2025-03-03" },
-      ]);
+      // TODO: load real conversations from DB when messages/conversations tables exist
+      setConversations([]);
       setLoading(false);
     });
   }, [router]);
@@ -125,25 +122,8 @@ export default function MessagesPage() {
                   </div>
                   <span className="ml-3 font-semibold text-earth-900">{selected.otherName}</span>
                 </div>
-                <div className="flex-1 overflow-y-auto p-4">
-                  {/* Placeholder messages for demo */}
-                  <div className="space-y-4">
-                    <div className="flex justify-start">
-                      <div className="max-w-[80%] rounded-2xl rounded-bl-md bg-earth-100 px-4 py-2 text-sm text-earth-800">
-                        Hi! Thanks for connecting. When would work for a first call?
-                      </div>
-                    </div>
-                    <div className="flex justify-end">
-                      <div className="max-w-[80%] rounded-2xl rounded-br-md bg-primary-500 px-4 py-2 text-sm text-white">
-                        How about Thursday afternoon?
-                      </div>
-                    </div>
-                    <div className="flex justify-start">
-                      <div className="max-w-[80%] rounded-2xl rounded-bl-md bg-earth-100 px-4 py-2 text-sm text-earth-800">
-                        Sounds good! Let&apos;s meet Thursday.
-                      </div>
-                    </div>
-                  </div>
+                <div className="flex flex-1 flex-col items-center justify-center overflow-y-auto p-4">
+                  <p className="text-sm text-earth-500">No messages yet. Start the conversation below.</p>
                 </div>
                 <div className="border-t border-earth-100 p-4">
                   <form
