@@ -50,7 +50,13 @@ const MAIN_LINKS = [
 ];
 
 const VISIBLE_MAIN = ["/", "/about", "/how-it-works", "/categories", "/mentors"];
-const MORE_LINKS = MAIN_LINKS.filter((l) => !VISIBLE_MAIN.includes(l.href));
+const EXPLORE_LABEL = "Explore";
+const MORE_LINKS_RAW = MAIN_LINKS.filter((l) => !VISIBLE_MAIN.includes(l.href));
+// Media Gallery first, then rest in original order
+const MORE_LINKS = [
+  ...MORE_LINKS_RAW.filter((l) => l.href === "/media"),
+  ...MORE_LINKS_RAW.filter((l) => l.href !== "/media"),
+];
 
 function NavLink({
   href,
@@ -200,7 +206,7 @@ export function Header() {
               }`}
             >
               <MoreHorizontal className="h-4 w-4" />
-              More
+              {EXPLORE_LABEL}
               <ChevronDown className="h-3.5 w-3" />
             </button>
             {moreOpen && (
@@ -314,7 +320,24 @@ export function Header() {
       {menuOpen && (
         <div className="border-t border-earth-100 bg-white px-4 py-4 lg:hidden">
           <div className="flex flex-col gap-1">
-            {MAIN_LINKS.filter((l) => l.href !== "/mentees" || showMentees).map(({ href, label, icon }) => (
+            {mainNavLinks.map(({ href, label, icon }) => (
+              <Link
+                key={href}
+                href={href}
+                className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-earth-700 hover:bg-earth-100"
+                onClick={() => setMenuOpen(false)}
+              >
+                {icon && (() => {
+                  const Icon = icon;
+                  return <Icon className="h-4 w-4" />;
+                })()}
+                {label}
+              </Link>
+            ))}
+          </div>
+          <p className="mb-2 mt-4 px-3 text-xs font-semibold uppercase tracking-wider text-earth-500">{EXPLORE_LABEL}</p>
+          <div className="flex flex-col gap-1">
+            {MORE_LINKS.filter((l) => l.href !== "/mentees" || showMentees).map(({ href, label, icon }) => (
               <Link
                 key={href}
                 href={href}
