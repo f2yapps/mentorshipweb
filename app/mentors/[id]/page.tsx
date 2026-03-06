@@ -120,10 +120,10 @@ export default async function MentorProfilePage({ params }: Props) {
           </div>
 
           <div className="mt-6 grid gap-4 sm:grid-cols-2">
-            {/* Expertise */}
+            {/* Expertise / Mentorship topics */}
             {mentor.expertise_categories.length > 0 && (
-              <section className="card p-5 sm:col-span-2">
-                <h2 className="text-xs font-semibold uppercase tracking-widest text-earth-500 mb-3">Areas of Expertise</h2>
+              <section className="card rounded-2xl p-5 sm:col-span-2">
+                <h2 className="text-xs font-semibold uppercase tracking-widest text-earth-500 mb-3">Mentorship Topics</h2>
                 <div className="flex flex-wrap gap-2">
                   {mentor.expertise_categories.map((cat: string) => (
                     <span key={cat} className="rounded-full bg-primary-100 border border-primary-200 px-3 py-1 text-sm font-medium text-primary-700">
@@ -135,7 +135,7 @@ export default async function MentorProfilePage({ params }: Props) {
             )}
 
             {/* Stats */}
-            <section className="card p-5">
+            <section className="card rounded-2xl p-5">
               <h2 className="text-xs font-semibold uppercase tracking-widest text-earth-500 mb-4">Details</h2>
               <dl className="space-y-3">
                 {mentor.experience_years != null && (
@@ -161,7 +161,7 @@ export default async function MentorProfilePage({ params }: Props) {
 
             {/* Languages */}
             {mentor.languages.length > 0 && (
-              <section className="card p-5">
+              <section className="card rounded-2xl p-5">
                 <h2 className="text-xs font-semibold uppercase tracking-widest text-earth-500 mb-4">Languages</h2>
                 <div className="flex flex-wrap gap-2">
                   {mentor.languages.map((lang: string) => (
@@ -174,8 +174,16 @@ export default async function MentorProfilePage({ params }: Props) {
             )}
           </div>
 
+          {/* Reviews / Testimonials placeholder */}
+          <section className="mt-6 card rounded-2xl p-5">
+            <h2 className="text-xs font-semibold uppercase tracking-widest text-earth-500 mb-4">Reviews & Testimonials</h2>
+            <p className="text-sm text-earth-600">
+              Mentees who have worked with this mentor can leave reviews here. Be the first to connect and share your experience!
+            </p>
+          </section>
+
           {/* CTA */}
-          <div className="mt-6 card p-6 flex flex-col sm:flex-row items-center gap-4 bg-primary-50 border-primary-100">
+          <div className="mt-6 card rounded-2xl p-6 flex flex-col sm:flex-row items-center gap-4 bg-primary-50 border-primary-100">
             <div className="flex-1">
               <h2 className="font-semibold text-primary-900">Ready to connect with {mentor.name.split(" ")[0]}?</h2>
               <p className="mt-1 text-sm text-primary-700">

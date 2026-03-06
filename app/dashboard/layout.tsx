@@ -33,28 +33,31 @@ export default async function DashboardLayout({
     if (role === "admin") nav.push({ href: "/dashboard/admin", label: "Admin" });
 
     return (
-    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-      <div className="flex flex-col gap-6 md:flex-row md:gap-8">
-        <aside className="w-full md:w-48 shrink-0">
-          <nav className="flex flex-wrap gap-2 md:flex-col md:gap-1">
-            {nav.map(({ href, label }) => (
+    <div className="min-h-screen bg-earth-50/50">
+      <div className="container-wide py-8">
+        <div className="flex flex-col gap-8 md:flex-row md:gap-10">
+          <aside className="w-full shrink-0 md:w-52">
+            <nav className="rounded-2xl border border-earth-100 bg-white p-3 shadow-soft">
+              {nav.map(({ href, label }) => (
+                <Link
+                  key={href}
+                  href={href}
+                  className="block rounded-xl px-4 py-2.5 text-sm font-medium text-earth-700 transition-colors hover:bg-earth-50"
+                >
+                  {label}
+                </Link>
+              ))}
+              <div className="my-2 border-t border-earth-100" />
               <Link
-                key={href}
-                href={href}
-                className="rounded-lg px-3 py-2 text-sm font-medium text-earth-700 hover:bg-earth-100"
+                href="/"
+                className="block rounded-xl px-4 py-2.5 text-sm font-medium text-earth-500 transition-colors hover:bg-earth-50"
               >
-                {label}
+                ← Back to site
               </Link>
-            ))}
-            <Link
-              href="/"
-              className="rounded-lg px-3 py-2 text-sm font-medium text-earth-500 hover:bg-earth-100"
-            >
-              ← Back to site
-            </Link>
-          </nav>
-        </aside>
-        <div className="min-w-0 flex-1">{children}</div>
+            </nav>
+          </aside>
+          <div className="min-w-0 flex-1">{children}</div>
+        </div>
       </div>
     </div>
     );

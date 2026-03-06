@@ -43,7 +43,7 @@ export function MentorCard({
     .toUpperCase();
 
   return (
-    <article className="card flex flex-col p-6 transition hover:shadow-md">
+    <article className="card-hover flex flex-col p-6">
       {/* Header row */}
       <div className="flex items-start gap-3">
         {/* Avatar */}

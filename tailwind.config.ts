@@ -46,6 +46,11 @@ const config: Config = {
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],
         mono: ["ui-monospace", "monospace"],
       },
+      boxShadow: {
+        soft: "0 2px 8px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)",
+        "soft-lg": "0 8px 24px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04)",
+        "soft-xl": "0 16px 48px rgba(0,0,0,0.08)",
+      },
     },
   },
   plugins: [],

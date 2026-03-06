@@ -84,7 +84,8 @@ export function NotificationsList({
       }
       router.refresh();
     } catch (e) {
-      setActionError(e instanceof Error ? e.message : "Action failed");
+      const msg = e instanceof Error ? e.message : (e && typeof e === "object" && "message" in e) ? String((e as { message: unknown }).message) : "Action failed";
+      setActionError(msg);
     } finally {
       setActionPending(null);
     }
@@ -121,7 +122,8 @@ export function NotificationsList({
       }
       router.refresh();
     } catch (e) {
-      setActionError(e instanceof Error ? e.message : "Action failed");
+      const msg = e instanceof Error ? e.message : (e && typeof e === "object" && "message" in e) ? String((e as { message: unknown }).message) : "Action failed";
+      setActionError(msg);
     } finally {
       setActionPending(null);
     }
