@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { getSupabaseClientAsync } from "@/lib/supabase/client";
+import { updateMentorshipStatus } from "@/app/actions/mentorship";
 
 type RequestRow = {
   id: string;

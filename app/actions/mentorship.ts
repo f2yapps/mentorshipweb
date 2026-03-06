@@ -58,3 +58,66 @@ export async function createMentorshipRequest(
   revalidatePath("/dashboard/mentor");
   return { ok: true, requestId: request.id };
 }
+
+export type UpdateStatusResult = { ok: true } | { ok: false; error: string };
+
+export async function updateMentorshipStatus(
+  requestId: string,
+  status: "accepted" | "declined"
+): Promise<UpdateStatusResult> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "Not authenticated" };
+
+  const { error } = await supabase
+    .from("mentorship_requests")
+    .update({ status })
+    .eq("id", requestId);
+
+  if (error) return { ok: false, error: error.message };
+
+  if (status === "accepted") {
+    try {
+      const { data: req } = await supabase
+        .from("mentorship_requests")
+        .select("mentee_id, mentor_id")
+        .eq("id", requestId)
+        .single();
+
+      if (req) {
+        const { data: menteeRow } = await supabase
+          .from("mentees")
+          .select("user_id")
+          .eq("id", req.mentee_id)
+          .single();
+
+        const { data: mentorUser } = await supabase
+          .from("users")
+          .select("name")
+          .eq("id", user.id)
+          .single();
+
+        if (menteeRow?.user_id) {
+          const msg = `${mentorUser?.name ?? "A mentor"} accepted your mentorship request. Check your dashboard to schedule a meeting.`;
+          await supabase.from("notifications").insert({
+            user_id: menteeRow.user_id,
+            type: "mentorship_accepted",
+            title: "Your mentorship request was accepted!",
+            message: msg,
+            body: msg,
+            related_entity_type: "mentorship_request",
+            related_entity_id: requestId,
+          });
+        }
+      }
+    } catch {
+      // Notification failure must never block the accept
+    }
+  }
+
+  revalidatePath("/dashboard/mentor");
+  revalidatePath("/dashboard/mentee");
+  return { ok: true };
+}
