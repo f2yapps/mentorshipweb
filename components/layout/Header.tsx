@@ -24,6 +24,7 @@ import {
   Image,
   LayoutDashboard,
   Bell,
+  MessageSquare,
   User,
   Settings,
   LogOut,
@@ -266,6 +267,13 @@ export function Header() {
                         <Bell className="h-4 w-4" /> Notifications
                       </Link>
                       <Link
+                        href="/messages"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-earth-700 hover:bg-earth-50"
+                      >
+                        <MessageSquare className="h-4 w-4" /> Messages
+                      </Link>
+                      <Link
                         href="/profile"
                         onClick={() => setUserMenuOpen(false)}
                         className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-earth-700 hover:bg-earth-50"
@@ -350,6 +358,7 @@ export function Header() {
             <div className="mt-4 border-t border-earth-100 pt-4">
               <Link href={dashboardHref} className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-earth-700 hover:bg-earth-100" onClick={() => setMenuOpen(false)}>Dashboard</Link>
               <Link href="/notifications" className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-earth-700 hover:bg-earth-100" onClick={() => setMenuOpen(false)}>Notifications</Link>
+              <Link href="/messages" className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-earth-700 hover:bg-earth-100" onClick={() => setMenuOpen(false)}>Messages</Link>
               <Link href="/profile" className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-earth-700 hover:bg-earth-100" onClick={() => setMenuOpen(false)}>Profile</Link>
               <Link href="/settings" className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-earth-700 hover:bg-earth-100" onClick={() => setMenuOpen(false)}>Settings</Link>
               <button type="button" onClick={() => { setMenuOpen(false); handleSignOut(); }} className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-earth-700 hover:bg-earth-100">Sign Out</button>

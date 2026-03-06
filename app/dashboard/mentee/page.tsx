@@ -4,7 +4,10 @@ import { createClient } from "@/lib/supabase/server";
 import { isSupabaseNotConfiguredError } from "@/lib/supabase/errors";
 import { MenteeDashboardRequests } from "@/components/dashboard/MenteeDashboardRequests";
 import { MenteeMentorInterests } from "@/components/dashboard/MenteeMentorInterests";
-import { LayoutDashboard, Users, Calendar, Bell, ArrowRight } from "lucide-react";
+import { RecommendedMentors } from "@/components/dashboard/RecommendedMentors";
+import { scoreMentors } from "@/lib/mentor-matching";
+import type { MentorForMatching } from "@/lib/mentor-matching";
+import { LayoutDashboard, Users, Sparkles, Bell, ArrowRight } from "lucide-react";
 
 export default async function MenteeDashboardPage() {
   try {
@@ -21,7 +24,7 @@ export default async function MenteeDashboardPage() {
 
     const { data: mentee } = await supabase
       .from("mentees")
-      .select("id")
+      .select("id, preferred_categories, goals")
       .eq("user_id", user.id)
       .single();
     if (!mentee) redirect("/auth/mentee");
@@ -92,6 +95,45 @@ export default async function MenteeDashboardPage() {
       .order("event_date", { ascending: true })
       .limit(3);
 
+    // AI matching: fetch all mentors and score them
+    const { data: userProfile } = await supabase
+      .from("users")
+      .select("country")
+      .eq("id", user.id)
+      .single();
+
+    const { data: mentorsRaw } = await supabase
+      .from("mentors")
+      .select(
+        "id, user_id, expertise_categories, experience_years, availability, languages, verified, users(name, country, bio, current_position, organization)"
+      );
+
+    type UserRow = { name: string; country: string | null; bio: string | null; current_position: string | null; organization: string | null } | null;
+    const mentorsForMatching: MentorForMatching[] = (mentorsRaw ?? []).map((m) => {
+      const usersField: unknown = (m as { users?: unknown }).users;
+      const userRow: UserRow = Array.isArray(usersField)
+        ? (usersField[0] ?? null) as UserRow
+        : (usersField as UserRow) ?? null;
+      return {
+        id: m.id,
+        user_id: m.user_id,
+        expertise_categories: m.expertise_categories,
+        experience_years: m.experience_years,
+        availability: m.availability,
+        languages: m.languages,
+        verified: m.verified,
+        users: userRow,
+      };
+    });
+
+    const menteeProfile = {
+      preferred_categories: (mentee as { preferred_categories?: string[] }).preferred_categories ?? [],
+      goals: (mentee as { goals?: string | null }).goals ?? null,
+      country: userProfile?.country ?? null,
+    };
+
+    const recommendedMentors = scoreMentors(menteeProfile, mentorsForMatching).slice(0, 5);
+
     return (
       <div className="space-y-8">
         {/* Welcome card */}
@@ -144,9 +186,21 @@ export default async function MenteeDashboardPage() {
 
         {pendingInterests > 0 && (
           <div className="rounded-2xl border border-primary-200 bg-primary-50 px-5 py-4 text-sm text-primary-800">
-            🎉 <strong>{pendingInterests} mentor{pendingInterests !== 1 ? "s" : ""}</strong> {pendingInterests !== 1 ? "are" : "is"} interested in mentoring you — respond below!
+            <strong>{pendingInterests} mentor{pendingInterests !== 1 ? "s" : ""}</strong> {pendingInterests !== 1 ? "are" : "is"} interested in mentoring you — respond below!
           </div>
         )}
+
+        {/* AI Recommended Mentors */}
+        <section>
+          <div className="flex items-center gap-2 mb-4">
+            <Sparkles className="h-5 w-5 text-primary-500" />
+            <h2 className="text-lg font-semibold text-earth-900">Recommended Mentors For You</h2>
+          </div>
+          <p className="mb-4 text-sm text-earth-500">
+            Matched based on your interests, goals, and profile — updated each visit.
+          </p>
+          <RecommendedMentors mentors={recommendedMentors} />
+        </section>
 
         <div className="grid gap-8 lg:grid-cols-3">
           {/* Mentors interested */}

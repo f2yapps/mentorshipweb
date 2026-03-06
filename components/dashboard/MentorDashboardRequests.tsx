@@ -71,13 +71,8 @@ export function MentorDashboardRequests({ requests: initialRequests }: Props) {
     setActionError(null);
     setSuccessId(null);
     try {
-      const supabase = await getSupabaseClientAsync();
-      const { error } = await supabase
-        .from("mentorship_requests")
-        .update({ status })
-        .eq("id", requestId);
-      if (error) throw error;
-      // Optimistically update local state so stats update immediately
+      const result = await updateMentorshipStatus(requestId, status);
+      if (!result.ok) throw new Error(result.error);
       setRequests((prev) =>
         prev.map((r) => (r.id === requestId ? { ...r, status } : r))
       );
@@ -170,7 +165,7 @@ export function MentorDashboardRequests({ requests: initialRequests }: Props) {
 
             {r.message && (
               <p className="mt-2 text-sm text-earth-700 border-l-2 border-earth-200 pl-3 italic">
-                "{r.message}"
+                &ldquo;{r.message}&rdquo;
               </p>
             )}
 
@@ -201,7 +196,7 @@ export function MentorDashboardRequests({ requests: initialRequests }: Props) {
                   href={`/messages/start?mentee_id=${r.menteeProfileId}`}
                   className="inline-flex items-center gap-1.5 rounded-lg bg-primary-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-primary-700 transition"
                 >
-                  💬 Message {r.menteeName}
+                  Message {r.menteeName}
                 </Link>
               </div>
             )}
@@ -240,7 +235,7 @@ export function MentorDashboardRequests({ requests: initialRequests }: Props) {
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-700 hover:bg-blue-100 transition"
                   >
-                    <span>📹</span> Start Zoom Meeting
+                    Start Zoom Meeting
                   </a>
                   <a
                     href="https://meet.google.com/new"
@@ -248,8 +243,20 @@ export function MentorDashboardRequests({ requests: initialRequests }: Props) {
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 rounded-lg border border-green-200 bg-green-50 px-3 py-1.5 text-xs font-medium text-green-700 hover:bg-green-100 transition"
                   >
-                    <span>🎥</span> Start Google Meet
+                    Start Google Meet
                   </a>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const roomName = `mentorship-${r.id.slice(0, 8)}`;
+                      const jitsiUrl = `https://meet.jit.si/${roomName}`;
+                      setMeetingLinkValue((prev) => ({ ...prev, [r.id]: jitsiUrl }));
+                      setMeetingProviderValue((prev) => ({ ...prev, [r.id]: "jitsi" }));
+                    }}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-purple-200 bg-purple-50 px-3 py-1.5 text-xs font-medium text-purple-700 hover:bg-purple-100 transition"
+                  >
+                    Generate Free Jitsi Room
+                  </button>
                 </div>
                 <p className="mb-2 text-xs text-earth-500">Create a meeting above, then paste the link here:</p>
                 <div className="space-y-2">
@@ -263,20 +270,21 @@ export function MentorDashboardRequests({ requests: initialRequests }: Props) {
                       <option value="">Select provider</option>
                       <option value="zoom">Zoom</option>
                       <option value="google_meet">Google Meet</option>
+                      <option value="jitsi">Jitsi Meet (Free)</option>
                     </select>
                   </div>
                   <div>
                     <label className="block text-xs text-earth-500 mb-0.5">Meeting link</label>
                     <input
                       type="url"
-                      placeholder="https://zoom.us/j/... or https://meet.google.com/..."
+                      placeholder="https://zoom.us/j/... or https://meet.google.com/... or https://meet.jit.si/..."
                       value={meetingLinkValue[r.id] ?? r.meeting_link ?? ""}
                       onChange={(e) => setMeetingLinkValue((prev) => ({ ...prev, [r.id]: e.target.value }))}
                       className="input flex-1 min-w-0 text-sm"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs text-earth-500 mb-0.5">Scheduled date & time (optional)</label>
+                    <label className="block text-xs text-earth-500 mb-0.5">Scheduled date &amp; time (optional)</label>
                     <input
                       type="datetime-local"
                       value={meetingScheduledValue[r.id] ?? (r.meeting_scheduled_at ? new Date(r.meeting_scheduled_at).toISOString().slice(0, 16) : "")}
