@@ -41,7 +41,8 @@ export default async function MenteeDashboardPage() {
     const requests = (requestsRaw ?? []).map((r) => {
       const mentorsField: unknown = (r as { mentors?: unknown }).mentors;
       const mentor = Array.isArray(mentorsField) ? mentorsField[0] : mentorsField;
-      const usersField: unknown = mentor != null ? (mentor as { users?: unknown }).users : null;
+      const mentorObj = mentor as { id?: string; users?: unknown } | null;
+      const usersField: unknown = mentorObj?.users ?? null;
       const userRow = Array.isArray(usersField) ? usersField[0] : usersField;
       const mentorName = (userRow as { name?: string } | null)?.name ?? "Mentor";
       return {
@@ -54,6 +55,7 @@ export default async function MenteeDashboardPage() {
         meeting_provider: (r as { meeting_provider?: string | null }).meeting_provider ?? null,
         meeting_scheduled_at: (r as { meeting_scheduled_at?: string | null }).meeting_scheduled_at ?? null,
         mentorName,
+        mentorProfileId: mentorObj?.id ?? null,
       };
     });
 

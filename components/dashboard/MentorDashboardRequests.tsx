@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { getSupabaseClientAsync } from "@/lib/supabase/client";
 
 type RequestRow = {
@@ -16,6 +17,7 @@ type RequestRow = {
   menteeName: string;
   menteeEmail?: string;
   menteeGoals?: string | null;
+  menteeProfileId?: string | null;
 };
 
 type Props = { requests: RequestRow[] };
@@ -189,6 +191,17 @@ export function MentorDashboardRequests({ requests: initialRequests }: Props) {
                 >
                   Decline
                 </button>
+              </div>
+            )}
+
+            {r.status === "accepted" && r.menteeProfileId && (
+              <div className="mt-4">
+                <Link
+                  href={`/messages/start?mentee_id=${r.menteeProfileId}`}
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-primary-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-primary-700 transition"
+                >
+                  💬 Message {r.menteeName}
+                </Link>
               </div>
             )}
 

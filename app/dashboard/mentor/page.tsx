@@ -60,10 +60,10 @@ export default async function MentorDashboardPage() {
     const requests = (requestsRaw ?? []).map((r) => {
       const menteesField: unknown = (r as { mentees?: unknown }).mentees;
       const mentee = Array.isArray(menteesField) ? menteesField[0] : menteesField;
-      const usersField: unknown = mentee != null ? (mentee as { users?: unknown }).users : null;
-      const user = Array.isArray(usersField) ? usersField[0] : usersField;
-      const u = user as { name?: string; email?: string } | null;
-      const m = mentee as { goals?: string | null } | null;
+      const menteeObj = mentee as { id?: string; goals?: string | null; users?: unknown } | null;
+      const usersField: unknown = menteeObj?.users ?? null;
+      const userRow = Array.isArray(usersField) ? usersField[0] : usersField;
+      const u = userRow as { name?: string; email?: string } | null;
       return {
         id: r.id,
         category: r.category,
@@ -75,7 +75,8 @@ export default async function MentorDashboardPage() {
         meeting_scheduled_at: (r as { meeting_scheduled_at?: string | null }).meeting_scheduled_at ?? null,
         menteeName: u?.name ?? "Mentee",
         menteeEmail: u?.email,
-        menteeGoals: m?.goals ?? null,
+        menteeGoals: menteeObj?.goals ?? null,
+        menteeProfileId: menteeObj?.id ?? null,
       };
     });
 

@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 type RequestRow = {
   id: string;
   category: string;
@@ -8,6 +10,7 @@ type RequestRow = {
   meeting_provider: string | null;
   meeting_scheduled_at: string | null;
   mentorName: string;
+  mentorProfileId?: string | null;
 };
 
 type Props = { requests: RequestRow[] };
@@ -82,6 +85,16 @@ export function MenteeDashboardRequests({ requests }: Props) {
             <p className="mt-2 text-xs text-earth-400 italic">
               Your mentor hasn&apos;t added a meeting link yet.
             </p>
+          )}
+          {r.status === "accepted" && r.mentorProfileId && (
+            <div className="mt-3">
+              <Link
+                href={`/messages/start?mentor_id=${r.mentorProfileId}`}
+                className="inline-flex items-center gap-1.5 rounded-lg bg-primary-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-primary-700 transition"
+              >
+                💬 Message {r.mentorName}
+              </Link>
+            </div>
           )}
         </li>
       ))}
