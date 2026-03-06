@@ -12,6 +12,8 @@ export function MentorOnboardingForm({ className = "" }: Props) {
   const router = useRouter();
 
   const [country, setCountry] = useState("");
+  const [currentPosition, setCurrentPosition] = useState("");
+  const [organization, setOrganization] = useState("");
   const [bio, setBio] = useState("");
   const [expertiseCategories, setExpertiseCategories] = useState<string[]>([]);
   const [experienceYears, setExperienceYears] = useState(0);
@@ -47,6 +49,8 @@ export function MentorOnboardingForm({ className = "" }: Props) {
 
       const profileUpdate: Record<string, string> = {};
       if (country.trim()) profileUpdate.country = country.trim();
+      if (currentPosition.trim()) profileUpdate.current_position = currentPosition.trim();
+      if (organization.trim()) profileUpdate.organization = organization.trim();
       if (bio.trim()) profileUpdate.bio = bio.trim();
 
       // Run user profile update and mentor insert in parallel
@@ -98,6 +102,35 @@ export function MentorOnboardingForm({ className = "" }: Props) {
           className="input mt-1"
         />
         <p className="mt-1 text-xs text-earth-500">Shown on your mentor card so scholars know where you're based.</p>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label htmlFor="current_position" className="block text-sm font-medium text-earth-700">
+            Job title / role
+          </label>
+          <input
+            id="current_position"
+            type="text"
+            placeholder="e.g. Software Engineer, PhD Researcher"
+            value={currentPosition}
+            onChange={(e) => setCurrentPosition(e.target.value)}
+            className="input mt-1"
+          />
+        </div>
+        <div>
+          <label htmlFor="organization" className="block text-sm font-medium text-earth-700">
+            Institution / Company
+          </label>
+          <input
+            id="organization"
+            type="text"
+            placeholder="e.g. Google, MIT, UN"
+            value={organization}
+            onChange={(e) => setOrganization(e.target.value)}
+            className="input mt-1"
+          />
+        </div>
       </div>
 
       <div>

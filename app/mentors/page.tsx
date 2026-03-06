@@ -22,7 +22,7 @@ export default async function MentorsPage({ searchParams }: Props) {
 
     let query = supabase
       .from("mentors")
-      .select("id, user_id, expertise_categories, experience_years, availability, languages, verified, users(id, name, country, bio)");
+      .select("id, user_id, expertise_categories, experience_years, availability, languages, verified, users(id, name, country, bio, current_position, organization)");
 
     // Unauthenticated visitors see only verified mentors
     if (!user) {
@@ -38,7 +38,7 @@ export default async function MentorsPage({ searchParams }: Props) {
 
     const { data: mentorsRaw } = await query.order("created_at", { ascending: false });
 
-    type UserRow = { id: string; name: string; country: string | null; bio: string | null } | null;
+    type UserRow = { id: string; name: string; country: string | null; bio: string | null; current_position: string | null; organization: string | null } | null;
     let mentors = (mentorsRaw ?? []).map((m) => {
       const usersField: unknown = (m as { users?: unknown }).users;
       const userRow: UserRow = Array.isArray(usersField)
@@ -103,6 +103,8 @@ export default async function MentorsPage({ searchParams }: Props) {
                 id={mentor.id}
                 name={mentor.users?.name ?? "Mentor"}
                 country={mentor.users?.country ?? undefined}
+                currentPosition={mentor.users?.current_position ?? undefined}
+                organization={mentor.users?.organization ?? undefined}
                 bio={mentor.users?.bio ?? undefined}
                 expertiseCategories={mentor.expertise_categories}
                 experienceYears={mentor.experience_years}

@@ -4,6 +4,8 @@ type Props = {
   id: string;
   name: string;
   country?: string | null;
+  currentPosition?: string | null;
+  organization?: string | null;
   bio?: string | null;
   expertiseCategories: string[];
   experienceYears: number;
@@ -26,6 +28,8 @@ export function MentorCard({
   id,
   name,
   country,
+  currentPosition,
+  organization,
   bio,
   expertiseCategories,
   experienceYears,
@@ -59,6 +63,11 @@ export function MentorCard({
               </span>
             )}
           </div>
+          {(currentPosition || organization) && (
+            <p className="mt-0.5 text-sm font-medium text-earth-700 truncate">
+              {[currentPosition, organization].filter(Boolean).join(" · ")}
+            </p>
+          )}
           {country && (
             <p className="mt-0.5 text-sm text-earth-500">📍 {country}</p>
           )}
