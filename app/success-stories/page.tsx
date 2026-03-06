@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import { createClient } from "@/lib/supabase/server";
 import { SuccessStoryCard } from "@/components/cards/SuccessStoryCard";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Success Stories",
@@ -7,70 +9,43 @@ export const metadata: Metadata = {
     "Real achievements from our mentor–mentee pairs: scholarships, career advancement, and personal growth.",
 };
 
-const SUCCESS_STORIES = [
-  {
-    id: "scholarship-1",
-    title: "From Local University to Full Scholarship Abroad",
-    excerpt:
-      "With my mentor's guidance on application essays and interview prep, I secured a full scholarship to a top European university for my master's in data science.",
-    outcome: "Full scholarship to MSc Data Science program",
-    menteeName: "Aisha M.",
-    mentorName: "David K.",
-    category: "Scholarship",
-  },
-  {
-    id: "career-1",
-    title: "First Tech Role in Four Months",
-    excerpt:
-      "I had the skills but didn't know how to present them. My mentor helped me refine my CV, practice interviews, and negotiate my first software engineering offer.",
-    outcome: "Software Engineer at a growing startup",
-    menteeName: "Samuel T.",
-    mentorName: "Jennifer L.",
-    category: "Career",
-  },
-  {
-    id: "research-1",
-    title: "Published My First Paper with Mentor Support",
-    excerpt:
-      "My mentor walked me through the research process, paper structure, and submission strategy. We got accepted to a reputable conference within a year.",
-    outcome: "Conference paper accepted",
-    menteeName: "Fatima N.",
-    mentorName: "Michael R.",
-    category: "Research",
-  },
-  {
-    id: "startup-1",
-    title: "From Idea to First Customers",
-    excerpt:
-      "I had an idea but no business background. My mentor helped me validate the concept, build a minimal product, and land our first 10 paying customers.",
-    outcome: "Launched MVP with 10+ customers",
-    menteeName: "Omar H.",
-    mentorName: "Sarah P.",
-    category: "Entrepreneurship",
-  },
-  {
-    id: "career-2",
-    title: "Pivoting into AI from a Different Field",
-    excerpt:
-      "I was in marketing and wanted to move into ML. My mentor suggested a learning path, projects to build, and how to position my transition to employers.",
-    outcome: "ML Engineer role at tech company",
-    menteeName: "Lina K.",
-    mentorName: "James W.",
-    category: "Career",
-  },
-  {
-    id: "scholarship-2",
-    title: "PhD Application Success",
-    excerpt:
-      "Applying for PhD programs felt overwhelming. My mentor helped me choose programs, draft research statements, and prepare for interviews. I got into my dream school.",
-    outcome: "PhD admission with funding",
-    menteeName: "Yusuf A.",
-    mentorName: "Emily C.",
-    category: "Scholarship",
-  },
-];
+export default async function SuccessStoriesPage() {
+  const supabase = await createClient();
+  let stories: {
+    id: string;
+    title: string;
+    excerpt: string | null;
+    content: string;
+    cover_image_url: string | null;
+    tags: string[];
+    user_id: string;
+    created_at: string;
+  }[] = [];
 
-export default function SuccessStoriesPage() {
+  try {
+    const { data: rows } = await supabase
+      .from("success_stories")
+      .select("id, title, excerpt, content, cover_image_url, tags, user_id, created_at")
+      .eq("is_published", true)
+      .order("created_at", { ascending: false })
+      .limit(50);
+
+    if (rows?.length) {
+      stories = rows.map((r: Record<string, unknown>) => ({
+        id: r.id as string,
+        title: r.title as string,
+        excerpt: (r.excerpt as string | null) ?? null,
+        content: r.content as string,
+        cover_image_url: r.cover_image_url as string | null,
+        tags: (r.tags as string[]) ?? [],
+        user_id: r.user_id as string,
+        created_at: r.created_at as string,
+      }));
+    }
+  } catch {
+    stories = [];
+  }
+
   return (
     <div className="min-h-screen bg-earth-50/50">
       <section className="border-b border-earth-100 bg-white py-16 sm:py-20">
@@ -84,20 +59,35 @@ export default function SuccessStoriesPage() {
       </section>
 
       <section className="container-wide py-12 sm:py-16">
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {SUCCESS_STORIES.map((story) => (
-            <SuccessStoryCard
-              key={story.id}
-              id={story.id}
-              title={story.title}
-              excerpt={story.excerpt}
-              outcome={story.outcome}
-              menteeName={story.menteeName}
-              mentorName={story.mentorName}
-              category={story.category}
-            />
-          ))}
-        </div>
+        {stories.length > 0 ? (
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {stories.map((story) => (
+              <div key={story.id} id={story.id} className="scroll-mt-24">
+              <SuccessStoryCard
+                key={story.id}
+                id={story.id}
+                title={story.title}
+                excerpt={story.excerpt ?? story.content.slice(0, 200) + (story.content.length > 200 ? "…" : "")}
+                outcome={story.tags[0] ?? "Mentorship"}
+                category={story.tags[0] ?? undefined}
+                imageUrl={story.cover_image_url}
+                href={`/success-stories#${story.id}`}
+              />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="mx-auto max-w-lg rounded-2xl border border-earth-200 bg-white p-10 text-center shadow-soft">
+            <p className="text-6xl" aria-hidden>✨</p>
+            <h2 className="mt-4 text-xl font-semibold text-earth-900">Success stories are on the way</h2>
+            <p className="mt-3 text-earth-600">
+              When mentees and mentors complete their journeys and share outcomes, their stories will appear here. Be the first to add yours by connecting with a mentor and achieving your goals.
+            </p>
+            <Link href="/mentors" className="btn-primary mt-8 inline-flex">
+              Find a mentor
+            </Link>
+          </div>
+        )}
       </section>
     </div>
   );

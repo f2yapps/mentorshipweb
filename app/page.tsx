@@ -46,38 +46,51 @@ const MENTORSHIP_AREAS = [
   { icon: "🌍", label: "Leadership & Impact" },
 ];
 
-const TESTIMONIALS = [
+const VALUE_STATEMENTS = [
   {
-    quote: "My mentor helped me land my first software engineering role in just four months. Having someone who believed in me made all the difference.",
-    name: "Aisha M.",
-    role: "Mentee · Ethiopia",
-    initials: "AM",
+    quote: "Mentorship can accelerate your learning, open doors, and build the confidence to pursue scholarships and career goals.",
+    label: "Why it matters",
     color: "bg-primary-100 text-primary-700",
   },
   {
-    quote: "Giving back through this platform is the most fulfilling thing I do. Watching scholars grow into confident professionals is deeply rewarding.",
-    name: "David K.",
-    role: "Mentor · Canada",
-    initials: "DK",
+    quote: "Volunteer mentors give their time so that talent everywhere has access to guidance — not just where it’s easy to find.",
+    label: "Our mission",
     color: "bg-green-100 text-green-700",
   },
   {
-    quote: "I got into a top graduate program with my mentor's guidance on my application. I never thought it was possible from where I started.",
-    name: "Fatima N.",
-    role: "Mentee · Nigeria",
-    initials: "FN",
+    quote: "From application advice to technical skills, our community supports real outcomes: new roles, admissions, and lasting professional relationships.",
+    label: "Real outcomes",
     color: "bg-amber-100 text-amber-700",
   },
 ];
 
-const PARTNERS = [
-  { name: "Tech for Good Foundation" },
-  { name: "Global Education Network" },
-  { name: "Developer Community Alliance" },
-];
-
 export default async function HomePage() {
   const supabase = await createClient();
+
+  let testimonials: { quote: string; name: string; role: string; initials: string; color: string }[] = [];
+  try {
+    const { data: reviewRows } = await supabase
+      .from("reviews")
+      .select("id, rating, feedback, created_at")
+      .not("feedback", "is", null)
+      .order("created_at", { ascending: false })
+      .limit(6);
+    if (reviewRows?.length && reviewRows.some((r: { feedback: string | null }) => r.feedback?.trim())) {
+      testimonials = reviewRows
+        .filter((r: { feedback: string | null }) => r.feedback?.trim())
+        .slice(0, 3)
+        .map((r: { feedback: string; id: string }, i: number) => ({
+          quote: (r.feedback as string).slice(0, 200) + ((r.feedback as string).length > 200 ? "…" : ""),
+          name: "Community member",
+          role: "Mentee",
+          initials: String(i + 1),
+          color: ["bg-primary-100 text-primary-700", "bg-green-100 text-green-700", "bg-amber-100 text-amber-700"][i] ?? "bg-earth-100 text-earth-700",
+        }));
+    }
+  } catch {
+    testimonials = [];
+  }
+  const useTestimonials = testimonials.length >= 2;
 
   const { data: mentorsRaw } = await supabase
     .from("mentors")
@@ -336,29 +349,31 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* Testimonials */}
+      {/* Testimonials or value statements */}
       <section className="bg-earth-50/80 py-20 sm:py-28">
         <div className="container-wide">
           <div className="text-center">
             <h2 className="text-3xl font-bold tracking-tight text-earth-900 sm:text-4xl">
-              Voices from Our Community
+              {useTestimonials ? "Voices from Our Community" : "Why Mentorship Matters"}
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-earth-600">
-              Real stories from mentors and scholars who are making it happen.
+              {useTestimonials
+                ? "What mentees and mentors say about their experience."
+                : "A few reasons we built this platform."}
             </p>
           </div>
           <div className="mt-14 grid gap-8 sm:grid-cols-3">
-            {TESTIMONIALS.map(({ quote, name, role, initials, color }) => (
-              <div key={name} className="flex flex-col rounded-2xl border border-earth-100 bg-white p-8 shadow-soft">
+            {(useTestimonials ? testimonials : VALUE_STATEMENTS).map((item, i) => (
+              <div key={i} className="flex flex-col rounded-2xl border border-earth-100 bg-white p-8 shadow-soft">
                 <span className="text-4xl leading-none text-primary-200">&ldquo;</span>
-                <p className="mt-4 flex-1 text-earth-700 leading-relaxed italic">{quote}</p>
+                <p className="mt-4 flex-1 text-earth-700 leading-relaxed italic">{(item as { quote: string }).quote}</p>
                 <div className="mt-8 flex items-center gap-4 border-t border-earth-100 pt-6">
-                  <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-sm font-bold ${color}`}>
-                    {initials}
+                  <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-sm font-bold ${(item as { color: string }).color}`}>
+                    {"initials" in item ? (item as { initials: string }).initials : (item as { label: string }).label.slice(0, 2).toUpperCase()}
                   </div>
                   <div>
-                    <p className="font-semibold text-earth-900">{name}</p>
-                    <p className="text-sm text-earth-500">{role}</p>
+                    <p className="font-semibold text-earth-900">{"name" in item ? (item as { name: string }).name : (item as { label: string }).label}</p>
+                    <p className="text-sm text-earth-500">{"role" in item ? (item as { role: string }).role : "Platform value"}</p>
                   </div>
                 </div>
               </div>
@@ -366,7 +381,7 @@ export default async function HomePage() {
           </div>
           <div className="mt-10 text-center">
             <Link href="/success-stories" className="text-sm font-semibold text-primary-600 hover:text-primary-700">
-              Read more success stories →
+              Read success stories →
             </Link>
           </div>
         </div>
@@ -413,31 +428,16 @@ export default async function HomePage() {
 
       {/* Partners */}
       <section className="bg-earth-50/80 py-20 sm:py-28">
-        <div className="container-wide">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-earth-900 sm:text-4xl">
-              Partners & Supporters
-            </h2>
-            <p className="mx-auto mt-4 max-w-xl text-earth-600">
-              Organizations that help us expand access to mentorship worldwide.
-            </p>
-          </div>
-          <div className="mt-14 flex flex-wrap items-center justify-center gap-6">
-            {PARTNERS.map((p) => (
-              <Link
-                key={p.name}
-                href="/partners"
-                className="rounded-2xl border border-earth-200 bg-white px-8 py-5 font-semibold text-earth-700 shadow-soft transition hover:border-primary-200 hover:shadow-soft-lg hover:text-primary-700"
-              >
-                {p.name}
-              </Link>
-            ))}
-          </div>
-          <div className="mt-8 text-center">
-            <Link href="/partners" className="text-sm font-semibold text-primary-600 hover:text-primary-700">
-              View all partners →
-            </Link>
-          </div>
+        <div className="container-wide text-center">
+          <h2 className="text-3xl font-bold tracking-tight text-earth-900 sm:text-4xl">
+            Partners & Supporters
+          </h2>
+          <p className="mx-auto mt-4 max-w-xl text-earth-600">
+            We are building partnerships with universities and organizations to expand access to mentorship worldwide.
+          </p>
+          <Link href="/partners" className="btn-secondary mt-8 inline-flex">
+            Learn about partnering with us
+          </Link>
         </div>
       </section>
 

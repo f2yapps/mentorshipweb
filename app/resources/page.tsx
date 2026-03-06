@@ -4,7 +4,7 @@ import { ResourceCard } from "@/components/cards/ResourceCard";
 export const metadata: Metadata = {
   title: "Resources & Learning Hub",
   description:
-    "Scholarship guides, resume templates, interview prep, and career development resources for mentees.",
+    "Curated links to scholarship guides, resume tips, interview prep, and career development resources.",
 };
 
 const CATEGORIES = [
@@ -14,45 +14,57 @@ const CATEGORIES = [
     resources: [
       {
         id: "sg-1",
-        title: "How to Find and Apply for Scholarships",
-        description: "Step-by-step guide to discovering scholarships and writing strong applications.",
+        title: "Scholarships for Development (Scholars4Dev)",
+        description: "Database of scholarships for students from developing countries — master's, PhD, and short courses.",
         type: "guide" as const,
+        href: "https://www.scholars4dev.com",
+        external: true,
       },
       {
         id: "sg-2",
-        title: "Statement of Purpose Template",
-        description: "A structured template and examples for SoP essays for graduate programs.",
-        type: "template" as const,
+        title: "DAAD Scholarship Database",
+        description: "Official German Academic Exchange Service database for studying in Germany.",
+        type: "guide" as const,
+        href: "https://www.daad.de/en/study-and-research-in-germany/scholarships/",
+        external: true,
       },
       {
         id: "sg-3",
-        title: "Recommendation Letter Guide",
-        description: "How to request and use recommendation letters effectively.",
+        title: "StudyPortals Scholarships",
+        description: "Search scholarships worldwide by country, level, and subject.",
         type: "guide" as const,
+        href: "https://www.studyportals.com/scholarships/",
+        external: true,
       },
     ],
   },
   {
     id: "resume-cv",
-    name: "Resume / CV",
+    name: "Resume & CV",
     resources: [
       {
         id: "cv-1",
-        title: "Tech Resume Template (ATS-Friendly)",
-        description: "Clean, ATS-optimized resume template for software and data roles.",
+        title: "Google Docs Resume Templates",
+        description: "Free, professional resume templates you can edit and download.",
         type: "template" as const,
+        href: "https://docs.google.com/document/u/0/?tgif=d&ftv=1",
+        external: true,
       },
       {
         id: "cv-2",
-        title: "Academic CV Template",
-        description: "Format and sections for academic and research positions.",
-        type: "template" as const,
+        title: "Harvard FAS Resume & Cover Letter Guide",
+        description: "Guidance on structure, content, and tailoring from Harvard's career office.",
+        type: "guide" as const,
+        href: "https://ocs.fas.harvard.edu/resume-cover-letter-guide",
+        external: true,
       },
       {
         id: "cv-3",
-        title: "Writing Strong Bullet Points",
-        description: "Turn your experience into impact-focused bullet points.",
+        title: "LinkedIn Profile Tips",
+        description: "Build a strong LinkedIn profile to attract recruiters and mentors.",
         type: "article" as const,
+        href: "https://www.linkedin.com/help/linkedin/answer/a521928",
+        external: true,
       },
     ],
   },
@@ -62,21 +74,27 @@ const CATEGORIES = [
     resources: [
       {
         id: "ip-1",
-        title: "Technical Interview Prep Roadmap",
-        description: "Structured plan for coding and system design interview preparation.",
-        type: "guide" as const,
+        title: "LeetCode (Coding Practice)",
+        description: "Practice coding problems commonly used in technical interviews.",
+        type: "tool" as const,
+        href: "https://leetcode.com",
+        external: true,
       },
       {
         id: "ip-2",
-        title: "Behavioral Interview Questions",
-        description: "Common STAR-format questions and how to answer them.",
+        title: "Glassdoor Interview Questions",
+        description: "Real interview questions shared by candidates at thousands of companies.",
         type: "article" as const,
+        href: "https://www.glassdoor.com/Interview/",
+        external: true,
       },
       {
         id: "ip-3",
-        title: "Salary Negotiation Tips",
-        description: "How to research and negotiate your offer with confidence.",
-        type: "article" as const,
+        title: "STAR Method (Behavioral Interviews)",
+        description: "NHS guide to answering competency-based questions using Situation, Task, Action, Result.",
+        type: "guide" as const,
+        href: "https://www.nhscareers.nhs.uk/explore-by-career/wider-healthcare-team/careers-in-the-wider-healthcare-team/working-in-the-wider-healthcare-team/star-approach/",
+        external: true,
       },
     ],
   },
@@ -86,21 +104,27 @@ const CATEGORIES = [
     resources: [
       {
         id: "cd-1",
-        title: "Building a Personal Brand Online",
-        description: "LinkedIn, portfolio, and visibility for early-career professionals.",
+        title: "Coursera — Career Success Specialization",
+        description: "Free courses on communication, project management, and career planning.",
         type: "guide" as const,
+        href: "https://www.coursera.org",
+        external: true,
       },
       {
         id: "cd-2",
-        title: "Networking for Introverts",
-        description: "Practical ways to build connections without burning out.",
-        type: "article" as const,
+        title: "Idealist — Jobs & Internships in Social Impact",
+        description: "Find roles at nonprofits and social enterprises worldwide.",
+        type: "tool" as const,
+        href: "https://www.idealist.org",
+        external: true,
       },
       {
         id: "cd-3",
-        title: "Transitioning into Tech",
-        description: "Paths from non-tech backgrounds into software, data, and AI roles.",
-        type: "guide" as const,
+        title: "Remote Work Resources (We Work Remotely)",
+        description: "Remote job board and tips for working from anywhere.",
+        type: "article" as const,
+        href: "https://weworkremotely.com",
+        external: true,
       },
     ],
   },
@@ -113,8 +137,7 @@ export default function ResourcesPage() {
         <div className="container-wide text-center">
           <h1 className="section-heading">Resources & Learning Hub</h1>
           <p className="mx-auto mt-4 max-w-2xl text-earth-600">
-            Free guides, templates, and articles to support your scholarship applications,
-            resume building, interview prep, and career growth.
+            Curated links to free, trusted resources for scholarships, resumes, interviews, and career growth. All links open in a new tab.
           </p>
         </div>
       </section>
@@ -133,7 +156,8 @@ export default function ResourcesPage() {
                     description={r.description}
                     category={cat.name}
                     type={r.type}
-                    href={`/resources#${r.id}`}
+                    href={r.href}
+                    external={r.external}
                   />
                 ))}
               </div>

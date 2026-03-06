@@ -174,11 +174,11 @@ export default async function MentorProfilePage({ params }: Props) {
             )}
           </div>
 
-          {/* Reviews / Testimonials placeholder */}
+          {/* Reviews & Testimonials */}
           <section className="mt-6 card rounded-2xl p-5">
             <h2 className="text-xs font-semibold uppercase tracking-widest text-earth-500 mb-4">Reviews & Testimonials</h2>
             <p className="text-sm text-earth-600">
-              Mentees who have worked with this mentor can leave reviews here. Be the first to connect and share your experience!
+              After a mentorship, mentees can leave a review. Reviews will appear here once they are submitted.
             </p>
           </section>
 
