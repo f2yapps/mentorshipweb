@@ -14,7 +14,7 @@ const FAQ_ITEMS = [
     id: "2",
     question: "How do I find a mentor?",
     answer:
-      "Go to Find Mentors and browse by category, country, or language. You can read mentor profiles and send a mentorship request with a short message about your goals. Once a mentor accepts, you can arrange meetings and stay in touch via our Messages feature.",
+      "Go to Find Mentors and browse by category, country, or language. You can read mentor profiles and send a mentorship request with a short message about your goals. Once a mentor accepts, you can arrange meetings and stay in touch via your dashboard and notifications.",
   },
   {
     id: "3",
@@ -50,7 +50,7 @@ const FAQ_ITEMS = [
     id: "8",
     question: "Is my data safe?",
     answer:
-      "We take privacy seriously. We use industry-standard security and don't sell your data. See our Privacy Policy for details. Messages between you and your mentor are private and not shared with third parties.",
+      "We take privacy seriously. We use industry-standard security and don't sell your data. See our Privacy Policy for details. Your account and profile data are protected and not shared with third parties.",
   },
 ];
 

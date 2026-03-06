@@ -3,7 +3,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseNotConfiguredError } from "@/lib/supabase/errors";
 import { MentorDashboardRequests } from "@/components/dashboard/MentorDashboardRequests";
-import { LayoutDashboard, Users, Calendar, Mail, Bell, ArrowRight } from "lucide-react";
+import { LayoutDashboard, Users, Calendar, Bell, ArrowRight } from "lucide-react";
 
 export default async function MentorDashboardPage() {
   try {
@@ -129,15 +129,6 @@ export default async function MentorDashboardPage() {
               <p className="text-sm text-earth-500">Pending requests</p>
             </div>
           </div>
-          <Link href="/messages" className="card-hover flex items-center gap-4 p-5">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-earth-100 text-earth-600">
-              <Mail className="h-6 w-6" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-earth-900">Messages</p>
-              <p className="text-xs text-earth-500">Chat with mentees</p>
-            </div>
-          </Link>
           <Link href="/notifications" className="card-hover flex items-center gap-4 p-5">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-earth-100 text-earth-600">
               <Bell className="h-6 w-6" />
