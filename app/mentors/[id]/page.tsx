@@ -39,7 +39,7 @@ export default async function MentorProfilePage({ params }: Props) {
 
     const { data: mentorRaw } = await supabase
       .from("mentors")
-      .select("id, user_id, expertise_categories, experience_years, availability, languages, verified, users(id, name, country, bio, avatar_url)")
+      .select("id, user_id, expertise_categories, experience_years, availability, languages, verified, users(id, name, country, bio, avatar_url, current_position, organization)")
       .eq("id", mentorId)
       .single();
 
@@ -48,6 +48,7 @@ export default async function MentorProfilePage({ params }: Props) {
     const usersField: unknown = (mentorRaw as { users?: unknown }).users;
     const userRow = (Array.isArray(usersField) ? usersField[0] : usersField) as {
       id: string; name: string; country: string | null; bio: string | null; avatar_url: string | null;
+      current_position: string | null; organization: string | null;
     } | null;
 
     const mentor = {
@@ -61,6 +62,8 @@ export default async function MentorProfilePage({ params }: Props) {
       country: userRow?.country ?? null,
       bio: userRow?.bio ?? null,
       avatar_url: userRow?.avatar_url ?? null,
+      current_position: userRow?.current_position ?? null,
+      organization: userRow?.organization ?? null,
     };
 
     const initials = mentor.name.split(" ").map((w: string) => w[0]).slice(0, 2).join("").toUpperCase();
@@ -107,6 +110,13 @@ export default async function MentorProfilePage({ params }: Props) {
                       </span>
                     )}
                   </div>
+                  {(mentor.current_position || mentor.organization) && (
+                    <p className="mt-0.5 text-sm font-medium text-earth-700">
+                      {mentor.current_position}
+                      {mentor.current_position && mentor.organization && " · "}
+                      {mentor.organization}
+                    </p>
+                  )}
                   {mentor.country && (
                     <p className="mt-0.5 text-sm text-earth-500">📍 {mentor.country}</p>
                   )}
@@ -138,6 +148,24 @@ export default async function MentorProfilePage({ params }: Props) {
             <section className="card rounded-2xl p-5">
               <h2 className="text-xs font-semibold uppercase tracking-widest text-earth-500 mb-4">Details</h2>
               <dl className="space-y-3">
+                {mentor.current_position && (
+                  <div className="flex items-center gap-3">
+                    <span className="text-xl">💼</span>
+                    <div>
+                      <dt className="text-xs text-earth-500">Position</dt>
+                      <dd className="text-sm font-semibold text-earth-900">{mentor.current_position}</dd>
+                    </div>
+                  </div>
+                )}
+                {mentor.organization && (
+                  <div className="flex items-center gap-3">
+                    <span className="text-xl">🏛️</span>
+                    <div>
+                      <dt className="text-xs text-earth-500">Institution / Company</dt>
+                      <dd className="text-sm font-semibold text-earth-900">{mentor.organization}</dd>
+                    </div>
+                  </div>
+                )}
                 {mentor.experience_years != null && (
                   <div className="flex items-center gap-3">
                     <span className="text-xl">🕐</span>
