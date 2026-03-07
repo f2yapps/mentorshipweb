@@ -24,7 +24,7 @@ function VerifiedContent() {
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
             <CheckCircle className="h-9 w-9 text-green-600" />
           </div>
-          <h1 className="text-2xl font-bold text-earth-900">Email Verified!</h1>
+          <h1 className="text-2xl font-bold text-earth-900">Successfully verified email</h1>
           <p className="mt-3 text-earth-600">
             Your email has been successfully verified. You&apos;re all set!
           </p>
