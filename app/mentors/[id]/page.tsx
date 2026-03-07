@@ -218,19 +218,26 @@ export default async function MentorProfilePage({ params }: Props) {
                 Send a mentorship request and start your journey. It's free and they'll respond within a few days.
               </p>
             </div>
-            {isMentee ? (
-              <Link href={`/mentors/${mentorId}/request`} className="btn-primary shrink-0">
-                Request Mentorship →
-              </Link>
-            ) : !user ? (
-              <Link href={`/auth/login?next=/mentors/${mentorId}/request`} className="btn-primary shrink-0">
-                Sign in to Request →
-              </Link>
-            ) : (
-              <Link href="/mentors" className="btn-secondary shrink-0">
-                Browse More Mentors
-              </Link>
-            )}
+            <div className="flex flex-wrap gap-2 shrink-0">
+              {isMentee ? (
+                <>
+                  <Link href={`/mentors/${mentorId}/request`} className="btn-primary">
+                    Request Mentorship →
+                  </Link>
+                  <Link href={`/messages/start?mentor_id=${mentorId}`} className="btn-secondary">
+                    💬 Send Message
+                  </Link>
+                </>
+              ) : !user ? (
+                <Link href={`/auth/login?next=/mentors/${mentorId}/request`} className="btn-primary">
+                  Sign in to Request →
+                </Link>
+              ) : (
+                <Link href="/mentors" className="btn-secondary">
+                  Browse More Mentors
+                </Link>
+              )}
+            </div>
           </div>
 
         </div>
