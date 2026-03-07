@@ -46,10 +46,20 @@ export async function getOrCreateConversation(
     menteeId = myMentee.id;
   }
 
-  // Upsert conversation
+  // Try to find existing conversation first
+  const { data: existing } = await supabase
+    .from("conversations")
+    .select("id")
+    .eq("mentor_id", mentorId)
+    .eq("mentee_id", menteeId)
+    .maybeSingle();
+
+  if (existing) return existing.id;
+
+  // Create new conversation
   const { data: conv, error } = await supabase
     .from("conversations")
-    .upsert({ mentor_id: mentorId, mentee_id: menteeId }, { onConflict: "mentor_id,mentee_id" })
+    .insert({ mentor_id: mentorId, mentee_id: menteeId })
     .select("id")
     .single();
 
