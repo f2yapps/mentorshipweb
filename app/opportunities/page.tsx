@@ -185,7 +185,7 @@ export default async function OpportunitiesPage({ searchParams }: { searchParams
                     return (
                       <div key={opp.id as string} className={`card p-5 ${isExpired ? "opacity-60" : ""}`}>
                         <div className="flex flex-wrap items-start justify-between gap-3">
-                          <div className="min-w-0 flex-1">
+                          <Link href={`/opportunities/${opp.id as string}`} className="min-w-0 flex-1 group">
                             <div className="flex flex-wrap items-center gap-2 mb-1">
                               <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${TYPE_COLORS[opp.opportunity_type as string] ?? "bg-earth-100 text-earth-600"}`}>
                                 {TYPE_LABELS[opp.opportunity_type as string] ?? (opp.opportunity_type as string)}
@@ -204,9 +204,9 @@ export default async function OpportunitiesPage({ searchParams }: { searchParams
                                 </span>
                               )}
                             </div>
-                            <h2 className="font-semibold text-earth-900 text-base">{opp.title as string}</h2>
+                            <h2 className="font-semibold text-earth-900 text-base group-hover:text-primary-700 transition">{opp.title as string}</h2>
                             <p className="text-sm text-earth-500 mt-0.5">{opp.organization as string}</p>
-                          </div>
+                          </Link>
                           {user && (
                             <BookmarkButton
                               opportunityId={opp.id as string}
@@ -214,7 +214,6 @@ export default async function OpportunitiesPage({ searchParams }: { searchParams
                             />
                           )}
                         </div>
-
                         <div className="mt-3 flex flex-wrap gap-4 text-xs text-earth-500">
                           {opp.country && (
                             <span className="flex items-center gap-1">
@@ -255,8 +254,14 @@ export default async function OpportunitiesPage({ searchParams }: { searchParams
                             <span className="font-medium">Eligibility:</span> {opp.eligibility as string}
                           </p>
                         )}
-                        {opp.application_link && !isExpired && (
-                          <div className="mt-4">
+                        <div className="mt-4 flex flex-wrap gap-2">
+                          <Link
+                            href={`/opportunities/${opp.id as string}`}
+                            className="inline-flex items-center gap-1.5 rounded-lg border border-earth-200 bg-white px-4 py-2 text-sm font-medium text-earth-700 hover:bg-earth-50 transition"
+                          >
+                            View Details
+                          </Link>
+                          {opp.application_link && !isExpired && (
                             <a
                               href={opp.application_link as string}
                               target="_blank"
@@ -265,8 +270,8 @@ export default async function OpportunitiesPage({ searchParams }: { searchParams
                             >
                               Apply Now <ExternalLink className="h-3.5 w-3.5" />
                             </a>
-                          </div>
-                        )}
+                          )}
+                        </div>
                       </div>
                     );
                   })}
