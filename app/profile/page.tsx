@@ -11,7 +11,7 @@ export default async function ProfilePage() {
 
     const { data: profile } = await supabase
       .from("users")
-      .select("id, name, email, role, country, bio, avatar_url")
+      .select("id, name, email, role, country, bio, avatar_url, current_position, organization")
       .eq("id", user.id)
       .single();
 
@@ -70,6 +70,13 @@ export default async function ProfilePage() {
                       {role}
                     </span>
                   </div>
+                  {((profile as {current_position?: string|null})?.current_position || (profile as {organization?: string|null})?.organization) && (
+                    <p className="mt-0.5 text-sm font-medium text-earth-700">
+                      {(profile as {current_position?: string|null})?.current_position}
+                      {(profile as {current_position?: string|null})?.current_position && (profile as {organization?: string|null})?.organization && " · "}
+                      {(profile as {organization?: string|null})?.organization}
+                    </p>
+                  )}
                   {profile?.country && (
                     <p className="mt-0.5 text-sm text-earth-500">📍 {profile.country}</p>
                   )}
@@ -109,6 +116,18 @@ export default async function ProfilePage() {
                 <section className="card p-6">
                   <h2 className="text-sm font-semibold uppercase tracking-wide text-earth-500 mb-3">Details</h2>
                   <dl className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                    {(profile as {current_position?: string|null})?.current_position && (
+                      <div className="rounded-lg bg-earth-50 p-3 text-center">
+                        <dt className="text-xs text-earth-500">Position</dt>
+                        <dd className="mt-1 text-sm font-bold text-earth-900">{(profile as {current_position?: string|null})?.current_position}</dd>
+                      </div>
+                    )}
+                    {(profile as {organization?: string|null})?.organization && (
+                      <div className="rounded-lg bg-earth-50 p-3 text-center">
+                        <dt className="text-xs text-earth-500">Institution</dt>
+                        <dd className="mt-1 text-sm font-bold text-earth-900">{(profile as {organization?: string|null})?.organization}</dd>
+                      </div>
+                    )}
                     {mentor.experience_years != null && (
                       <div className="rounded-lg bg-earth-50 p-3 text-center">
                         <dt className="text-xs text-earth-500">Experience</dt>
