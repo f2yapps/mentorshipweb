@@ -5,6 +5,7 @@
  */
 
 import { createServerClient } from "@supabase/ssr";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import { SupabaseNotConfiguredError } from "./errors";
 
@@ -39,5 +40,16 @@ export async function createClient() {
         }
       },
     },
+  });
+}
+
+// Service-role client — bypasses RLS. Use only in server actions for internal writes
+// (e.g. inserting notifications for other users). Never expose to client.
+export function createAdminClient() {
+  const supabaseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL ?? "").trim();
+  const serviceRoleKey = (process.env.SUPABASE_SERVICE_ROLE_KEY ?? "").trim();
+  if (!supabaseUrl || !serviceRoleKey) throw new SupabaseNotConfiguredError();
+  return createSupabaseClient(supabaseUrl, serviceRoleKey, {
+    auth: { autoRefreshToken: false, persistSession: false },
   });
 }

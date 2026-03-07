@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 
 export type CreateRequestResult = { ok: true; requestId: string } | { ok: false; error: string };
@@ -20,7 +20,9 @@ export async function createMentorshipRequest(
   const { data: menteeUser } = await supabase.from("users").select("name").eq("id", user.id).single();
   const menteeName = menteeUser?.name ?? "A mentee";
 
-  const { data: request, error: insertError } = await supabase
+  // Use admin client for the insert so any remaining DB triggers run as service_role (bypasses RLS)
+  const admin = createAdminClient();
+  const { data: request, error: insertError } = await admin
     .from("mentorship_requests")
     .insert({
       mentee_id: menteeId,
@@ -41,17 +43,22 @@ export async function createMentorshipRequest(
     .select("user_id")
     .eq("id", mentorId)
     .single();
-  if (mentor?.user_id) {
-    const notifMsg = `${menteeName} sent you a mentorship request in ${category}.`;
-    await supabase.from("notifications").insert({
-      user_id: mentor.user_id,
-      type: "mentorship_request",
-      title: "New mentorship request",
-      message: notifMsg,
-      body: notifMsg,
-      related_entity_type: "mentorship_request",
-      related_entity_id: request.id,
-    });
+  try {
+    if (mentor?.user_id) {
+      const notifMsg = `${menteeName} sent you a mentorship request in ${category}.`;
+      const admin = createAdminClient();
+      await admin.from("notifications").insert({
+        user_id: mentor.user_id,
+        type: "mentorship_request",
+        title: "New mentorship request",
+        message: notifMsg,
+        body: notifMsg,
+        related_entity_type: "mentorship_request",
+        related_entity_id: request.id,
+      });
+    }
+  } catch {
+    // Notification failure must never block the request creation
   }
 
   revalidatePath("/dashboard/mentee");
@@ -71,7 +78,8 @@ export async function updateMentorshipStatus(
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, error: "Not authenticated" };
 
-  const { error } = await supabase
+  const admin = createAdminClient();
+  const { error } = await admin
     .from("mentorship_requests")
     .update({ status })
     .eq("id", requestId);
@@ -101,7 +109,8 @@ export async function updateMentorshipStatus(
 
         if (menteeRow?.user_id) {
           const msg = `${mentorUser?.name ?? "A mentor"} accepted your mentorship request. Check your dashboard to schedule a meeting.`;
-          await supabase.from("notifications").insert({
+          const admin = createAdminClient();
+          await admin.from("notifications").insert({
             user_id: menteeRow.user_id,
             type: "mentorship_accepted",
             title: "Your mentorship request was accepted!",
