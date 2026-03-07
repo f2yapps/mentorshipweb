@@ -7,7 +7,7 @@ import { MenteeMentorInterests } from "@/components/dashboard/MenteeMentorIntere
 import { RecommendedMentors } from "@/components/dashboard/RecommendedMentors";
 import { scoreMentors } from "@/lib/mentor-matching";
 import type { MentorForMatching } from "@/lib/mentor-matching";
-import { LayoutDashboard, Users, Sparkles, Bell, ArrowRight } from "lucide-react";
+import { LayoutDashboard, Users, Sparkles, Bell, ArrowRight, GraduationCap, Calendar, ExternalLink } from "lucide-react";
 
 export default async function MenteeDashboardPage() {
   try {
@@ -134,6 +134,26 @@ export default async function MenteeDashboardPage() {
 
     const recommendedMentors = scoreMentors(menteeProfile, mentorsForMatching).slice(0, 5);
 
+    // Scholarship recommendations: match by field_of_study overlap with mentee categories
+    let schQuery = supabase
+      .from("opportunities")
+      .select("id, title, organization, deadline, opportunity_type, funding_type, field_of_study, application_link")
+      .eq("is_published", true)
+      .order("deadline", { ascending: true, nullsFirst: false })
+      .limit(20);
+
+    const { data: allOpps } = await schQuery;
+
+    const menteeCategories = menteeProfile.preferred_categories.map((c) => c.toLowerCase());
+    const scoredOpps = (allOpps ?? []).map((opp) => {
+      const fields = ((opp as { field_of_study?: string[] }).field_of_study ?? []).map((f) => f.toLowerCase());
+      const hasAny = fields.includes("any");
+      const overlap = hasAny ? 1 : fields.filter((f) => menteeCategories.some((c) => c.includes(f) || f.includes(c))).length;
+      return { ...opp, _score: hasAny ? 0.5 : overlap };
+    }).sort((a, b) => (b as { _score: number })._score - (a as { _score: number })._score).slice(0, 4);
+
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+
     return (
       <div className="space-y-8">
         {/* Welcome card */}
@@ -200,6 +220,59 @@ export default async function MenteeDashboardPage() {
             Matched based on your interests, goals, and profile — updated each visit.
           </p>
           <RecommendedMentors mentors={recommendedMentors} />
+        </section>
+
+        {/* Scholarships You May Qualify For */}
+        <section>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <GraduationCap className="h-5 w-5 text-amber-500" />
+              <h2 className="text-lg font-semibold text-earth-900">Scholarships You May Qualify For</h2>
+            </div>
+            <Link href="/opportunities" className="text-sm font-medium text-primary-600 hover:text-primary-700">
+              View all →
+            </Link>
+          </div>
+          {scoredOpps.length === 0 ? (
+            <div className="rounded-2xl border border-earth-100 bg-earth-50 px-5 py-6 text-center text-sm text-earth-500">
+              No opportunities yet.{" "}
+              <Link href="/opportunities" className="text-primary-600 hover:underline">Browse the full list</Link>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {scoredOpps.map((opp) => {
+                const deadline = (opp as { deadline?: string }).deadline
+                  ? new Date(((opp as { deadline?: string }).deadline as string) + "T00:00:00")
+                  : null;
+                const daysLeft = deadline ? Math.ceil((deadline.getTime() - today.getTime()) / 86400000) : null;
+                const isExpired = daysLeft !== null && daysLeft < 0;
+                return (
+                  <div key={(opp as { id: string }).id} className={`flex items-start justify-between gap-3 rounded-2xl border border-earth-100 bg-white p-4 shadow-sm ${isExpired ? "opacity-50" : ""}`}>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-semibold text-earth-900 text-sm">{(opp as { title: string }).title}</p>
+                      <p className="text-xs text-earth-500 mt-0.5">{(opp as { organization: string }).organization}</p>
+                      {deadline && (
+                        <p className={`mt-1 flex items-center gap-1 text-xs ${daysLeft !== null && daysLeft <= 14 && !isExpired ? "text-red-600 font-semibold" : "text-earth-400"}`}>
+                          <Calendar className="h-3 w-3" />
+                          {isExpired ? "Closed" : `Deadline: ${deadline.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}`}
+                        </p>
+                      )}
+                    </div>
+                    {(opp as { application_link?: string }).application_link && !isExpired && (
+                      <a
+                        href={(opp as { application_link: string }).application_link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="shrink-0 inline-flex items-center gap-1 rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-amber-600 transition"
+                      >
+                        Apply <ExternalLink className="h-3 w-3" />
+                      </a>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </section>
 
         <div className="grid gap-8 lg:grid-cols-3">
